@@ -1,21 +1,25 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* acconfig.h
+   This file is in the public domain.
 
-/* Define to empty if the keyword does not work.  */
-#undef const
+   Descriptive text for the C preprocessor macros that
+   the distributed Autoconf macros can define.
+   No software package will use all of them; autoheader copies the ones
+   your configure.in uses into your configuration header file templates.
 
-/* Define as the return type of signal handlers (int or void).  */
-#undef RETSIGTYPE
+   The entries are in sort -df order: alphabetical, case insensitive,
+   ignoring punctuation (such as underscores).  Although this order
+   can split up related entries, it makes it easier to check whether
+   a given entry is in the file.
 
-/* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
-
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
+   Leave the following blank line there!!  Autoheader needs it.  */
+
 
 /* Set this to be blah blah blah. */
-#ifndef DEBUG_LOG
+/* #ifndef DEBUG_LOG
 #define DEBUG_LOG debug.log
-#endif
+#endif */
+#undef DEBUG_LOG
 
 /* Set this blah blah blah. */
 #undef SCORESDIR
@@ -23,71 +27,104 @@
 /* Comment this out to use a shared best times file. */
 #undef USE_GROUP_BEST_FILE
 
-/* Define if you have the fileno function.  */
-#undef HAVE_FILENO
+
+/* Leave that blank line there!!  Autoheader needs it.
+   If you're adding to this file, keep in mind:
+   The entries are in sort -df order: alphabetical, case insensitive,
+   ignoring punctuation (such as underscores).  */
 
-/* Define if you have the flock function.  */
-#undef HAVE_FLOCK
-
-/* Define if you have the get_current_dir_name function.  */
-#undef HAVE_GET_CURRENT_DIR_NAME
-
-/* Define if you have the getopt function.  */
-#undef HAVE_GETOPT
-
-/* Define if you have the getopt_long function.  */
-#undef HAVE_GETOPT_LONG
-
-/* Define if you have the lockf function.  */
-#undef HAVE_LOCKF
-
-/* Define if you have the memmove function.  */
-#undef HAVE_MEMMOVE
-
-/* Define if you have the memset function.  */
-#undef HAVE_MEMSET
-
-/* Define if you have the snprintf function.  */
-#undef HAVE_SNPRINTF
-
-/* Define if you have the sprintf function.  */
-#undef HAVE_SPRINTF
-
-/* Define if you have the strdup function.  */
-#undef HAVE_STRDUP
-
-/* Define if you have the vsnprintf function.  */
-#undef HAVE_VSNPRINTF
-
-/* Define if you have the vsprintf function.  */
-#undef HAVE_VSPRINTF
-
-/* Define if you have the <errno.h> header file.  */
+/* Define if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
-/* Define if you have the <getopt.h> header file.  */
+/* Define if you have the `fileno' function. */
+#undef HAVE_FILENO
+
+/* Define if you have the `flock' function. */
+#undef HAVE_FLOCK
+
+/* Define if you have the `getopt' function. */
+#undef HAVE_GETOPT
+
+/* Define if you have the <getopt.h> header file. */
 #undef HAVE_GETOPT_H
 
-/* Define if you have the <limits.h> header file.  */
-#undef HAVE_LIMITS_H
+/* Define if you have the `getopt_long' function. */
+#undef HAVE_GETOPT_LONG
 
-/* Define if you have the <string.h> header file.  */
-#undef HAVE_STRING_H
+/* Define if you have the `get_current_dir_name' function. */
+#undef HAVE_GET_CURRENT_DIR_NAME
 
-/* Define if you have the <sys/file.h> header file.  */
-#undef HAVE_SYS_FILE_H
+/* Define if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
 
-/* Define if you have the <sys/types.h> header file.  */
-#undef HAVE_SYS_TYPES_H
-
-/* Define if you have the <unistd.h> header file.  */
-#undef HAVE_UNISTD_H
-
-/* Define if you have the curses library (-lcurses).  */
+/* Define if you have the `curses' library (-lcurses). */
 #undef HAVE_LIBCURSES
 
-/* Define if you have the m library (-lm).  */
+/* Define if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define if you have the ncurses library (-lncurses).  */
-#undef HAVE_LIBNCURSES
+/* Define if you have the <limits.h> header file. */
+#undef HAVE_LIMITS_H
+
+/* Define if you have the `lockf' function. */
+#undef HAVE_LOCKF
+
+/* Define if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
+
+/* Define if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define if you have the `memset' function. */
+#undef HAVE_MEMSET
+
+/* Define if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
+/* Define if you have the `sprintf' function. */
+#undef HAVE_SPRINTF
+
+/* Define if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define if you have the `strdup' function. */
+#undef HAVE_STRDUP
+
+/* Define if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define if you have the <sys/file.h> header file. */
+#undef HAVE_SYS_FILE_H
+
+/* Define if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the `vsnprintf' function. */
+#undef HAVE_VSNPRINTF
+
+/* Define if you have the `vsprintf' function. */
+#undef HAVE_VSPRINTF
+
+/* Define as the return type of signal handlers (`int' or `void'). */
+#undef RETSIGTYPE
+
+/* Define if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+#undef size_t
