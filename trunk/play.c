@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+* $Id: play.c,v 1.2 1999-02-10 23:49:27 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -108,15 +108,19 @@ int GetInput(GameStats* Game)
 			{
 				case MINE:
 					SetMine(Game->CursorX,Game->CursorY,MARKED);
+					Game->MarkedMines++;
 					break;
 				case MARKED:
 					SetMine(Game->CursorX,Game->CursorY,MINE);
+					Game->MarkedMines--;
 					break;
 				case BAD_MARK:
 					SetMine(Game->CursorX,Game->CursorY,UNKNOWN);
+					Game->MarkedMines--;
 					break;
 				case UNKNOWN:
 					SetMine(Game->CursorX,Game->CursorY,BAD_MARK);
+					Game->MarkedMines++;
 					break;
 				default:
 					SweepError("Cannot mark as a mine.");
@@ -142,6 +146,8 @@ int GetInput(GameStats* Game)
 				case MINE:
 					/* BOOM! */
 					Boom();
+					SetMine(Game->CursorX,Game->CursorY,DETONATED);
+					CharSet.FalseMark='x';
 					Game->Status=LOSE;
 #ifdef DEBUG_LOG
 					fprintf(DebugLog,"Mine exposed! Setting Status to LOSE.\n");
@@ -149,18 +155,18 @@ int GetInput(GameStats* Game)
 #endif /* DEBUG_LOG */
 					break;
 				case UNKNOWN:
-					ClickSquare(Game,-1,-1);
+					Clear(Game);
 					break;
 				case EMPTY:
 					SweepError("Square already exposed.");
 					break;
 				case 1: case 2: case 3: case 4:
 				case 5: case 6: case 7: case 8:
-					
+					/* Double-click */
+					SuperClear(Game);
 
 					break;
 				default:
-
 					break;
 			}
 			break;
@@ -230,7 +236,7 @@ int GetInput(GameStats* Game)
 			/* FOO! */
 			/* Make a node for now. */
 /*			AddNodeToFile(NULL,GenerateFakeNode());*/
-			AddNodeToFile(NULL,InitNode(Game));
+/*			AddNodeToFile(NULL,InitNode(Game));*/
 #ifdef DEBUG_LOG
 			fprintf(DebugLog,"Quitting quietly.\n========================================\n");
 			fclose(DebugLog);
@@ -238,7 +244,7 @@ int GetInput(GameStats* Game)
 			clear();
 			refresh();
 			endwin();
-			exit(0);
+			exit(EXIT_SUCCESS);
 			break;
 
 		case '0':
@@ -302,6 +308,13 @@ int GetInput(GameStats* Game)
 			}
 			break;
 #endif /* SWEEP_MOUSE */
+
+#ifdef DEBUG_LOG
+		case '|':
+			fprintf(DebugLog,"Entering cheat mode.\n");
+			CharSet.Mine='+';
+			break;
+#endif /* DEBUG_LOG */
 
 		case ERR:
 #ifdef DEBUG_LOG
@@ -408,119 +421,4 @@ void Boom()
 	delwin(BoomWin);
 
 	return;
-}
-
-int ClickSquare(GameStats* Game, int ThisX, int ThisY)
-{
-	unsigned char SquareVal;
-	int Total=0;
-
-	if (ThisX < 0)
-	{
-		ThisX=Game->CursorX;
-	}
-
-	if (ThisY < 0)
-	{
-		ThisY=Game->CursorY;
-	}
-
-	GetMine(ThisX,ThisY,SquareVal);
-	if (SquareVal != UNKNOWN)
-	{
-		return SquareVal;
-	}
-
-	/* Check the above squares */
-	if (ThisY > 0)
-	{
-		/* Check upper-left */
-		if (ThisX > 0)
-		{
-			GetMine(ThisX-1,ThisY-1,SquareVal);
-			if (SquareVal == MINE)
-			{
-				Total++;
-			}
-		}
-
-		/* Check directly above */
-		GetMine(ThisX,ThisY-1,SquareVal);
-		if (SquareVal == MINE)
-		{
-			Total++;
-		}
-	
-		/* Check upper-right */
-		if (ThisX < (Game->Width -1))
-		{
-			GetMine(ThisX+1,ThisY-1,SquareVal);
-			if (SquareVal == MINE)
-			{
-				Total++;
-			}
-		}
-	}
-
-	if (ThisX > 0)
-	{
-		GetMine(ThisX-1,ThisY,SquareVal);
-		if (SquareVal == MINE)
-		{
-			Total++;
-		}
-	}
-
-	if (ThisX < (Game->Width -1))
-	{
-		GetMine(ThisX+1,ThisY,SquareVal);
-		if (SquareVal == MINE)
-		{
-			Total++;
-		}
-	}
-
-	/* Check the below squares */
-	if (ThisY < (Game->Height -1))
-	{
-		/* Check lower-left */
-		if (ThisX > 0)
-		{
-			GetMine(ThisX-1,ThisY+1,SquareVal);
-			if (SquareVal == MINE)
-			{
-				Total++;
-			}
-		}
-
-		/* Check directly below */
-		GetMine(ThisX,ThisY+1,SquareVal);
-		if (SquareVal == MINE)
-		{
-			Total++;
-		}
-	
-		/* Check lower-right */
-		if (ThisX < (Game->Width -1))
-		{
-			GetMine(ThisX+1,ThisY+1,SquareVal);
-			if (SquareVal == MINE)
-			{
-				Total++;
-			}
-		}
-	}
-
-	/* Either set the value, or recurse to finish the job. */
-	if (Total !=0 )
-	{
-		SetMine(ThisX,ThisY,Total);
-	}
-	else
-	{
-		SetMine(ThisX,ThisY,EMPTY);
-		/* Start the recursion. */
-
-	}
-	return Total;
 }

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+* $Id: drawing.c,v 1.2 1999-02-10 23:49:25 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -344,6 +344,82 @@ void AskPrefs(GameStats* Game)
 	ValueBuffer[0]=0;
 	CurrentLine++;
 
+	/* Now ask about the alert prefs. */
+	mvprintw(CurrentLine,0,"Use Beep/Flash/No alert? [");
+	switch (Game->Alert)
+	{
+		case BEEP: default:
+			printw("B/f/n]:");
+			break;
+		case FLASH:
+			printw("b/F/n]:");
+			break;
+		case NO_ALERT:
+			printw("b/f/N]:");
+			break;
+	}
+
+	while (Status<=0)
+	{
+		if (Status<0)
+		{
+			beep();
+			mvprintw(LINES-1,0,"Invalid entry for Alert mode.");
+			mvclrtoeol(CurrentLine,41);
+		}
+		ValueBuffer[0]=mvgetch(CurrentLine,34);
+		refresh();
+		switch(ValueBuffer[0])
+		{
+			case '\n': case '\r':
+				Status=1;
+				switch (Game->Alert)
+				{
+					case BEEP: default:
+						mvprintw(CurrentLine,34,"Beep");
+						break;
+					case FLASH:
+						mvprintw(CurrentLine,34,"Flash");
+						break;
+					case NO_ALERT:
+						mvprintw(CurrentLine,34,"None");
+						break;
+				}
+				break;
+		
+			case 'b': case 'B':
+				Game->Alert=BEEP;
+				mvprintw(CurrentLine,34,"Beep");
+				Status=1;
+				break;
+			
+			case 'f': case 'F':
+				Game->Alert=FLASH;
+				mvprintw(CurrentLine,34,"Flash");
+				Status=1;
+				break;
+			
+			case 'n': case 'N':
+				Game->Alert=NO_ALERT;
+				mvprintw(CurrentLine,34,"None");
+				Status=1;
+				break;
+			
+			default:
+#ifdef DEBUG_LOG
+				fprintf(DebugLog, "Unknown character: %c\n", ValueBuffer[0]);
+#endif
+				Status=-1;
+				break;
+		}
+	}
+	mvclrtoeol(LINES-1,0);
+	Status=0;
+
+	ValueBuffer[0]=0;
+	CurrentLine++;
+
+	/* Ask about saving these prefs. */
 	mvprintw(CurrentLine,0,"Save these preferences? [Y/n]:");
 	while (Status<=0)
 	{
@@ -410,7 +486,7 @@ void Help()
 	if ((HelpWin=newwin(0,0,0,0))==NULL)
 	{
 		perror("Help::newwin");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	wborder(HelpWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
 	mvwprintw(HelpWin,1,2,"Time out - Freesweep Help");
@@ -432,7 +508,7 @@ void Help()
 		clear();
 		refresh();
 		endwin();
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 	else
 	{
@@ -472,15 +548,17 @@ int DrawBoard(GameStats* Game)
 					waddch(Game->Board,(CellVal)+'0');
 					break;
 				case MINE:
-/*					waddch(Game->Board,CharSet.Mine);*/
-					waddch(Game->Board,'+');
-/*					waddch(Game->Board,(CoordX%10)+'0');*/
+					waddch(Game->Board,CharSet.Mine);
+/*					waddch(Game->Board,'+');*/
 					break;
 				case MARKED:
 					waddch(Game->Board,CharSet.Mark);
 					break;
 				case BAD_MARK:
 					waddch(Game->Board,CharSet.FalseMark);
+					break;
+				case DETONATED:
+					waddch(Game->Board,CharSet.Bombed);
 					break;
 				default:
 					break;
@@ -508,7 +586,7 @@ void PrintBestTimes(char* Filename)
 	if ((BestTimesWin=newwin(0,0,0,0))==NULL)
 	{
 		perror("PrintHighs::AllocWin");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	wborder(BestTimesWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
 	mvwprintw(BestTimesWin,1,2,"Best times");
@@ -542,7 +620,7 @@ void PrintBestTimes(char* Filename)
 				clear();
 				refresh();
 				endwin();
-				exit(0);
+				exit(EXIT_SUCCESS);
 			}
 			else if (Input==' ')
 			{
@@ -637,7 +715,7 @@ void PrintBestTimes(char* Filename)
 		refresh();
 		endwin();
 		FreeNode(Head);
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 	else
 	{

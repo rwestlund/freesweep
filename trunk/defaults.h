@@ -1,11 +1,11 @@
 /*********************************************************************
-* $Id: defaults.h,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+* $Id: defaults.h,v 1.2 1999-02-10 23:49:25 hartmann Exp $
 *********************************************************************/
 
 #ifndef __DEFAULTS_H__
 #define __DEFAULTS_H__
 
-#define GLOBAL_PREFS_FILE "/home/hartmann/sweep/sweeprc"
+#define GLOBAL_PREFS_FILE "/usr6/hartmann/sweep/sweeprc"
 
 #define DEFAULT_HEIGHT 15
 #define DEFAULT_WIDTH 15
