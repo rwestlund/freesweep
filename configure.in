@@ -13,10 +13,10 @@ dnl AC_PATH_PROG(DATE, date)
 dnl Look for ncurses in a variable.
 AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses, NCURSES=/usr/local)
 
-if test "$NCURSES" = "no"  ; then
+if test "$NCURSES" = "no" ; then
 	LIBS="-lcurses $LIBS"
 else
-	dnl Linux uses
+	dnl Linux uses ncurses, but not in /usr/local
 	if test "$host_os" = 'linux' ; then
 		NCURSES=/usr
 	fi
@@ -30,6 +30,10 @@ else
 
 	dnl Replace `main' with a function in -lncurses:
 	AC_CHECK_LIB(ncurses,main)
+
+	if test "$ac_cv_lib_ncurses_main" = 'no' ; then
+		LIBS="-lcurses $LIBS"
+	fi
 fi
 
 dnl Checks for libraries.
