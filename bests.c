@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: bests.c,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+* $Id: bests.c,v 1.2 1999-02-10 23:49:24 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -227,7 +227,8 @@ int MigrateBestTimes(FILE* OldFile)
 			perror("MigrateBestTimes::AllocBuffer");
 			return 1;
 		}
-		sprintf(AttribBuffer,"%s\t%st%d\tUnknown\n",ValueBuffer,Current->Attributes,Current->Time);
+		/* sprintf(AttribBuffer,"%s\t%st%d\tUnknown\n",ValueBuffer,Current->Attributes,Current->Time); */
+		snprintf(AttribBuffer, BestTimeLen, "%s\t%st%d\tUnknown\n",ValueBuffer,Current->Attributes,Current->Time);
 
 		/* Convert it. Technically insecure, but it'll keep people from fucking with their times. */
 		ValueBuffer=AttribBuffer;
@@ -675,7 +676,8 @@ BestTimeNode* InitNode(GameStats* Game)
 		perror("AddNewNode::SetAttributes");
 		return NULL;
 	}
-	else if (sprintf(NewNode->Attributes,"w%dh%dm%d",Game->Width,Game->Height,Mines) < 0)
+/*	else if (sprintf(NewNode->Attributes,"w%dh%dm%d",Game->Width,Game->Height,Mines) < 0)*/
+	else if (snprintf(NewNode->Attributes, ((2*MAX_H)+(2*MAX_W)+4), "w%dh%dm%d",Game->Width,Game->Height,Mines) < 0)
 	{
 		perror("AddNewNode::SetAtributes");
 		return NULL;
@@ -741,7 +743,8 @@ int WriteNodeList(char* Filename, BestTimeNode* Head)
 
 	while (Current!=NULL)
 	{
-		if ((sprintf(WriteBuffer,"%s\t%st%d\t%s\n",Current->Username,Current->Attributes,Current->Time,Current->Date)) < 0)
+/*		if ((sprintf(WriteBuffer,"%s\t%st%d\t%s\n",Current->Username,Current->Attributes,Current->Time,Current->Date)) < 0)*/
+		if ((snprintf(WriteBuffer,((2*L_MAX_W)+(2*L_MAX_H)+MAX_DATE+MAX_NAME+24),"%s\t%st%d\t%s\n",Current->Username,Current->Attributes,Current->Time,Current->Date)) < 0)
 		{
 			perror("WriteNodeList::Write to buffer");
 			/* Handle the fail gracefully here. */
@@ -834,7 +837,8 @@ BestTimeNode* GenerateFakeNode()
 #endif /* DEBUG_LOG */
 		return NULL;
 	}
-	else if (sprintf(NewNode->Attributes,"w%dh%dm%d",rand()%50,rand()%50,rand()%250) < 0)
+/*	else if (sprintf(NewNode->Attributes,"w%dh%dm%d",rand()%50,rand()%50,rand()%250) < 0)*/
+	else if (snprintf(NewNode->Attributes,((2*MAX_H)+(2*MAX_W)+4),"w%dh%dm%d",rand()%50,rand()%50,rand()%250) < 0)
 	{
 		perror("AddNewNode::SetAtributes");
 #ifdef DEBUG_LOG

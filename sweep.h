@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+* $Id: sweep.h,v 1.2 1999-02-10 23:49:27 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -32,6 +32,9 @@
 #define DFL_BESTS_FILE ".sweeptimes"
 #define MAGIC_NUMBER 128
 
+/* size of the hashtable, prime too */
+#define HASHSIZE 61
+
 /* These are defines for maximum accepted values */
 #define MAX_LINE 1024
 #define MAX_H 1024
@@ -48,6 +51,7 @@
 #define MARKED 0xa
 #define BAD_MARK 0xb
 #define EMPTY 0xc
+#define DETONATED 0xd
 
 /* These are for winning and losing. */
 #define WIN 1
@@ -107,6 +111,7 @@ typedef struct _GameStats
 	int Width;
 	int Percent;
 	unsigned int NumMines;
+	unsigned int MarkedMines;
 	int Color;
 	int Fast;
 	int Alert;
@@ -120,6 +125,13 @@ typedef struct _GameStats
 	WINDOW* Border;
 	WINDOW* Board;
 } GameStats;
+
+/* This is the struct for the clearing algo. */
+struct Mark
+{
+	int x, y;
+	struct Mark *next;
+};
 
 /* This is the format for the high scores records. */
 typedef struct _BestTimeNode
@@ -216,5 +228,25 @@ int WriteNodeList(char* Filename, BestTimeNode* Head);
 BestTimeNode* GenerateFakeNode();
 
 /* These are the functions defined in hash.c */
+void InsertMark(struct Mark **ht, int x, int y);
+char DeleteRandomMark(struct Mark **ht, int *x, int *y);
+
+/* These are the functions defined in clear.c */
+void Clear(GameStats *Game);
+void SuperClear(GameStats *Game);
+
+/* macros to lookup crap in the look up table for the clearing algo */
+#define LOOKUP(t, xx, yy) \
+	(unsigned char)((t)[(xx)/8 + yy * g_table_w]) & \
+		(((unsigned char)0x80)>>((xx)%8))
+
+#define SET(t, xx, yy) \
+	(unsigned char)((t)[(xx)/8 + yy * g_table_w]) |= \
+		(((unsigned char)0x80)>>((xx)%8))
+
+#define UNSET(t, xx, yy) \
+	(unsigned char)((t)[(xx)/8 + yy * g_table_w]) &= \
+		~(((unsigned char)0x80)>>((xx)%8))
+
 
 #endif /* __SWEEP_H__ */

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+* $Id: game.c,v 1.2 1999-02-10 23:49:26 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -57,6 +57,7 @@ int InitGame(GameStats* Game)
 	Game->Percent=DEFAULT_PERCENT;
 	Game->Color=DEFAULT_COLOR;
 	Game->NumMines=DEFAULT_NUMMINES;
+	Game->MarkedMines=0;
 	Game->Fast=DEFAULT_FASTSTART;
 	Game->Alert=DEFAULT_ALERT;
 	Game->LargeBoardX=Game->LargeBoardY=0;
@@ -148,7 +149,7 @@ int ReadyGame(GameStats* Game)
 		sizeof(char)))<=0)
 	{
 		perror("ReadyGame::AllocField");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	if (Game->Percent!=0)
 	{
@@ -167,10 +168,15 @@ int ReadyGame(GameStats* Game)
 		RandX=rand()%Game->Width;
 		RandY=rand()%Game->Height;
 		GetMine(RandX,RandY,CellVal);
-		if ((CellVal!=MINE)&& !((RandX==Game->Width/2)&&(RandY==Game->Height/2)))
+
+		/* This is gonna be ugly... */
+		if (!( (abs((((Game->Width)/2)-RandX))<2) && (abs((((Game->Height)/2)-RandY))<2)))
 		{
-			SetMine(RandX,RandY,MINE);
-			MinesToSet--;
+			if (CellVal!=MINE)
+			{
+				SetMine(RandX,RandY,MINE);
+				MinesToSet--;
+			}
 		}
 	}
 
@@ -224,7 +230,7 @@ int ReadyGame(GameStats* Game)
 	if ((Game->Border==NULL)||(Game->Board==NULL))
 	{
 		perror("ReadyGame::AllocWin");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	return 0;
@@ -362,7 +368,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 			case 'v':
 				printf("Freesweep version %s by Gus Hartmann (hartmann@cs.wisc.edu).\n",VERSION);
 				printf("Compiled for %s on %s at %s by %s\n.",SYSTEM_TYPE,__DATE__,__TIME__,USER);
-				exit(0);
+				exit(EXIT_SUCCESS);
 				break;
 			case 'w':
 				/* Set width to optarg */
@@ -413,7 +419,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	if (ErrorFlag!=0)
 	{
 		fprintf(stderr,"Usage:\n  freesweep: [-%% percent][-a][-b|-d][-f|-i][-h height][-m mines][-s][-v]\n    [-w width]\n");
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 
 	if (BestTimesFlag==1)
@@ -425,13 +431,13 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 		noutrefresh();
 		doupdate();
 		endwin();
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 
 	if (DumpFlag==1)
 	{
 		DumpNodeFile(NULL);
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
 
 	if (SaveFlag==1)
@@ -451,6 +457,7 @@ void DumpGame(GameStats* Game)
 	fprintf(DebugLog,"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 	fprintf(DebugLog,"Height is %d, Width is %d\n",Game->Height,Game->Width);
 	fprintf(DebugLog,"Percent is %d, NumMines is %d\n",Game->Percent,Game->NumMines);
+	fprintf(DebugLog,"MarkedMines is %d\n",Game->MarkedMines);
 	fprintf(DebugLog,"Fast is %d, LineDraw is %d\n",Game->Fast,Game->LineDraw);
 	fprintf(DebugLog,"CursorY is %d, CursorX is %d\n",Game->CursorY,Game->CursorX);
 	fprintf(DebugLog,"LargeBoardY is %d, LargeBoardX is %d\n",Game->LargeBoardY,Game->LargeBoardX);
