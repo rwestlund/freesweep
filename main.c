@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.16 1999-02-22 07:45:50 hartmann Exp $
+* $Id: main.c,v 1.17 1999-02-23 07:09:25 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 	}
 #endif /* DEBUG_LOG */
 	
-	if ((Game=malloc(sizeof(GameStats)))<=0)
+	if ((Game=malloc(sizeof(GameStats)))==NULL)
 	{
 		perror("Main::AllocGame");
 		return 1;
