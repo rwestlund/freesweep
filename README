@@ -8,15 +8,15 @@ settings in the interactive setup. Use of -s without -f is discouraged.
 new format and deleting the previous version.
 
 	The Makefile assumes multiple architecture builds, and identifies the
-system with a string of the format `uname`_`uname -m`, such as Linux_i486,
-or SunOS_i86.
+system with a string given off by the GNU config.guess script.
 
 	While the game is playable on any terminal supported by ncurses,
 the help and high scores windows are designed to use a screen 80 columns wide.
 
 	The use of the -d option overrides all other options.
 
-	On odd width boards, there is wrap-around.
-
 	Sometimes when quitting, a core is dumped by _strtol_internal. Failure
 somewhere in the best times code.
+
+	On most X keymaps, both the left arrow and the down arrow don't
+work, reporting "Unknown keystroke."
