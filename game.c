@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.28 1999-07-24 23:39:50 hartmann Exp $
+* $Id: game.c,v 1.29 1999-07-27 03:26:53 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -232,7 +232,7 @@ int ReadyGame(GameStats* Game)
 int ParseArgs(GameStats* Game, int Argc, char** Argv)
 {
 #if HAVE_GETOPT || HAVE_GETOPT_LONG
-	int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0, GPLFlag=0;
+	int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0, GPLFlag=0, PercentOrNum=0, HelpFlag=0;
 	extern int opterr, optind;
 	extern char* optarg;
 
@@ -246,6 +246,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 		{"fast", no_argument, 0, 'f'},
 		{"show-gpl", no_argument, 0, 'g'},
 		{"height", required_argument, 0, 'h'},
+		{"help", no_argument, 0, 'H'},
 		{"interactive", no_argument, 0, 'i'},
 		{"mines", no_argument, 0, 'm'},
 		{"save-prefs", no_argument, 0, 's'},
@@ -273,6 +274,10 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 				/* Set percent to optarg */
 				Value=atoi(optarg);
 				((CheckPercent(Value)>=0)?Game->Percent=Value:fprintf(stderr,"Invalid value for percent.\n"));
+				PercentOrNum++;
+				break;
+			case 'H':
+				/* Show the help listing, but exit without error. */
 				break;
 			case 'a':
 				SwitchCharSet(Game);
@@ -298,16 +303,17 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 				QueryFlag++;
 				break;
 			case 'm':
-				/* Set nummines to optarg */
+				/* Set nummines to optarg if PercentFlag is not set.*/
 				Value=atoi(optarg);
 				((CheckNumMines(Value,Game->Height,Game->Width)>=0)?Game->NumMines=Value:fprintf(stderr,"Invalid value for number of mines.\n"));
+				PercentOrNum++;
 				break;
 			case 's':
 				/* Set the save flag */
 				SaveFlag++;
 				break;
 			case 'v':
-				printf("Freesweep v%s by\nGus Hartmann (hartmann@cs.wisc.edu) and Pete Keller (psilord@cs.wisc.edu).\n",VERSION);
+				printf("Freesweep %s by\nGus Hartmann (hartmann@cs.wisc.edu) and Pete Keller (psilord@cs.wisc.edu).\n",VERSION);
 				exit(EXIT_SUCCESS);
 				break;
 			case 'w':
@@ -327,19 +333,25 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	/* Also insure that there was not more than one -s was passed. */
 	if (SaveFlag>1)
 	{
-		fprintf(stderr,"Only one -s can be specified.\n");
+		fprintf(stderr,"Only one save preferences command can be specified.\n");
+		ErrorFlag++;
+	}
+
+	if (PercentOrNum > 1)
+	{
+		fprintf(stderr, "Only one value for mines or percentage can be specified.\n");
 		ErrorFlag++;
 	}
 
 	if (GPLFlag>1)
 	{
-		fprintf(stderr,"Only one -g can be specified.\n");
+		fprintf(stderr,"The GNU GPL can only be displayed once.\n");
 		ErrorFlag++;
 	}
 
 	if ((BestTimesFlag + DumpFlag) > 1)
 	{
-		fprintf(stderr,"Only one -b or -d can be specified.\n");
+		fprintf(stderr,"Only one show best times or dump best times can be specified.\n");
 		ErrorFlag++;
 	}
 
@@ -363,14 +375,21 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 		Game->Fast=0;
 	}
 
-	if (ErrorFlag!=0)
+	if (ErrorFlag + HelpFlag > 0)
 	{
 #ifdef HAVE_GETOPT_LONG
-		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-a, --alt-charset\t\tUse the alternate character set\n\t-b, --show-best-times\t\tDisplay best times\n\t-d, --dump-best-times\t\tPrint best times to stdout\n\t-f, --fast\t\t\tStart in fast mode\n\t-g, --show-gpl\t\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-i, --interactive\t\tStart in interactive mode\n\t-m value, --mines=value\t\tSet mines to value\n\t-s, --save-prefs\t\tSave any specified preferences\n\t-v, --version\t\t\tDisplay version information\n\t-w value, --width=value\t\tSet width to value\n");
+		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-a, --alt-charset\t\tUse the alternate character set\n\t-b, --show-best-times\t\tDisplay best times\n\t-d, --dump-best-times\t\tPrint best times to stdout\n\t-f, --fast\t\t\tStart in fast mode\n\t-g, --show-gpl\t\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-H, --help\t\t\tDisplay this help message\n\t-i, --interactive\t\tStart in interactive mode\n\t-m value, --mines=value\t\tSet mines to value\n\t-s, --save-prefs\t\tSave any specified preferences\n\t-v, --version\t\t\tDisplay version information\n\t-w value, --width=value\t\tSet width to value\n");
 #else
-		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-h value\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m value\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
+		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-H\t\t\tDisplay this help message\n\t-h value\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m value\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
 #endif
-		exit(EXIT_FAILURE);
+		if (ErrorFlag != 0)
+		{
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			exit(EXIT_SUCCESS);
+		}
 	}
 
 	if (BestTimesFlag==1)
