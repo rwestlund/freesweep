@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: defaults.h,v 1.4 1999-02-23 17:33:07 psilord Exp $
+* $Id: defaults.h,v 1.5 1999-03-07 01:45:56 hartmann Exp $
 *********************************************************************/
 
 #ifndef __DEFAULTS_H__
@@ -15,7 +15,6 @@
 #define DEFAULT_NUMMINES 0
 #define DEFAULT_FASTSTART 0
 #define DEFAULT_ALERT 0
-#define VI_KEYS
 
 #define USE_GROUP_BEST_FILE
 

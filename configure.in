@@ -10,17 +10,14 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses[=/usr/local]
-                          path to the ncurses drawing package ], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
+AC_ARG_WITH(ncurses, [  --with-ncurses[=DIR]    ncurses package root in DIR [/usr/local]], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
+AC_SUBST(NCURSES_HINT)
 
-AC_ARG_WITH(debug, [  --with-debug            For debugging file.], DEBUG_LOG=$with_debug)
-
+dnl Check for debugging file
+AC_ARG_ENABLE(debug-log, [  --enable-debug-log      Enables debugging file, debug.log.], DEBUG_LOG=$with_debug)
 if test "$DEBUG_LOG" != 'no' ; then
 	AC_DEFINE(DEBUG_LOG)
 fi
-
-
-AC_SUBST(NCURSES_HINT)
 
 dnl Checks for libraries.
 dnl look for ncurses in the suggested location, if given.
