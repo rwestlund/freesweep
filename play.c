@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.33 1999-03-06 22:04:14 hartmann Exp $
+* $Id: play.c,v 1.34 1999-03-16 05:36:43 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -131,7 +131,7 @@ int GetInput(GameStats* Game)
 				Game->BadMarkedMines == 0)
 			{
 				StopTimer();
-				YouWin();
+/*				YouWin();*/
 				Game->Status = WIN;
 #ifdef DEBUG_LOG
 				fprintf(DebugLog, "Num %d, Marked %d, Bad %d\n", 
@@ -191,7 +191,7 @@ int GetInput(GameStats* Game)
 				case MINE:
 					StopTimer();
 					/* BOOM! */
-					Boom();
+/*					Boom();*/
 					SetMine(Game->CursorX,Game->CursorY,DETONATED);
 					CharSet.FalseMark='x';
 					CharSet.Mine='o';
@@ -200,7 +200,7 @@ int GetInput(GameStats* Game)
 					fprintf(DebugLog,"Mine exposed! Setting Status to LOSE.\n");
 					fflush(DebugLog);
 #endif /* DEBUG_LOG */
-					StartTimer();
+/*					StartTimer();*/
 					break;
 				case UNKNOWN:
 					Clear(Game);
@@ -520,7 +520,6 @@ void Boom(void)
 	mvwprintw(BoomWin,(LINES/6)-1,(COLS-15)/6,"Boom!");
 
 	wrefresh(BoomWin);
-	napms(1000);
 	werase(BoomWin);
 	wnoutrefresh(BoomWin);
 	delwin(BoomWin);

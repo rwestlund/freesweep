@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.18 1999-03-06 22:04:14 hartmann Exp $
+* $Id: drawing.c,v 1.19 1999-03-16 05:36:43 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -634,7 +634,7 @@ int DrawBoard(GameStats* Game)
 			}
 		}
 	}
-	move(0,0);
+	wmove(Game->Board,0,0);
 
 	wnoutrefresh(Game->Board);
 	return 0;
