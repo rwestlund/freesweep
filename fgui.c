@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: fgui.c,v 1.13 2000-04-02 00:52:11 hartmann Exp $
+*  $Id: fgui.c,v 1.14 2000-08-05 07:13:47 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -224,7 +224,8 @@ char* Choose(struct FileBuf *fb)
 	 * the path. */
 
 	in=getch();
-	while ((in != ' ') && (in != KEY_RIGHT) && (in != KEY_ESC))
+/*	while ((in != ' ') && (in != KEY_RIGHT) && (in != KEY_ESC))*/
+	while ((in != ' ') && (in != KEY_RIGHT))
 	{
 		switch (in)
 		{

@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: stats.c,v 1.8 1999-08-09 05:25:36 hartmann Exp $
+*  $Id: stats.c,v 1.9 2000-08-05 07:13:47 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -55,7 +55,30 @@ void PrintStats(GameStats *Game)
 
 	ClearStats();
 
-	mvwprintw(StatsWin, 0, 0, "Time: %d", Game->Time);
+/*	mvwprintw(StatsWin, 0, 0, "Time: %ds", Game->Time);*/
+	/*
+		Put better clock here.
+	*/
+	if ( Game->Time >= 86400 )
+	{
+		mvwprintw(StatsWin, 0, 0, "Time: %d:%02d:%02d:%02ds", Game->Time / 86400, ( Game->Time % 86400 ) / 3600, ( Game->Time % 3600 ) / 60 , Game->Time % 60 );
+	}
+	else if ( Game->Time >= 3600 )
+	{
+		mvwprintw(StatsWin, 0, 0, "Time: %d:%02d:%02ds", Game->Time / 3600, ( Game->Time % 3600 ) / 60 , Game->Time % 60 );
+	}
+	else if ( Game->Time >= 60 )
+	{
+		mvwprintw(StatsWin, 0, 0, "Time: %d:%02ds", Game->Time / 60 , Game->Time % 60 );
+	}
+	else
+	{
+		mvwprintw(StatsWin, 0, 0, "Time: %ds", Game->Time);
+	}
+
+
+
+
 	mvwprintw(StatsWin, 1, 0, "Loc: %d, %d", Game->CursorX, Game->CursorY);
 	mvwprintw(StatsWin, 2, 0, "Mines: %d", Game->NumMines);
 	mvwprintw(StatsWin, 3, 0, "Marks:");
