@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.26 1999-02-24 03:32:59 psilord Exp $
+* $Id: play.c,v 1.27 1999-02-24 05:04:53 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -187,6 +187,7 @@ int GetInput(GameStats* Game)
 					SweepError("Cannot expose a flagged mine.");
 					break;
 				case MINE:
+					StopTimer();
 					/* BOOM! */
 					Boom();
 					SetMine(Game->CursorX,Game->CursorY,DETONATED);
