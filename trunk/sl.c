@@ -16,10 +16,11 @@ void SaveGame(GameStats* Game, char *fname)
 	}
 	
 	/* dump the stats out */
-	fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+	fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
 			"%u\n%u\n%u\n",
 			Game->Height, Game->Width, Game->Percent, Game->NumMines, 
-			Game->MarkedMines, Game->Color, Game->Fast, Game->Alert, 
+			Game->MarkedMines, Game->BadMarkedMines, Game->Color, 
+			Game->Fast, Game->Alert, 
 			Game->LineDraw, Game->CursorX, Game->CursorY,
 			Game->LargeBoardX, Game->LargeBoardY, Game->Status,
 			Game->FocusX, Game->FocusY, Game->Time);
@@ -59,10 +60,11 @@ GameStats* LoadGame(char *fname)
 	}
 
 	/* Load the Game Stats */
-	fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+	fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
 			"%u\n%u\n%u\n",
 			&Game->Height, &Game->Width, &Game->Percent, &Game->NumMines, 
-			&Game->MarkedMines, &Game->Color, &Game->Fast, &Game->Alert, 
+			&Game->MarkedMines, &Game->BadMarkedMines, &Game->Color, 
+			&Game->Fast, &Game->Alert, 
 			&Game->LineDraw, &Game->CursorX, &Game->CursorY,
 			&Game->LargeBoardX, &Game->LargeBoardY, &Game->Status,
 			&Game->FocusX, &Game->FocusY, &Game->Time);

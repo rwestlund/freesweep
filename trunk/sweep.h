@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.5 1999-02-11 18:50:35 psilord Exp $
+* $Id: sweep.h,v 1.6 1999-02-12 02:51:39 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -57,6 +57,7 @@
 
 /* These are for winning and losing. */
 #define WIN 1
+#define INPROG 0
 #define LOSE -1
 
 /* These are for the alert types. */
@@ -114,6 +115,7 @@ typedef struct _GameStats
 	int Percent;
 	unsigned int NumMines;
 	unsigned int MarkedMines;
+	unsigned int BadMarkedMines;
 	int Color;
 	int Fast;
 	int Alert;
@@ -202,7 +204,8 @@ void MoveLeft(GameStats* Game, int Num);
 void MoveRight(GameStats* Game, int Num);
 void MoveUp(GameStats* Game, int Num);
 void MoveDown(GameStats* Game, int Num);
-void Boom();
+void Boom(void);
+void YouWin(void);
 int ClickSquare(GameStats* Game, int ThisX, int ThisY);
 int DoubleClickSquare(GameStats* Game, int ThisX, int ThisY);
 

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.6 1999-02-12 00:09:08 psilord Exp $
+* $Id: play.c,v 1.7 1999-02-12 02:51:38 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -116,15 +116,22 @@ int GetInput(GameStats* Game)
 					break;
 				case BAD_MARK:
 					SetMine(Game->CursorX,Game->CursorY,UNKNOWN);
-					Game->MarkedMines--;
+					Game->BadMarkedMines--;
 					break;
 				case UNKNOWN:
 					SetMine(Game->CursorX,Game->CursorY,BAD_MARK);
-					Game->MarkedMines++;
+					Game->BadMarkedMines++;
 					break;
 				default:
 					SweepError("Cannot mark as a mine.");
 					break;
+			}
+
+			if (Game->MarkedMines == Game->NumMines && 
+				Game->BadMarkedMines == 0)
+			{
+				YouWin();
+				Game->Status = WIN;
 			}
 			break;
 
@@ -418,7 +425,7 @@ void MoveDown(GameStats* Game,int Num)
 	return;
 }
 
-void Boom()
+void Boom(void)
 {
 	WINDOW* BoomWin;
 
@@ -441,6 +448,33 @@ void Boom()
 	wclear(BoomWin);
 	wnoutrefresh(BoomWin);
 	delwin(BoomWin);
+
+	return;
+}
+
+void YouWin(void)
+{
+	WINDOW* YouWin;
+
+	if ((YouWin=newwin(LINES/3,COLS/3,LINES/3,COLS/3))==NULL)
+	{
+		perror("YouWin::Alloc Window");
+		return;
+	}
+
+	if (wborder(YouWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark)!=OK)
+	{
+		perror("YouWin::Draw Border");
+		return;
+	}
+
+	mvwprintw(YouWin,(LINES/6)-1,(COLS-15)/6,"You Win!");
+
+	wrefresh(YouWin);
+	napms(1000);
+	wclear(YouWin);
+	wnoutrefresh(YouWin);
+	delwin(YouWin);
 
 	return;
 }
