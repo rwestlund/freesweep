@@ -1557,7 +1557,7 @@ cat >> confdefs.h <<EOF
 EOF
 
 
-for ac_func in strdup memset memmove fileno lockf flock
+for ac_func in strdup memset memmove fileno lockf flock get_current_dir_name
 do
 echo $ac_n "checking for $ac_func""... $ac_c" 1>&6
 echo "configure:1564: checking for $ac_func" >&5

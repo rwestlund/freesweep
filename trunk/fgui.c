@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: fgui.c,v 1.14 2000-08-05 07:13:47 hartmann Exp $
+*  $Id: fgui.c,v 1.15 2000-08-30 04:10:54 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -39,7 +39,13 @@ struct FileBuf* CreateFileBuf(char *dir)
 	char **sort = NULL;
 
 	chdir(dir);
+#if defined(PATH_MAX)
 	path = xgetcwd(NULL, PATH_MAX);
+#elif defined(HAVE_GET_CURRENT_DIR_NAME)
+	path = get_current_dir_name();
+#else /* Now what? No idea! */
+	assert(1);
+#endif
 
 	dent = xopendir(dir);
 
