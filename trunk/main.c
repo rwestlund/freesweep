@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.11 1999-02-17 07:48:25 psilord Exp $
+* $Id: main.c,v 1.12 1999-02-18 01:49:00 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -9,8 +9,7 @@ int main(int argc, char** argv)
 	GameStats* Game;
 
 #ifdef DEBUG_LOG
-/*	if ((DebugLog=fopen("debug.log","a"))==0)*/
-	if ((DebugLog=fopen("/dev/pts/6","a"))==0)
+	if ((DebugLog=fopen("debug.log","a"))==0)
 	{
 		perror("Main::OpenDebugLog");
 		return 1;
