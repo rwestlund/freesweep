@@ -37,5 +37,6 @@ dnl Checks for library functions.
 AC_CHECK_FUNC(snprintf, AC_DEFINE(HAVE_SNPRINTF))
 AC_CHECK_FUNCS(strdup)
 AC_CHECK_FUNCS(memset)
+AC_CHECK_FUNCS(memmove)
 
 AC_OUTPUT(Makefile)
