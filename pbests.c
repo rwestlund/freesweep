@@ -318,7 +318,7 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 		sprintf(mbuf[i].buf, "%s|a%um%ut%u|%s\n", 
 			b->name, b->area, b->mines, b->time, b->date);
 		
-		fprintf(DebugLog, "Encrypting -> '%s'", mbuf[i].buf);
+/*		fprintf(DebugLog, "Encrypting -> '%s'", mbuf[i].buf);*/
 		/* encrypt the data */
 		mbuf[i].len = strlen(mbuf[i].buf);
 		for (j = 0; j < mbuf[i].len; j++)

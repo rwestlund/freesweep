@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.12 1999-02-18 01:35:34 hartmann Exp $
+* $Id: sweep.h.in,v 1.1 1999-02-18 01:35:34 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>
-#include "/s/ncurses/include/curses.h"
+#include "@NCURSES@/include/curses.h"
 
 #ifdef NCURSES_MOUSE_VERSION
 #define SWEEP_MOUSE
