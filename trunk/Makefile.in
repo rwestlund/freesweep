@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.26 1999-02-23 19:12:17 psilord Exp $
+# $Id: Makefile.in,v 1.27 1999-02-25 19:26:28 psilord Exp $
 ######################################################################
 
 SRCS = clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c tick.c utils.c
@@ -27,7 +27,7 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 	@echo Building $<
 	@/bin/rm -f $*.o 
 	@[ -d $(SYSTEM_TYPE) ]|| mkdir $(SYSTEM_TYPE)
-	$(CC) -c $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o $<
+	$(CC) $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o -c $<
 	@@LN_S@ $(SYSTEM_TYPE)/$*.o .
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
