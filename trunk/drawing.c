@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.4 1999-02-11 06:29:10 hartmann Exp $
+* $Id: drawing.c,v 1.5 1999-02-11 08:55:36 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -480,6 +480,7 @@ void Help()
 		"\'.\' repeats the last command.",
 		"\'a\' toggles the character set.",
 		"\'?\' displays this help screen.",
+		"\'q\' quits the game.",
 		"Any non-zero number multiplies the next action."
 	};
 
@@ -494,7 +495,7 @@ void Help()
 	mvwprintw(HelpWin,3,2,"Useful Keys:");
 
 	/* Be sure to update this to account for all of the error messages. */
-	for (CurrentLine=0;CurrentLine<10;CurrentLine++)
+	for (CurrentLine=0;CurrentLine<11;CurrentLine++)
 	{
 		mvwprintw(HelpWin,CurrentLine+4,6,Messages[CurrentLine]);
 	}

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.4 1999-02-11 08:50:20 hartmann Exp $
+* $Id: main.c,v 1.5 1999-02-11 08:55:37 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -35,6 +35,7 @@ int main(int argc, char** argv)
 
 	/* Output all the relevant information about the compilation. */
 	printf("Freesweep v%s for %s on %s at %s by %s\n",VERSION,SYSTEM_TYPE,__DATE__,__TIME__,USER);
+	printf("Freesweep comes with ABSOLUTELY NO WARRANTY; see the file COPYING for more info.\n");
 #ifdef DEBUG_LOG
 	fprintf(DebugLog,"Freesweep v%s for %s on %s at %s by %s\n",VERSION,SYSTEM_TYPE,__DATE__,__TIME__,USER);
 #endif /* DEBUG_LOG */
