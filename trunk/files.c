@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: files.c,v 1.8 1999-08-09 05:25:35 hartmann Exp $
+*  $Id: files.c,v 1.9 2002-12-19 07:04:05 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -191,6 +191,7 @@ int WritePrefsFile(GameStats* Game)
 			fprintf(PrefsFile,"Mines=%d\n",Game->NumMines);
 		}
 		fprintf(PrefsFile,"FastStart=%d\n",Game->Fast);
+		fprintf(PrefsFile,"Color=%d\n",Game->Color);
 		fprintf(PrefsFile,"LineDraw=%d\n",Game->LineDraw);
 		switch (Game->Alert)
 		{

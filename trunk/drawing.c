@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: drawing.c,v 1.21 1999-08-09 05:25:35 hartmann Exp $
+*  $Id: drawing.c,v 1.22 2002-12-19 07:04:05 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -350,6 +350,7 @@ void AskPrefs(GameStats* Game)
 				Game->Fast=1;
 				mvprintw(CurrentLine,41,"Yes");
 				Status=1;
+				break;
 			
 			default:
 #ifdef DEBUG_LOG
@@ -440,6 +441,69 @@ void AskPrefs(GameStats* Game)
 	ValueBuffer[0]=0;
 	CurrentLine++;
 
+	/* Ask about color. */
+	mvprintw(CurrentLine,0,"Use Color if available? [");
+	if (Game->Color>=1)
+	{
+		printw("Y/n]:");
+	}
+	else
+	{
+		printw("y/N]:");
+	}
+	while (Status<=0)
+	{
+		if (Status<0)
+		{
+			beep();
+			mvprintw(LINES-1,0,"Invalid entry for Color mode.");
+			mvclrtoeol(CurrentLine,31);
+		}
+		ValueBuffer[0]=mvgetch(CurrentLine,31);
+		refresh();
+		switch(ValueBuffer[0])
+		{
+			case '\n': case '\r':
+				Status=1;
+				if (Game->Color==1)
+				{
+					mvprintw(CurrentLine,31,"Yes");
+				}
+				else
+				{
+					mvprintw(CurrentLine,31,"No");
+				}
+				break;
+		
+			case 'n': case 'N':
+				Game->Color=0;
+				mvprintw(CurrentLine,31,"No");
+				Status=1;
+				break;
+			
+			case 'y': case 'Y':
+				Game->Color=1;
+				mvprintw(CurrentLine,31,"Yes");
+				Status=1;
+				break;
+			
+			default:
+#ifdef DEBUG_LOG
+				fprintf(DebugLog, "Unknown character: %c\n", ValueBuffer[0]);
+#endif
+				Status=-1;
+				break;
+		}
+	}
+	mvclrtoeol(LINES-1,0);
+	Status=0;
+
+	ValueBuffer[0]=0;
+	CurrentLine++;
+
+
+
+
 	/* Ask about saving these prefs. */
 	mvprintw(CurrentLine,0,"Save these preferences? [Y/n]:");
 	while (Status<=0)
@@ -502,6 +566,7 @@ void Help()
 		"\'c\' centers the cursor.",
 		"\'.\' repeats the last command.",
 		"\'a\' toggles the character set.",
+		"\'b\' toggles the color settings.",
 		"\'?\' displays this help screen.",
 		"\'g\' displays the GNU General Public License.",
 		"\'n\' starts a new game.",
@@ -618,9 +683,93 @@ int DrawBoard(GameStats* Game)
 				case EMPTY:
 					waddch(Game->Board,CharSet.Space);
 					break;
-				case 1: case 2: case 3: case 4:
-				case 5: case 6: case 7: case 8:
+				case 1:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,7,NULL);
+					}
 					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 2:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,1,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 3:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,2,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 4:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,3,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 5:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,1,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 6:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,1,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 7:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,1,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
+					break;
+				case 8:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,5,NULL);
+					}
+					waddch(Game->Board,(CellVal)+'0');
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
 					break;
 				case MINE:
 					waddch(Game->Board,CharSet.Mine);
@@ -736,7 +885,7 @@ int Pan(GameStats* Game)
 	/* The basic border needs to be drawn regardless. */
 
 	/* If the board isn't larger than the screen, no need to pan. */
-	if ((Game->LargeBoardX + Game->LargeBoardY)==0)
+	if ((Game->LargeBoardX + Game->LargeBoardY) == 0)
 	{
 		wborder(Game->Border,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
 		wnoutrefresh(Game->Border);

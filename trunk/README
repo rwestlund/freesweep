@@ -10,6 +10,8 @@ the mentions the copyright and GNU GPL.
 	Bugs should be mailed to sweep@cs.wisc.edu, if it works, or
 hartmann@cs.wisc.edu otherwise.
 
+	Color works, but right now the values are not customizable. Sorry.
+
 	If no file locking mechanism is found, group-writable best times
 will be disabled.
 
