@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.10 1999-02-22 06:09:09 hartmann Exp $
+* $Id: game.c,v 1.11 1999-02-22 06:22:02 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -207,6 +207,8 @@ int ReadyGame(GameStats* Game)
 int ParseArgs(GameStats* Game, int Argc, char** Argv)
 {
 	int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0;
+	extern int opterr, optind;
+	extern char* optarg;
 
 	/* Clear the error flag. */
 	opterr=0;

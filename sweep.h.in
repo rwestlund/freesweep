@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.9 1999-02-22 06:09:09 hartmann Exp $
+* $Id: sweep.h.in,v 1.10 1999-02-22 06:22:02 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -18,9 +18,8 @@
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>
-
+#include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
 
 #ifdef HAVE_LIBNCURSES
 #include "@NCURSES_HINT@/include/curses.h"
