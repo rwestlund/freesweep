@@ -165,6 +165,8 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 
 			while(*p++ != '\n');
 		}
+
+		free(space);
 	}
 }
 
@@ -281,6 +283,7 @@ void SaveBestTimesFile(struct BestFileDesc *bfd)
 	/* convert the bfd to a mess and write it out */
 	Pack(bfd, fp);
 
+	free(name);
 	fclose(fp);
 }
 

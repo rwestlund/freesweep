@@ -1,4 +1,4 @@
-/********************************************************************* * $Id: files.c,v 1.2 1999-02-10 23:49:25 hartmann Exp $
+/********************************************************************* * $Id: files.c,v 1.3 1999-02-18 19:38:00 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -90,12 +90,9 @@ int SourceHomeFile(GameStats* Game)
 	FILE* PrefsFile;
 	char *Buffer, *Pathname;
 
-	if ((Pathname=malloc(MAX_LINE))==NULL)
-	{
-		perror("SourceHomeFile::malloc");
-		return 1;
-	}
-	else if ((Buffer=getenv("HOME"))==NULL)
+	Pathname=(char*)xmalloc(MAX_LINE);
+
+	if ((Buffer=getenv("HOME"))==NULL)
 	{
 		perror("SourceHomeFile::getenv");
 		return 1;
@@ -108,20 +105,24 @@ int SourceHomeFile(GameStats* Game)
 	{
 		/* The user has no personal preferences. */
 		/* Try sourcing the older preferences files. */
+		free(Pathname);
 		return OldPrefsFile(Game);
 	}
 	else if (SourceFile(Game,PrefsFile)==1)
 	{
 /*		An error occurred while reading the file. Try closing it. */
 		fclose(PrefsFile);
+		free(Pathname);
 		return 1;
 	}
 	else
 	{
 /*		Done, so close the file. */
 		fclose(PrefsFile);
+		free(Pathname);
 		return 0;
 	}
+
 }
 
 int SourceGlobalFile(GameStats* Game)
