@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: error.c,v 1.4 1999-02-17 07:16:45 hartmann Exp $
+* $Id: error.c,v 1.5 1999-04-12 04:01:42 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -101,6 +101,12 @@ void SweepMessage(char* format, ...)
 	va_list args;
 
 	ClearError();
+
+	if ( format == NULL)
+	{
+		return;
+	}
+	
 	va_start(args, format);
 	vsnprintf(NewErrMsg,41,format,args);
 	va_end(args);
