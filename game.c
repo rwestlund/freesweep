@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.23 1999-03-05 08:41:41 hartmann Exp $
+* $Id: game.c,v 1.24 1999-05-22 02:42:15 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -231,15 +231,41 @@ int ReadyGame(GameStats* Game)
 
 int ParseArgs(GameStats* Game, int Argc, char** Argv)
 {
+#if HAVE_GETOPT || HAVE_GETOPT_LONG
 	int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0, GPLFlag=0;
 	extern int opterr, optind;
 	extern char* optarg;
+
+#ifdef HAVE_GETOPT_LONG
+	static struct option long_options[] =
+	{
+		{"percent", required_argument, 0, '%'},
+		{"alt-charset", no_argument, 0, 'a'},
+		{"show-best-times", no_argument, 0, 'b'},
+		{"dump-best-times", no_argument, 0, 'd'},
+		{"fast", no_argument, 0, 'f'},
+		{"show-gpl", no_argument, 0, 'g'},
+		{"height", required_argument, 0, 'h'},
+		{"interactive", no_argument, 0, 'i'},
+		{"mines", no_argument, 0, 'm'},
+		{"save-prefs", no_argument, 0, 's'},
+		{"version", no_argument, 0, 'v'},
+		{"width", required_argument, 0, 'w'},
+		{0, 0, 0, 0}
+	};
 
 	/* Clear the error flag. */
 	opterr=0;
 
 	/* Parse the command line options. */
-	while ((Opt=getopt(Argc,Argv,"%:abdfgh:ilm:r:svw:"))!=EOF)
+	while ((Opt=getopt_long(Argc,Argv,"%:abdfgh:im:svw:",long_options, NULL))!=EOF)
+#else if HAVE_GETOPT
+	/* Clear the error flag. */
+	opterr=0;
+
+	/* Parse the command line options. */
+	while ((Opt=getopt(Argc,Argv,"%:abdfgh:im:svw:"))!=EOF)
+#endif /* HAVE_GETOPT */
 	{
 		switch (Opt)
 		{
@@ -296,6 +322,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 		}
 		Value=0;
 	}
+
 	/* Make sure there aren't any more arguments. */
 	/* Also insure that there was not more than one -s was passed. */
 	if (SaveFlag>1)
@@ -338,7 +365,11 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 
 	if (ErrorFlag!=0)
 	{
-		fprintf(stderr,"Usage:\n  freesweep: [-%% percent][-a][-b|-d][-f|-i][-h height][-m mines][-s][-v]\n	[-w width]\n");
+#ifdef HAVE_GETOPT_LONG
+		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%%, --percent=value\tSet percent to value\n\t-a, --alt-charset\tUse the alternate character set\n\t-b, --show-best-times\tDisplay best times\n\t-d, --dump-best-times\tPrint best times to stdout\n\t-f, --fast\t\tStart in fast mode\n\t-g, --show-gpl\t\tDisplay the GNU General Public License\n\t-h, --height=value\tSet height to value\n\t-i, --interactive\tStart in interactive mode\n\t-m, --mines=value\tSet mines to value\n\t-s, --save-prefs\tSave any specified preferences\n\t-v, --version\t\tDisplay version information\n\t-w, --width=value\tSet width to value\n");
+#else
+		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% percent\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public Licwnse\t-h height\tSet height to value\t-i\t\tStart in interactive mode\n\t-m mines\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
+#endif
 		exit(EXIT_FAILURE);
 	}
 
@@ -377,6 +408,8 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	{
 		WritePrefsFile(Game);
 	}
+
+#endif /* HAVE_GETOPT || HAVE_GETOPT_LONG */
 	return 0;
 
 }
