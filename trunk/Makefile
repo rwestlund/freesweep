@@ -1,13 +1,13 @@
 # Generated automatically from Makefile.in by configure.
 ######################################################################
-# $Id: Makefile,v 1.4 1999-02-11 01:39:45 hartmann Exp $
+# $Id: Makefile,v 1.5 1999-02-11 01:46:27 hartmann Exp $
 ######################################################################
 
 SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c
 HEADS = sweep.h defaults.h
 MISC = README Makefile sweeprc configure.in install-sh configure.in Makefile.in config.guess configure config.sub
 TARGET = newsweep
-CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache
+CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status
 VERSION = 0.81
 
 NOW = $(shell /s/std/bin/date +%Y%m%d%H%M)
