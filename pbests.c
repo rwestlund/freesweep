@@ -10,7 +10,7 @@ static void SaveBestTimesFile(struct BestFileDesc *bfd);
 static struct BestEntry* NewBestEntry(GameStats *Game);
 static char* FPTBTF(void);
 static void Unpack(struct BestFileDesc *bfd, FILE *abyss);
-static int BTCmpFunc(const void *l, const void *r);
+static int BECmpFunc(const void *l, const void *r);
 
 /* the one function that does it all */
 void UpdateBestTimesFile(GameStats *Game)
@@ -146,12 +146,12 @@ void BFDSort(struct BestFileDesc *bfd)
 	else
 	{
 		/* qsort the whole mess */
-		qsort(bfd->ents, bfd->numents+1, sizeof(bfd->ents[0]), BTCmpFunc);
+		qsort(bfd->ents, bfd->numents+1, sizeof(bfd->ents[0]), BECmpFunc);
 	}
 }
 
 /* the Best Entry comparison function */
-int BTCmpFunc(const void *l, const void *r)
+int BECmpFunc(const void *l, const void *r)
 {
 	struct BestEntry *bl, *br;
 
@@ -192,6 +192,10 @@ int BTCmpFunc(const void *l, const void *r)
 			}
 		}
 	}
+
+	/* shut the compiler up */
+	/* this never happens */
+	return 0;
 }
 
 void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n)
