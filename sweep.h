@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.7 1999-02-13 01:07:43 psilord Exp $
+* $Id: sweep.h,v 1.8 1999-02-13 01:52:13 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -285,5 +285,8 @@ void SuperClear(GameStats *Game);
 void SaveGame(GameStats* Game, char *fname);
 GameStats* LoadGame(char *fname);
 
+
+/* functions defined in gpl.c */
+void PrintGPL();
 
 #endif /* __SWEEP_H__ */
