@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.24 1999-02-25 22:38:25 psilord Exp $
+* $Id: main.c,v 1.25 1999-03-03 06:08:02 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -52,6 +52,7 @@ int main(int argc, char** argv)
 	noutrefresh();
 
 	InitErrorWin(Game);
+	InitStatsWin();
 	ReadyGame(Game);
 	noutrefresh();
 
@@ -64,6 +65,7 @@ int main(int argc, char** argv)
 
 		/* Touch a couple windows */
 		RedrawErrorWin();
+		RedrawStatsWin();
 
 		ReReadyGame(Game);
 		PrintInfo();

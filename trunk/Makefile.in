@@ -1,8 +1,8 @@
 ######################################################################
-# $Id: Makefile.in,v 1.27 1999-02-25 19:26:28 psilord Exp $
+# $Id: Makefile.in,v 1.28 1999-03-03 06:08:02 psilord Exp $
 ######################################################################
 
-SRCS = clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c tick.c utils.c
+SRCS = clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c stats.c tick.c utils.c
 HEADS = sweep.h defaults.h
 MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in
 TARGET = freesweep
