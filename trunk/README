@@ -19,19 +19,14 @@ fucking bizarre- Sun's curses doesn't have the arrows-under-X problem.
 
 	There should be a stats window, under the info win, on the right
 side of the screen, with the elapsed game time, the number of mines marked,
-and the total number of mines.
-
-	New key that should work: 'n' for "New Game" - abort the current
-game and start a new one, counting the game as neither a win nor a loss.
-
-	New key: 'r' for "Reconfigure" - abort the current game (as above),
-but instead of restarting with the same game, run AskPrefs() to determine
-what the user wants for the new games.
+and the total number of mines, and your current location in the board.
 
 Fix up the error condition for what happens when you can't write to the
 best times file and shit. Just quitting doesn't seem to good.
 Also, fix the creation permissions of the group file. Like either the client
 can make a new one with 666 perms, or the installer makes one with the
 correct permissions.
+
+See if purify bitches about what I wrote with the reconfig shit.
 
 See what purify is bitching about in the load/save game code.

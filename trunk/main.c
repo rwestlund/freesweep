@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.20 1999-02-24 03:41:46 psilord Exp $
+* $Id: main.c,v 1.21 1999-02-24 03:59:46 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -106,7 +106,6 @@ int main(int argc, char** argv)
 				clear();
 				noutrefresh();
 				Wipe(Game);
-/*				InitGame(Game);*/
 				AskPrefs(Game);
 				ReadyGame(Game);
 				Center(Game);
