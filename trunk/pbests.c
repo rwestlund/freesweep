@@ -9,7 +9,8 @@ static void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n);
 static void SaveBestTimesFile(struct BestFileDesc *bfd);
 static struct BestEntry* NewBestEntry(GameStats *Game);
 static char* FPTBTF(void);
-void Unpack(struct BestFileDesc *bfd, FILE *abyss);
+static void Unpack(struct BestFileDesc *bfd, FILE *abyss);
+static int BTCmpFunc(const void *l, const void *r);
 
 /* the one function that does it all */
 void UpdateBestTimesFile(GameStats *Game)
@@ -22,9 +23,9 @@ void UpdateBestTimesFile(GameStats *Game)
 
 	LoadBestTimesFile(bfd); 
 
-	BFDSort(bfd);
-
 	InsertEntry(bfd, b);
+
+	BFDSort(bfd);
 
 	SaveBestTimesFile(bfd);
 
@@ -122,7 +123,7 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	/* walk through memory looking for newlines and building the entries
 	 * as you go */
 	p = space;
-	for (i = 0; i < numents; i++)
+	for (i = 0; i < bfd->numents; i++)
 	{
 		b = &bfd->ents[i];	/* save me typing */
 
@@ -137,14 +138,99 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 
 void BFDSort(struct BestFileDesc *bfd)
 {
-	/* preform a radix sort, effectively */
-	/* sort according to area */
-	/* sort according to mines for each area subsection */
-	/* sort each mine subsection according to time */
+	if (bfd->replflag == TRUE)
+	{
+		/* I just replaced a node, everything is still sorted */
+		return;
+	}
+	else
+	{
+		/* qsort the whole mess */
+		qsort(bfd->ents, bfd->numents+1, sizeof(bfd->ents[0]), BTCmpFunc);
+	}
+}
+
+/* the Best Entry comparison function */
+int BTCmpFunc(const void *l, const void *r)
+{
+	struct BestEntry *bl, *br;
+
+	bl = *((struct BestEntry**)l);
+	br = *((struct BestEntry**)r);
+
+	if (bl->area < br->area)
+	{
+		return -1;
+	}
+	else if (bl->area > br->area)
+	{
+		return 1;
+	}
+	else if (bl->area == br->area)
+	{
+		if (bl->mines < br->mines)
+		{
+			return -1;
+		}
+		else if (bl->mines > br->mines)
+		{
+			return 1;
+		}
+		else if (bl->mines == br->mines)
+		{
+			if (bl->time < br->time)
+			{
+				return -1;
+			}
+			else if (bl->time > br->time)
+			{
+				return 1;
+			}
+			else if (bl->time == br->time)
+			{
+				return 0;
+			}
+		}
+	}
 }
 
 void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n)
 {
+	int replaced = FALSE;
+	int i = 0;
+
+	/* search until I find a match */
+	for (i = 0; i < bfd->numents; i++)
+	{
+		/* did the area match? */
+		if (n->area == bfd->ents[i].area)
+		{
+			/* did the number of mines match? */
+			if (n->mines == bfd->ents[i].mines)
+			{
+				/* yup, replace it and mark the flag */
+				bfd->ents[i].time = n->time;
+				strncpy(bfd->ents[i].name, n->name, MAX_NAME);
+				strncpy(bfd->ents[i].date, n->date, MAX_DATE);
+				replaced = TRUE;
+			}
+		}
+	}
+	
+	if (replaced == TRUE)
+	{
+		bfd->replflag = TRUE;
+		return;
+	}
+	else
+	{
+		/* use the x-tra one I got initially */
+		bfd->ents[bfd->numents].area = n->area;
+		bfd->ents[bfd->numents].mines = n->mines;
+		bfd->ents[bfd->numents].time = n->time;
+		strncpy(bfd->ents[bfd->numents].name, n->name, MAX_NAME);
+		strncpy(bfd->ents[bfd->numents].date, n->date, MAX_DATE);
+	}
 }
 
 void SaveBestTimesFile(struct BestFileDesc *bfd)
