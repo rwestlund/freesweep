@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.22 1999-05-06 19:03:20 psilord Exp $
+* $Id: sweep.h.in,v 1.23 1999-05-06 22:02:25 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -212,6 +212,7 @@ struct FileBuf
 {
 	char *fpath;
 	struct FileBuf *next;
+	struct FileBuf *prev;
 };
 
 

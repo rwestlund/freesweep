@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.34 1999-03-16 05:36:43 hartmann Exp $
+* $Id: play.c,v 1.35 1999-05-06 22:02:25 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -172,6 +172,15 @@ int GetInput(GameStats* Game)
 			Game->Status = RECONF;
 			break;
 
+		/* The accepted key to open the save gui */
+		case 'w':
+			if (Multiplier != 1)
+			{
+				SweepError("Can only save game once.");
+				Multiplier=1;
+			}
+			FSGUI();
+		break;
 
 		/* The accepted keys to expose a space. */
 		case ' ':
