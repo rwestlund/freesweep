@@ -1,4 +1,4 @@
-/********************************************************************* * $Id: files.c,v 1.4 1999-02-22 06:09:09 hartmann Exp $
+/********************************************************************* * $Id: files.c,v 1.5 1999-02-23 05:25:44 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -106,7 +106,7 @@ int SourceHomeFile(GameStats* Game)
 		/* The user has no personal preferences. */
 		/* Try sourcing the older preferences files. */
 		free(Pathname);
-		return OldPrefsFile(Game);
+		return 0;
 	}
 	else if (SourceFile(Game,PrefsFile)==1)
 	{
@@ -204,93 +204,4 @@ int WritePrefsFile(GameStats* Game)
 		fclose(PrefsFile);
 	}
 	return 0;
-}
-
-/* OldPrefsFile() is a desperate attempt to live down the horrid file
-   format of the early versions. It reads the older file, saves it in
-   the new format, and then deletes the older file.
-*/
-int OldPrefsFile(GameStats* Game)
-{
-	FILE* PrefsFile;
-	char Buffer[MAX_LINE+1], PathBuffer[MAX_LINE];
-	char* Pathname;
-	int Value=0;
-
-	if ((Pathname=getenv("HOME"))==NULL)
-	{
-		perror("OldPrefsFile::getenv");
-		return 1;
-	}
-	strcpy(PathBuffer,Pathname);
-	strcat(PathBuffer,"/.minesrc");
-
-	if ((PrefsFile=fopen(PathBuffer,"r"))>0)
-	{
-		/* Source the file for preferences. */
-		while ((fgets(Buffer,MAX_LINE,PrefsFile)!=0)&&(Buffer[0]!='~'))
-		{
-			switch (Buffer[0])
-			{
-				case '#':
-					/* Ignore the entire line. */
-					break;
-				case '%':
-					Buffer[0]=' ';
-					Value=atoi(Buffer);
-					((CheckPercent(Value)>0)?Game->Percent=Value,Game->NumMines=0:fprintf(stderr,"Invaid value for percent.\n"));
-					break;
-				case 'a':
-					Buffer[0]=' ';
-					Value=atoi(Buffer);
-					Value=(Value==0?1:0);
-					((CheckLineDraw(Value)>0)?InitCharSet(Game,Value):fprintf(stderr,"Invalid value for linedraw.\n"));
-					break;
-				case 'c':
-
-					break;
-				case 'h':
-					Buffer[0]=' ';
-					Value=atoi(Buffer);
-					((CheckHeight(Value)>0)?Game->Height=Value:fprintf(stderr,"Invalid value for height.\n"));
-					break;
-				case 'm':
-					Buffer[0]=' ';
-					Value=atoi(Buffer);
-					((CheckNumMines(Value,Game->Height,Game->Width)>0)?Game->NumMines=Value,Game->Percent=0:fprintf(stderr,"Invalid value for mines.\n"));
-					break;
-				case 'w':
-					Buffer[0]=' ';
-					Value=atoi(Buffer);
-					((CheckWidth(Value)>0)?Game->Width=Value:fprintf(stderr,"Invalid value for width.\n"));
-					break;
-				default:
-					/* Just in case something unexpected happens. */
-					break;
-			}
-		}
-		/* Write the preferences in the new file format. */
-		if ((WritePrefsFile(Game))==0)
-		{
-			fclose(PrefsFile);
-			unlink(PathBuffer);
-			return 0;
-		}
-		else
-		{
-			fprintf(stderr,"Error converting old preference file.\n");
-#ifdef DEBUG_LOG
-			fprintf(DebugLog,"Error converting old preference file.\n");
-#endif /* DEBUG_LOG */
-			return 1;
-		}
-	}
-	else
-	{
-		perror("SourceHomeFile::Open old file");
-#ifdef DEBUG_LOG
-		fprintf(DebugLog,"Unable to open old prefernce file %s.\n",PathBuffer);
-#endif /* DEBUG_LOG */
-		return 1;
-	}
 }

@@ -8,13 +8,14 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-dnl AC_PATH_PROG(DATE, date)
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
+AC_ARG_WITH(ncurses, [  --with-ncurses=[/usr/local] path to the ncurses drawing package ], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
 
 AC_SUBST(NCURSES_HINT)
 
+dnl Checks for libraries.
+dnl look for ncurses in the suggested location, if given.
 if test "$NCURSES_HINT" = "no" ; then
 	AC_CHECK_LIB(curses,main)
 else
@@ -43,7 +44,6 @@ else
 	fi
 fi
 
-dnl Checks for libraries.
 dnl Replace `main' with a function in -lm:
 AC_CHECK_LIB(m,main)
 
@@ -57,8 +57,8 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-dnl AC_CHECK_FUNC(snprintf, AC_DEFINE(HAVE_SNPRINTF))
 AC_CHECK_FUNCS(snprintf)
+AC_CHECK_FUNCS(getopt)
 AC_CHECK_FUNCS(strdup)
 AC_CHECK_FUNCS(memset)
 AC_CHECK_FUNCS(memmove)
