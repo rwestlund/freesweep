@@ -57,8 +57,47 @@ struct BestFileDesc* NewBFD(void)
 	return bfd;
 }
 
+/* summon from the depths of the abyss the best times file */
 void LoadBestTimesFile(struct BestFileDesc *bfd)
 {
+	FILE *abyss = NULL
+	char *truename = NULL;
+	
+	truename = FPTBTF();
+
+	abyss = fopen(truename, "r");
+	if (abyss == NULL)
+	{
+		SweepError("Could not find best times file");
+		/* XXX Fix me */
+		exit(EXIT_FAILURE);
+	}
+	
+	/* take the binary mess the file is and make it into a nice bfd */
+	Unpack(bfd, abyss);
+
+	free(truename);
+
+	close(abyss);	/* you just try! */
+}
+
+void Unpack(struct BestFileDesc *bfd, FILE *abyss)
+{
+	unsigned char *space = NULL;
+	unsigned int numents = 0;
+	unsigned int size = 0;
+
+	/* how many entries do I have? */
+	fscanf(abyss, "%u\n", &numents);
+	
+	/* how many bytes do I need to read? */
+	fscanf(abyss, "%u\n", &size);
+
+	/* read it in */
+	fread(space, size, 1, abyss);
+
+	/* convert it to real ascii */
+
 }
 
 void BFDSort(struct BestFileDesc *bfd)
