@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.25 1999-02-23 19:08:57 psilord Exp $
+* $Id: play.c,v 1.26 1999-02-24 03:32:59 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -158,6 +158,16 @@ int GetInput(GameStats* Game)
 				Multiplier=1;
 			}
 			Game->Status = ABORT;
+			break;
+		
+		/* The accepted key to make a reconfigure if the game */
+		case 'x':
+			if (Multiplier != 1)
+			{
+				SweepError("Can only reconfigure game once.");
+				Multiplier=1;
+			}
+			Game->Status = RECONF;
 			break;
 
 

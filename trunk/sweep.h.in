@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.15 1999-02-23 19:08:57 psilord Exp $
+* $Id: sweep.h.in,v 1.16 1999-02-24 03:33:00 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -235,6 +235,7 @@ void SetCharSet(int Value);
 int ParseArgs(GameStats* Game, int Argc, char** Argv);
 void DumpGame(GameStats* Game);
 int ReReadyGame(GameStats* Game);
+void Wipe(GameStats *Game);
 
 /* These are the functions defined in play.c */
 int GetInput(GameStats* Game);

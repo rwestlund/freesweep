@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.13 1999-02-23 07:09:25 hartmann Exp $
+* $Id: game.c,v 1.14 1999-02-24 03:32:59 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -67,6 +67,18 @@ int InitGame(GameStats* Game)
 	Game->Status=INPROG;
 	InitCharSet(Game,DEFAULT_LINEDRAW);
 	return 0;
+}
+
+/* Get the game ready for a reconfigure */
+void Wipe(GameStats *Game)
+{
+	wclear(Game->Board);
+	wnoutrefresh(Game->Board);
+	wclear(Game->Border);
+	wnoutrefresh(Game->Border);
+	delwin(Game->Board);
+	delwin(Game->Border);
+	free(Game->Field);
 }
 
 void SetCharSet(int Value)
@@ -314,7 +326,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 
 	if (ErrorFlag!=0)
 	{
-		fprintf(stderr,"Usage:\n  freesweep: [-%% percent][-a][-b|-d][-f|-i][-h height][-m mines][-s][-v]\n    [-w width]\n");
+		fprintf(stderr,"Usage:\n  freesweep: [-%% percent][-a][-b|-d][-f|-i][-h height][-m mines][-s][-v]\n	[-w width]\n");
 		exit(EXIT_FAILURE);
 	}
 
