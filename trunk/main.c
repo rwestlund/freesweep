@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.9 1999-02-12 02:55:20 psilord Exp $
+* $Id: main.c,v 1.10 1999-02-12 03:45:30 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -85,8 +85,6 @@ int main(int argc, char** argv)
 
 		/* It might be nice to log this before reseting it. */
 		Game->Status=INPROG;
-		Game->MarkedMines = 0;
-		Game->BadMarkedMines = 0;
 
 		Pan(Game);
 		DrawCursor(Game);

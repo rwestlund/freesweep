@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.5 1999-02-12 02:51:38 psilord Exp $
+* $Id: game.c,v 1.6 1999-02-12 03:45:29 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -471,6 +471,7 @@ int ReReadyGame(GameStats* Game)
 		MinesToSet=Game->NumMines;
 	}
 
+	Game->NumMines = MinesToSet;
 	/* Yeah, I know it's a crappy way to get a random number. */
 	srand(time(NULL));
 
@@ -490,6 +491,9 @@ int ReReadyGame(GameStats* Game)
 			}
 		}
 	}
+
+	Game->MarkedMines = 0;
+	Game->BadMarkedMines = 0;
 
 	Game->CursorX=(Game->Width-1)/2;
 	Game->CursorY=Game->Height/2;
