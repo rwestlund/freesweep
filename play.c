@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.3 1999-02-11 18:50:35 psilord Exp $
+* $Id: play.c,v 1.4 1999-02-11 18:56:14 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -12,7 +12,6 @@ int GetInput(GameStats* Game)
 	unsigned char RetVal;
 	int Multiplier=1;
 	int UserInput=0;
-	GameStats *LGame = NULL;
 
 #ifdef SWEEP_MOUSE
 	MEVENT MouseInput;
