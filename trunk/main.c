@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.17 1999-02-23 07:09:25 hartmann Exp $
+* $Id: main.c,v 1.18 1999-02-23 19:08:56 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -88,6 +88,22 @@ int main(int argc, char** argv)
 		}
 		g_tick = 0;
 
+		/* see what happened */
+		switch(Game->Status)
+		{
+			case ABORT:
+				ReReadyGame(Game);
+				break;
+			case RECONF:
+				AskPrefs(Game);
+				ReReadyGame(Game);
+			case WIN:
+				break;
+			case LOSE:
+				break;
+
+		}
+
 		/* It might be nice to log this before reseting it. */
 		Game->Status=INPROG;
 
@@ -96,10 +112,20 @@ int main(int argc, char** argv)
 		DrawBoard(Game);
 		doupdate();
 		UndrawCursor(Game);
-		/* Sleep a couple seconds before the next game. */
-		napms(2000);
-		flushinp();
 
+		/* I want a wait on some things, not on others */
+		switch(Game->Status)
+		{
+			case LOSE:
+			case WIN:
+				/* Sleep a couple seconds before the next game. */
+				napms(2000);
+			break;
+			default:
+				break;
+		}
+
+		flushinp();
 	}
 
 	endwin();

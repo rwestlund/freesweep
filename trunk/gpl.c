@@ -357,7 +357,7 @@ void PrintGPL()
 		exit(EXIT_FAILURE);
 	}
 
-	signal(SIGALRM, SIG_IGN);
+	StopTimer();
 
 	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
 	mvwprintw(GPLWin,1,2,"Time out - The GNU General Public License");
@@ -386,8 +386,7 @@ void PrintGPL()
 				delwin(GPLWin);
 				clear();
 				noutrefresh();
-				signal(SIGALRM, sighandler);
-				alarm(1);
+				StartTimer();
 				return;
 				break;
 
@@ -418,8 +417,7 @@ void PrintGPL()
 	delwin(GPLWin);
 	clear();
 	noutrefresh();
-	signal(SIGALRM, sighandler);
-	alarm(1);
+	StartTimer();
 
 	return;
 }

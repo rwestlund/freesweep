@@ -486,13 +486,21 @@ static void DumpBFD(struct BestFileDesc *bfd, int valid)
 }
 
 
+/* Lock a file for exclusive use */
 void tlockf(FILE *fp, char *name)
 {
 	int fd;
 
+	/* this is actually dark magic. You aren't supposed to mix fileno
+	 * and streams */
 	fflush(fp);
 	
+#if defined(HAVE_FILENO)
 	fd = fileno(fp);
+#else
+#error "Need fileno() replacement"
+#endif
+
 	lseek(fd, 0L, SEEK_SET);
 
 #if defined(HAVE_FLOCK) && defined(HAVE_LOCKF)
@@ -513,13 +521,21 @@ void tlockf(FILE *fp, char *name)
 
 }
 
+/* unlock a locked file */
 void tunlockf(FILE *fp)
 {
 	int fd;
 
+	/* this is actually dark magic. You aren't supposed to mix fileno
+	 * and streams */
 	fflush(fp);
 	
+#if defined(HAVE_FILENO)
 	fd = fileno(fp);
+#else
+#error "Need fileno() replacement"
+#endif
+
 	lseek(fd, 0L, SEEK_SET);
 
 #if defined(HAVE_FLOCK) && defined(HAVE_LOCKF)
