@@ -1,9 +1,11 @@
 #include "sweep.h"
 
+#define GPL_LINES 341
+
 void PrintGPL()
 {
 	WINDOW* GPLWin;
-	int Input=0, CurrentLine=0;
+	int Input=0, CurrentLine=0, CurrentY=0;
 	char* Messages[]=
 	{
 "			 GNU GENERAL PUBLIC LICENSE",
@@ -127,7 +129,8 @@ void PrintGPL()
 "distribute the same sections as part of a whole which is a work based",
 "on the Program, the distribution of the whole must be on the terms of",
 "this License, whose permissions for other licensees extend to the",
-"entire whole, and thus to each and every part regardless of who wrote it.",
+"entire whole, and thus to each and every part regardless of who",
+"wrote it.",
 "",
 "Thus, it is not the intent of this section to claim rights or contest",
 "your rights to work written entirely by you; rather, the intent is to",
@@ -345,7 +348,8 @@ void PrintGPL()
 "proprietary programs.  If your program is a subroutine library, you may",
 "consider it more useful to permit linking proprietary applications with the",
 "library.  If this is what you want to do, use the GNU Library General",
-"Public License instead of this License." };
+"Public License instead of this License."
+	};
 
 	if ((GPLWin=newwin(0,0,0,0))==NULL)
 	{
@@ -357,28 +361,47 @@ void PrintGPL()
 	mvwhline(GPLWin,2,1,CharSet.HLine,COLS-2);
 
 	/* Be sure to update this to account for all of the error messages. */
-	for (CurrentLine=0;CurrentLine<11;CurrentLine++)
+	CurrentLine=0;
+	while (CurrentLine<GPL_LINES)
 	{
-		mvwprintw(GPLWin,CurrentLine+4,6,Messages[CurrentLine]);
-	}
+		for (CurrentY=4; CurrentY< (LINES - 2) ; CurrentY++ )
+		{
+			if ( CurrentLine < GPL_LINES )
+			{
+				mvwprintw(GPLWin,CurrentY,2,Messages[CurrentLine++]);
+			}
+			else
+			{
+				CurrentY=LINES -1;
+			}
+		}
+		mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
+		wmove(GPLWin,0,0);
+		wrefresh(GPLWin);
+		Input=wgetch(GPLWin);
 
-	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
-	wmove(GPLWin,0,0);
-	wrefresh(GPLWin);
-	Input=wgetch(GPLWin);
-	if ((Input=='q')||(Input=='Q'))
-	{
-		clear();
-		refresh();
-		endwin();
-		exit(EXIT_SUCCESS);
-	}
-	else
-	{
-		wclear(GPLWin);
-		delwin(GPLWin);
-		clear();
-		noutrefresh();
+		switch (Input)
+		{
+			case 'q':
+				clear();
+				refresh();
+				endwin();
+				exit(EXIT_SUCCESS);
+				break;
+
+			case ' ':
+				wmove(GPLWin,3,0);
+				wclrtobot(GPLWin);
+				wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+				wrefresh(GPLWin);
+				break;
+
+			default:
+				wclear(GPLWin);
+				delwin(GPLWin);
+				clear();
+				noutrefresh();
+		}
 	}
 	return;
 }

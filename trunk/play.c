@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.11 1999-02-12 17:53:59 hartmann Exp $
+* $Id: play.c,v 1.12 1999-02-13 00:03:37 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -131,9 +131,11 @@ int GetInput(GameStats* Game)
 			{
 				YouWin();
 				Game->Status = WIN;
+#ifdef DEBUG_LOG
 				fprintf(DebugLog, "Num %d, Marked %d, Bad %d\n", 
 					Game->NumMines, Game->MarkedMines, Game->BadMarkedMines);
-				fflush(NULL);
+				fflush(DebugLog);
+#endif /* DEBUG_LOG */
 			}
 			break;
 
