@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.19 1999-03-16 05:36:43 hartmann Exp $
+* $Id: drawing.c,v 1.20 1999-07-30 05:01:50 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -78,7 +78,7 @@ void AskPrefs(GameStats* Game)
 			mvprintw(LINES-1,0,"Invalid entry for Height.");
 			mvclrtoeol(CurrentLine,(26+L_MAX_H));
 		}
-#ifdef HAVE_LIBNCURSES
+#if defined HAVE_LIBNCURSES
 		mvgetnstr(CurrentLine,(26+L_MAX_H),ValueBuffer,L_MAX_H);
 #else
 		mvgetnstr(CurrentLine,(26+L_MAX_H),ValueBuffer,L_MAX_H+2);
@@ -118,7 +118,7 @@ void AskPrefs(GameStats* Game)
 			mvprintw(LINES-1,0,"Invalid entry for Width.");
 			mvclrtoeol(CurrentLine,(25+L_MAX_W));
 		}
-#ifdef HAVE_LIBNCURSES
+#if defined HAVE_LIBNCURSES
 		mvgetnstr(CurrentLine,(25+L_MAX_W),ValueBuffer,L_MAX_W);
 #else
 		mvgetnstr(CurrentLine,(25+L_MAX_W),ValueBuffer,L_MAX_W+2);
@@ -166,7 +166,7 @@ void AskPrefs(GameStats* Game)
 			mvprintw(LINES-1,0,"Invalid entry for Mines.");
 			mvclrtoeol(CurrentLine,(41+L_MAX_H+L_MAX_W));
 		}
-#ifdef HAVE_LIBNCURSES
+#if defined HAVE_LIBNCURSES
 		mvgetnstr(CurrentLine,(41+L_MAX_H+L_MAX_W),ValueBuffer,(L_MAX_H+L_MAX_W));
 #else
 		mvgetnstr(CurrentLine,(41+L_MAX_H+L_MAX_W),ValueBuffer,(L_MAX_H+L_MAX_W)+2);

@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.33 1999-07-29 04:17:21 hartmann Exp $
+dnl $Id: configure.in,v 1.34 1999-07-30 05:01:50 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -83,19 +83,22 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(snprintf getopt_long strdup memset memmove flock lockf fileno vsnprintf vsprintf)dnl
+AC_CHECK_FUNCS(strdup memset memmove flock lockf fileno)dnl
 
 # Look for lesser but similar functions.
+AC_CHECK_FUNCS(snprintf)dnl
 if test "${ac_cv_func_snprintf}" = 'no' ; then
 	AC_MSG_WARN([Consider getting a system with snprintf.])
 	AC_CHECK_FUNCS(sprintf)dnl
 fi
 
+AC_CHECK_FUNCS(vsnprintf)dnl
 if test "${ac_cv_func_vsnprintf}" = 'no' ; then
 	AC_MSG_WARN([Consider getting a system with vsnprintf.])
 	AC_CHECK_FUNCS(vsprintf)dnl
 fi
 
+AC_CHECK_FUNCS(getopt_long)dnl
 if test "${ac_cv_func_getopt_long}" = 'no' ; then
 	AC_MSG_WARN([Consider getting a system with getopt_long.])
 	AC_CHECK_FUNCS(getopt)dnl
