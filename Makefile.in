@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.30 1999-03-05 23:25:24 hartmann Exp $
+# $Id: Makefile.in,v 1.31 1999-03-06 22:35:06 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -13,7 +13,7 @@ CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.statu
 SYSTEM_TYPE = @host@
 
 CC = @CC@
-CFLAGS = -Wall -DVERSION=\"$(VERSION)\" -DDEBUG_LOG=\"debug.log\" @CFLAGS@ @DEFS@ 
+CFLAGS = -Wall -DVERSION=\"$(VERSION)\" @CFLAGS@ @DEFS@ 
 LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 OBJS = $(SRCS:.c=.o)

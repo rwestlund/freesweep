@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: pbests.c,v 1.23 1999-03-05 23:25:24 hartmann Exp $
+* $Id: pbests.c,v 1.24 1999-03-06 22:35:06 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -441,6 +441,7 @@ char* FPTGBTF(void)
 
 static void DumpBFD(struct BestFileDesc *bfd, int valid)
 {
+#ifdef DEBUG_LOG
 	int i = 0;
 
 	fprintf(DebugLog, "BFD DUMP START\n");
@@ -464,6 +465,7 @@ static void DumpBFD(struct BestFileDesc *bfd, int valid)
 		}
 	}
 	fprintf(DebugLog, "BFD DUMP END\n");
+#endif /* DEBUG_LOG */
 }
 
 
@@ -495,7 +497,9 @@ void tlockf(FILE *fp, char *name)
 #endif
 
 	{
+#ifdef DEBUG_LOG
 		fprintf(DebugLog, "Can't lock file: (%d)%s\n", errno, name);
+#endif /* DEBUG_LOG */
 		SweepError("Cannot lock file: %s\n", name);
 		exit(EXIT_FAILURE);
 	}
@@ -529,7 +533,9 @@ void tunlockf(FILE *fp)
 #error "Need flock() or lockf()"
 #endif
 	{
+#ifdef DEBUG_LOG
 		fprintf(DebugLog, "Can't unlock file: %d\n", errno);
+#endif /* DEBUG_LOG */
 		SweepError("Cannot unlock file: %d\n", errno);
 		exit(EXIT_FAILURE);
 	}
