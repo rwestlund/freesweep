@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.24 1999-05-07 01:13:05 psilord Exp $
+* $Id: sweep.h.in,v 1.25 1999-05-07 01:46:46 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -308,6 +308,9 @@ void InsertMark(struct Mark **ht, int x, int y);
 char DeleteRandomMark(struct Mark **ht, int *x, int *y);
 void Clear(GameStats *Game);
 void SuperClear(GameStats *Game);
+
+/* These are the functions in fgui.c */
+char* FSGUI(void);
 
 /* macros to lookup crap in the look up table for the clearing algo */
 #define LOOKUP(t, xx, yy) \

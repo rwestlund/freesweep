@@ -6,9 +6,12 @@
 #define FSWIDTH 0.80
 #define FSHEIGHT 0.80
 
+static struct FileBuf* CreateFileBuf(char *dir);
+static void DestroyFileBuf(struct FileBuf *head);
+static char *FSelector(void);
 static char* Choose(struct FileBuf *fb);
-static void Display(WINDOW *fgui, struct FileBuf *fb, int find, 
-	int cursor, int amount);
+static void Display(WINDOW *fgui, struct FileBuf *fb, int find, int cursor, 
+	int amount);
 
 /* make a linked list of filenames given a directory */
 struct FileBuf* CreateFileBuf(char *dir)
@@ -134,7 +137,8 @@ char *FSelector(void)
 }
 
 /* this is the nasty function that parses the filedesc and spits up a window
- * for you so you can select something out of it */
+	for you so you can select something out of it. XXX Must implement "this
+	is correct" option */
 char* Choose(struct FileBuf *fb)
 {
 	WINDOW *gui = NULL, *fgui = NULL;
@@ -221,10 +225,11 @@ char* Choose(struct FileBuf *fb)
 	wrefresh(gui);
 	delwin(fgui);
 	delwin(gui);
+
 	return strdup(fb[find + cursor - 1].fpath);
 }
 
-/* draw the part of the FiseBuf I have specified in the window */
+/* draw the part of the FileBuf I have specified in the window */
 void Display(WINDOW *fgui, struct FileBuf *fb, int find, 
 	int cursor, int amount)
 {
@@ -247,13 +252,16 @@ void Display(WINDOW *fgui, struct FileBuf *fb, int find,
 }
 
 /* This controls all of the logic for saving a file, when it is done, it
- * returns the file name to where to save the game. */
+	returns the file name to where to save the game. */
 char* FSGUI(void)
 {
+	char *file = NULL;
+
 	StopTimer();
-	FSelector();
+	file = FSelector();
 	StartTimer();
-	return NULL;
+
+	return file;;
 }
 
 
