@@ -10,10 +10,9 @@ freesweep \- a curses minesweeper-style game
 [\fB\-a\fP]
 [\fB\-b\fP]
 [\fB\-d\fP]
-[\fB\-f\fP]
+[\fB\-f\fP\ |\ \fB\-i\fP]
 [\fB\-g\fP]
 [\fB\-h\fP\ \fIvalue\fP]
-[\fB\-i\fP]
 [\fB\-m\fP\ \fIvalue\fP]
 [\fB\-s\fP]
 [\fB\-v\fP]
@@ -22,7 +21,7 @@ freesweep \- a curses minesweeper-style game
 [\fB\-\-dump\-best\-times\fP]
 [\fB\-\-fast\fP]
 [\fB\-\-height=\fP\fIvalue\fP]
-[\fB\-\-interactive\fP]
+[\fB\-\-interactive\fP\ |\ \fB\-\-save\-prefs\fP]
 [\fB\-\-mines=\fP\fIvalue\fP]
 [\fB\-\-percent=\fP\fIvalue\fP]
 [\fB\-\-show\-best\-times\fP]
@@ -71,21 +70,25 @@ version 2 or later of the GNU GPL, so this license may be superceded in the
 future.
 .TP
 \fB\-h\fP\ \fIvalue\fP, \fB\-\-height=\fP\fIvalue\fP
-
+Set height to \fIvalue\fP. If the interactive dialog is run initially, any
+value passed for height will be listed as the default.
 .TP
 \fB\-i\fP, \fB\-\-interactive\fP
-
+Force the interactive menu to be run initially. This is primarily used to
+override the FastStart option specified in the
 .TP
 \fB\-m\fP\ \fIvalue\fP, \fB\-\-mines=\fP\fIvalue\fP
 
 .TP
-\fB\-s\fP
+\fB\-s\fP, \fB\-\-save\-prefs\fP
 
 .TP
-\fB\-v\fP
-
+\fB\-v\fP, \fB\-\-version\fP
+Display version information.
 .TP
 \fB\-w\fP\ \fIvalue\fP, \fB\-\-width=\fP\fIvalue\fP
+Set width to \fIvalue\fP. If the interactive dialog is run initially, any
+value passed for width will be listed as the default.
 
 
 
@@ -133,7 +136,7 @@ The user's sweep resource file.
 .I ~/.sweeptimes
 The user's sweep best times file.
 .TP 10
-.I "datadir/sweeprc"
+\fI${prefix}/share/sweeprc\fP
 The global default sweep resource file.
 
 .SH AUTHORS

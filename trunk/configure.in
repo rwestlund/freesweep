@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.31 1999-07-24 23:39:50 hartmann Exp $
+dnl $Id: configure.in,v 1.32 1999-07-27 04:44:19 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -83,7 +83,7 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(snprintf getopt getopt_long strdup memset memmove flock lockf fileno)dnl
+AC_CHECK_FUNCS(snprintf getopt getopt_long strdup memset memmove flock lockf fileno vsnprintf vsprintf)dnl
 
 dnl If neither locking mechanism is there, disable group scores.
 if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then
