@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.26 1999-07-22 04:43:23 hartmann Exp $
+* $Id: game.c,v 1.27 1999-07-22 04:49:08 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -366,7 +366,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	if (ErrorFlag!=0)
 	{
 #ifdef HAVE_GETOPT_LONG
-		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-a, --alt-charset\tUse the alternate character set\n\t-b, --show-best-times\tDisplay best times\n\t-d, --dump-best-times\tPrint best times to stdout\n\t-f, --fast\t\tStart in fast mode\n\t-g, --show-gpl\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-i, --interactive\tStart in interactive mode\n\t-m value, --mines=value\tSet mines to value\n\t-s, --save-prefs\tSave any specified preferences\n\t-v, --version\t\tDisplay version information\n\t-w value, --width=value\tSet width to value\n");
+		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-a, --alt-charset\t\tUse the alternate character set\n\t-b, --show-best-times\t\tDisplay best times\n\t-d, --dump-best-times\t\tPrint best times to stdout\n\t-f, --fast\t\t\tStart in fast mode\n\t-g, --show-gpl\t\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-i, --interactive\t\tStart in interactive mode\n\t-m value, --mines=value\tSet mines to value\n\t-s, --save-prefs\t\tSave any specified preferences\n\t-v, --version\t\t\tDisplay version information\n\t-w value, --width=value\tSet width to value\n");
 #else
 		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-h value\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m value\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
 #endif
