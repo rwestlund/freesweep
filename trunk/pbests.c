@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "math.h"
+#include <math.h>
 #include "sweep.h"
 
 static struct BestFileDesc* NewBFD(void);
@@ -15,8 +15,9 @@ static void Pack(struct BestFileDesc *bfd, FILE *fp);
 static int BECmpFunc(const void *l, const void *r);
 static void tlockf(FILE *fp, char * name);
 static void tunlockf(FILE *fp);
-
 static void DumpBFD(struct BestFileDesc *bfd, int valid);
+
+extern int errno;
 
 /* need a simple line buffer */
 struct MBuf
@@ -91,16 +92,21 @@ void LoadBestTimesFile(struct BestFileDesc *bfd)
 		abyss = xfopen(truename, "wb");
 
 		fprintf(DebugLog, "Creating Besttimes file....\n");
+		tlockf(abyss, truename);
 		fprintf(abyss, "0\n0\n");
+		tunlockf(abyss);
 		fclose(abyss);
 		goto again;		/* XXX So sue me, I'm lazy */
 	}
+
+	tlockf(abyss, truename);
 	
 	/* take the ascii/binary mess the file is and make it into a nice bfd */
 	Unpack(bfd, abyss);
 
 	free(truename);
 
+	tunlockf(abyss);
 	fclose(abyss);	/* you just try! */
 }
 
@@ -110,7 +116,7 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	unsigned int numents = 0;
 	unsigned int size = 0;
 	unsigned int i = 0;
-	char *p = NULL;
+	unsigned char *p = NULL;
 	struct BestEntry *b = NULL;
 
 	/* how many entries do I have? */
@@ -160,7 +166,7 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 			b = &bfd->ents[i];	/* save me typing */
 	
 			/* get all the data out and into the entry */
-			sscanf(p, "%[^(](a%dm%dt%d)%s", 
+			sscanf((char *)p, "%[^(](a%dm%dt%d)%s", 
 				b->name, &b->area, &b->mines, &b->time, b->date);
 			fprintf(DebugLog, "Found --> %s, %u, %u, %u, %s\n",
 				b->name, b->area, b->mines, b->time, b->date);
@@ -282,10 +288,14 @@ void SaveBestTimesFile(struct BestFileDesc *bfd)
 
 	fp = xfopen(name, "w");
 
+	tlockf(fp, name);
+	
 	/* convert the bfd to a mess and write it out */
 	Pack(bfd, fp);
 
 	free(name);
+
+	tunlockf(fp);
 	fclose(fp);
 }
 
@@ -435,7 +445,7 @@ char* FPTBTF(void)
 	}
 
 	/* get me some memory for the string */
-	fp = (unsigned char*)xmalloc(strlen(home) + strlen(DFL_BESTS_FILE) + 2);
+	fp = (char*)xmalloc(strlen(home) + strlen(DFL_BESTS_FILE) + 2);
 
 	/* make the full path */
 	strcpy(fp, home);
@@ -476,6 +486,7 @@ static void DumpBFD(struct BestFileDesc *bfd, int valid)
 void tlockf(FILE *fp, char *name)
 {
 	int fd;
+
 	fflush(fp);
 	
 	fd = fileno(fp);
@@ -492,7 +503,8 @@ void tlockf(FILE *fp, char *name)
 #endif
 
 	{
-		SweepError("Cannot lock best times file: %s\n", name);
+		fprintf(DebugLog, "Can't lock file: (%d)%s\n", errno, name);
+		SweepError("Cannot lock file: %s\n", name);
 		exit(EXIT_FAILURE);
 	}
 
@@ -501,6 +513,7 @@ void tlockf(FILE *fp, char *name)
 void tunlockf(FILE *fp)
 {
 	int fd;
+
 	fflush(fp);
 	
 	fd = fileno(fp);
@@ -516,7 +529,8 @@ void tunlockf(FILE *fp)
 #error "Need flock() or lockf()"
 #endif
 	{
-		SweepError("Cannot unlock best times file\n");
+		fprintf(DebugLog, "Can't unlock file\n");
+		SweepError("Cannot unlock file\n");
 		exit(EXIT_FAILURE);
 	}
 }
