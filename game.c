@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.20 1999-02-25 07:24:21 hartmann Exp $
+* $Id: game.c,v 1.21 1999-03-03 07:37:56 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -85,9 +85,9 @@ void Wipe(GameStats *Game)
 	{
 		Game->NumMines=0;
 	}
-	wclear(Game->Board);
+	werase(Game->Board);
 	wnoutrefresh(Game->Board);
-	wclear(Game->Border);
+	werase(Game->Border);
 	wnoutrefresh(Game->Border);
 	delwin(Game->Board);
 	delwin(Game->Border);

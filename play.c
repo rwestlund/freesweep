@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.29 1999-03-03 07:21:06 hartmann Exp $
+* $Id: play.c,v 1.30 1999-03-03 07:37:56 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -404,9 +404,9 @@ int GetInput(GameStats* Game)
 
 		/* XXX load a game */
 		case 'o':
-			wclear(Game->Board);
+			werase(Game->Board);
 			wnoutrefresh(Game->Board);
-			wclear(Game->Border);
+			werase(Game->Border);
 			wnoutrefresh(Game->Border);
 			delwin(Game->Board);
 			delwin(Game->Border);
@@ -516,7 +516,7 @@ void Boom(void)
 
 	wrefresh(BoomWin);
 	napms(1000);
-	wclear(BoomWin);
+	werase(BoomWin);
 	wnoutrefresh(BoomWin);
 	delwin(BoomWin);
 
@@ -543,7 +543,7 @@ void YouWin(void)
 
 	wrefresh(YouWin);
 	napms(1000);
-	wclear(YouWin);
+	werase(YouWin);
 	wnoutrefresh(YouWin);
 	delwin(YouWin);
 
