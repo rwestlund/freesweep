@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.22 1999-03-05 03:55:24 hartmann Exp $
+* $Id: game.c,v 1.23 1999-03-05 08:41:41 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -281,7 +281,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 				SaveFlag++;
 				break;
 			case 'v':
-				printf("Freesweep version %s by Gus Hartmann and Pete Keller.\n",VERSION);
+				printf("Freesweep v%s by\nGus Hartmann (hartmann@cs.wisc.edu) and Pete Keller (psilord@cs.wisc.edu).\n",VERSION);
 				exit(EXIT_SUCCESS);
 				break;
 			case 'w':
