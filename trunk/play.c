@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: play.c,v 1.38 2000-11-02 03:48:14 hartmann Exp $
+*  $Id: play.c,v 1.39 2000-11-07 05:30:16 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -19,6 +19,7 @@ int GetInput(GameStats* Game)
 	int Multiplier=1;
 	int UserInput=0;
 	char *pathname = NULL;
+	GameStats* LoadedGame;
 
 #ifdef SWEEP_MOUSE
 	MEVENT MouseInput;
@@ -185,7 +186,31 @@ int GetInput(GameStats* Game)
 				SweepError("Can only save game once.");
 				Multiplier=1;
 			}
-			FSGUI();
+			if ( (pathname = FSGUI() ) != NULL )
+			{
+				if ((  LoadedGame = LoadGame(pathname) ) == NULL )
+				{
+					SweepError("Error loading game %s", pathname);
+				}
+				else
+				{
+					werase(Game->Board);
+					wnoutrefresh(Game->Board);
+					werase(Game->Border);
+					wnoutrefresh(Game->Border);
+					delwin(Game->Board);
+					delwin(Game->Border);
+					free(Game->Field);
+					free(Game);
+					Game = LoadedGame;
+					SweepError("Done Loading");
+				}
+				break;
+			}
+			else
+			{
+				SweepError("Unable to open file");
+			}
 		break;
 
 		/* The accepted keys to expose a space. */
