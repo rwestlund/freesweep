@@ -21,6 +21,21 @@ RETSIGTYPE sighandler(int signo)
             endwin();
 			printf("\n\t***Segmentation Fault detected. Cleaning up....\n\n");
             exit(EXIT_FAILURE);
+			break;
+		case SIGBUS:
+            clear();
+            refresh();
+            endwin();
+			printf("\n\t***Bus Error detected. Cleaning up....\n\n");
+            exit(EXIT_FAILURE);
+			break;
+		case SIGILL:
+            clear();
+            refresh();
+            endwin();
+			printf("\n\t***Illegal Instruction detected. Cleaning up....\n\n");
+            exit(EXIT_FAILURE);
+			break;
 		default:
 			break;
 	}
