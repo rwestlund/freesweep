@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: error.c,v 1.7 1999-08-09 05:25:35 hartmann Exp $
+*  $Id: error.c,v 1.8 2000-11-07 05:34:17 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -130,5 +130,11 @@ void SweepMessage(char* format, ...)
 	wnoutrefresh(ErrWin);
 	move(0,0);
 	noutrefresh();
+	return;
+}
+
+void ChangeSweepAlert(int NewAlert)
+{
+	ErrAlert = NewAlert;
 	return;
 }
