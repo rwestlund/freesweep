@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.7 1999-02-12 04:00:38 psilord Exp $
+* $Id: game.c,v 1.8 1999-02-17 07:54:07 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -295,7 +295,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	opterr=0;
 
 	/* Parse the command line options. */
-	while ((Opt=getopt(Argc,Argv,"%:abdfh:ilm:r:svw:"))!=EOF)
+	while ((Opt=getopt(Argc,Argv,"%:abdfgh:ilm:r:svw:"))!=EOF)
 	{
 		switch (Opt)
 		{
@@ -315,6 +315,9 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 				break;
 			case 'f':
 				FastFlag++;
+				break;
+			case 'g':
+
 				break;
 			case 'h':
 				/* Set height to optarg */
