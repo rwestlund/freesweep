@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.6 1999-02-19 06:10:07 psilord Exp $
+* $Id: sweep.h.in,v 1.7 1999-02-19 06:50:07 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -23,7 +23,7 @@
 #include <unistd.h>
 
 #ifdef HAVE_LIBNCURSES
-#include "@NCURSES@/include/curses.h"
+#include "@NCURSES_HINT@/include/curses.h"
 
 #ifdef NCURSES_MOUSE_VERSION
 #define SWEEP_MOUSE

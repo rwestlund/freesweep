@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.21 1999-02-19 06:10:06 psilord Exp $
+# $Id: Makefile.in,v 1.22 1999-02-19 06:50:06 hartmann Exp $
 ######################################################################
 
 SRCS = bests.c clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c tick.c utils.c
@@ -27,13 +27,13 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 	@echo Building $<
 	@/bin/rm -f $*.o 
 	@[ -d $(SYSTEM_TYPE) ]|| mkdir $(SYSTEM_TYPE)
-	@$(CC) -c $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o $<
+	$(CC) -c $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o $<
 	@@LN_S@ $(SYSTEM_TYPE)/$*.o .
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
 	@echo Linking
 	@/bin/rm -f $(TARGET)
-	@(cd $(SYSTEM_TYPE); $(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET))
+	(cd $(SYSTEM_TYPE); $(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET))
 	@echo "Making symlink to ./$(TARGET)"
 	@@LN_S@ $(SYSTEM_TYPE)/$(TARGET) .
 
@@ -51,11 +51,11 @@ distclean:
 	@make sterile
 
 sterile:
-	@-make clean
-	@/bin/rm -f */*.o */core */made */$(TARGET) */a.out sweep.h
+	-make clean
+	-/bin/rm -f */*.o */core */made */$(TARGET) */a.out sweep.h
 
 tar: $(SRCS) $(MISC)
-	@(cd ../; tar -cvf $(TARGET)-$(VERSION).tar $(addprefix ./sweep/,$(SRCS) defaults.h $(MISC)))
+	(cd ../; tar -cvf $(TARGET)-$(VERSION).tar $(addprefix ./sweep/,$(SRCS) defaults.h $(MISC)))
 
 tags: $(SRCS) $(HEADS) $(MISC)
 	@ctags $(SRCS) $(HEADS)

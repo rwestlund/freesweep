@@ -362,7 +362,7 @@ void PrintGPL()
 	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
 	mvwprintw(GPLWin,1,2,"Time out - The GNU General Public License");
 	mvwhline(GPLWin,2,1,CharSet.HLine,COLS-2);
-	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, space for more, any other key to continue.--");
+	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
 
 	/* Be sure to update this to account for all of the error messages. */
 	LinesLeft=GPL_LINES;
@@ -382,21 +382,6 @@ void PrintGPL()
 		switch (Input)
 		{
 			case 'q':
-				clear();
-				refresh();
-				endwin();
-				exit(EXIT_SUCCESS);
-				break;
-
-			case ' ':
-				wmove(GPLWin,3,0);
-				wclrtobot(GPLWin);
-				wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-				mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, space for more, any other key to continue.--");
-				wrefresh(GPLWin);
-				break;
-
-			default:
 				wclear(GPLWin);
 				delwin(GPLWin);
 				clear();
@@ -404,6 +389,14 @@ void PrintGPL()
 				signal(SIGALRM, sighandler);
 				alarm(1);
 				return;
+				break;
+
+			default:
+				wmove(GPLWin,3,0);
+				wclrtobot(GPLWin);
+				wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+				mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key for more.--");
+				wrefresh(GPLWin);
 				break;
 		}
 	}
@@ -416,29 +409,17 @@ void PrintGPL()
 		
 	}
 	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, or any other key to continue.--");
+	mvwprintw(GPLWin,LINES-1,1,"--Press any key to quit. --");
 	wmove(GPLWin,0,0);
 	wrefresh(GPLWin);
 	Input=wgetch(GPLWin);
 
-	switch (Input)
-	{
-		case 'q':
-			clear();
-			refresh();
-			endwin();
-			exit(EXIT_SUCCESS);
-			break;
+	wclear(GPLWin);
+	delwin(GPLWin);
+	clear();
+	noutrefresh();
+	signal(SIGALRM, sighandler);
+	alarm(1);
 
-		default:
-			wclear(GPLWin);
-			delwin(GPLWin);
-			clear();
-			noutrefresh();
-			signal(SIGALRM, sighandler);
-			alarm(1);
-			return;
-			break;
-	}
 	return;
 }
