@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.10 1999-02-17 06:58:19 hartmann Exp $
+* $Id: sweep.h,v 1.11 1999-02-17 07:48:26 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -155,8 +155,8 @@ struct BestEntry
 	unsigned int mines;
 	unsigned int time;
 
-	char name[MAX_NAME+1];
-	char date[MAX_DATE+1];
+	char name[MAX_NAME];
+	char date[MAX_DATE];
 	char *attribs;
 };
 
@@ -241,6 +241,11 @@ void ClearError();
 int RedrawErrorWin();
 void SweepAlert();
 void SweepMessage(char* format, ...);
+
+/* These are the functions described in utils.c */
+void* xmalloc(size_t num);
+FILE* xfopen(char *name, char *type);
+
 
 /* These are the functions defined in bests.c */
 int MigrateBestTimes(FILE* ScoresFile);
