@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.28 1999-03-05 03:55:25 hartmann Exp $
+* $Id: main.c,v 1.29 1999-03-05 08:41:41 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	}
 
 	/* Output all the relevant information about the compilation. */
-	printf("Freesweep v%s by Gus Hartmann and Pete Keller.\n",VERSION);
+	printf("Freesweep v%s by\nGus Hartmann (hartmann@cs.wisc.edu) and Pete Keller (psilord@cs.wisc.edu).\n",VERSION);
 	printf("Freesweep comes with ABSOLUTELY NO WARRANTY; see the file COPYING for more info.\n");
 #ifdef DEBUG_LOG
 	fprintf(DebugLog,"Freesweep v%s by Gus Hartmann and Pete Keller.\n",VERSION);
