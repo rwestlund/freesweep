@@ -7,7 +7,7 @@ static void ClearStats(void);
 
 int InitStatsWin(void)
 {
-	if ((StatsFrame=newwin(6,INFO_W,(LINES - 10),(COLS-INFO_W)))==NULL)
+	if ((StatsFrame=newwin(6,INFO_W,6,(COLS-INFO_W)))==NULL)
 	{ 
 		return 1;
 	}

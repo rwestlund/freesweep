@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.30 1999-03-03 07:37:56 hartmann Exp $
+* $Id: play.c,v 1.31 1999-03-05 03:55:25 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -228,6 +228,13 @@ int GetInput(GameStats* Game)
 				SweepError("Can only refresh the display once.");
 				Multiplier=1;
 			}
+			PrintInfo();
+			RedrawStatsWin();
+			RedrawErrorWin();
+			touchwin(Game->Border);
+			touchwin(Game->Board);
+
+			noutrefresh();
 
 			break;
 
