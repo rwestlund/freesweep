@@ -1,0 +1,220 @@
+/*********************************************************************
+* $Id: sweep.h,v 1.1.1.1 1998-11-23 03:57:08 hartmann Exp $
+*********************************************************************/
+
+#ifndef __SWEEP_H__
+#define __SWEEP_H__
+
+/* The library header files. */
+#include <unistd.h>
+#include <strings.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <curses.h>
+#include <time.h>
+#include <assert.h>
+#include <math.h>
+
+#ifdef NCURSES_MOUSE_VERSION
+#define SWEEP_MOUSE
+#endif /* NCURSES_MOUSE_VERSION */
+
+#include "defaults.h"
+
+/* These are all the defines used in freesweep */
+/* These are defines for convenience */
+#define DELIMITERS " \t="
+#define DFL_PREFS_FILE ".sweeprc"
+#define DFL_BESTS_FILE ".sweeptimes"
+#define MAGIC_NUMBER 128
+
+/* These are defines for maximum accepted values */
+#define MAX_LINE 1024
+#define MAX_H 1024
+#define MAX_W 1024
+#define L_MAX_H 4
+#define L_MAX_W 4
+#define INFO_W 21
+#define MAX_NAME 80
+#define MAX_DATE 26
+
+/* These are the macros for cell values. */
+#define UNKNOWN 0x0
+#define MINE 0x9
+#define MARKED 0xa
+#define BAD_MARK 0xb
+#define EMPTY 0xc
+
+/* These are for winning and losing. */
+#define WIN 1
+#define LOSE -1
+
+/* These are for the alert types. */
+#define BEEP 0
+#define FLASH 1
+#define NO_ALERT 2
+
+/* These are the macros that reduce the memory usage by *half*. */
+#define GetMine(x,y,ret) \
+	ret=(unsigned char)(!((ret)=Game->Field[((x)/2+(y)*( ( Game->Width +1 )/2))])\
+	?UNKNOWN:((x)%2)?(ret)&0x0f:((ret)&0xf0)>>4)
+
+#define SetMine(x,y,val) \
+	Game->Field[((x)/2)+(y)*( ( Game->Width +1 )/2)]=(!((x)%2)?((Game->Field[((x)\
+	/2)+(y)*( ( Game->Width +1 )/2)]&0x0f)|((unsigned char)(val)<<4)):\
+	((Game->Field[((x)/2)+(y)*( ( Game->Width +1 ) /2)]&0xf0)|((unsigned char)(val)\
+	&0x0f)))
+
+/* This extends the naming convention of ncurses functions. */
+#define mvclrtoeol(y,x) (move(y,x)==ERR?ERR:clrtoeol());
+#define noutrefresh() wnoutrefresh(stdscr);
+#ifndef mvwhline
+#define mvwhline(w,y,x,z,n) (wmove(w,y,x)==ERR?ERR:whline(w,z,n));
+#endif /* mvwhline */
+#ifndef mvwvline
+#define mvwvline(w,y,x,z,n) (wmove(w,y,x)==ERR?ERR:wvline(w,z,n));
+#endif /* mvwvline */
+
+/* These are all the structs used in freesweep */
+/* This is the struct containing all the various drawing characters. */
+typedef struct _DrawChars
+{
+	chtype ULCorner;
+	chtype URCorner;
+	chtype LLCorner;
+	chtype LRCorner;
+	chtype HLine;
+	chtype VLine;
+	chtype UArrow;
+	chtype DArrow;
+	chtype LArrow;
+	chtype RArrow;
+	chtype Mine;
+	chtype Space;
+	chtype Mark;
+	chtype FalseMark;
+	chtype Bombed;
+} DrawChars;
+
+/* This is the struct containing all the relevant game information. */
+typedef struct _GameStats
+{
+	int Height;
+	int Width;
+	int Percent;
+	unsigned int NumMines;
+	int Color;
+	int Fast;
+	int Alert;
+	int LineDraw;
+	int CursorX, CursorY;
+	int LargeBoardX, LargeBoardY;
+	int Status;
+	unsigned int FocusX, FocusY;
+	unsigned int Time;
+	unsigned char* Field;
+	WINDOW* Border;
+	WINDOW* Board;
+} GameStats;
+
+/* This is the format for the high scores records. */
+typedef struct _BestTimeNode
+{
+	char Username[MAX_NAME+1];
+	char* Attributes;
+	int Time;
+	char Date[MAX_DATE+1];
+	struct _BestTimeNode* Next;
+} BestTimeNode;
+
+typedef struct _CoordPair
+{
+	int CoordX, CoordY;
+} CoordPair;
+
+
+#ifdef DEBUG_LOG
+FILE* DebugLog;
+#endif /* DEBUG_LOG */
+
+DrawChars CharSet;
+
+/* These are the functions defined in files.c */
+int SourceHomeFile(GameStats* Game);
+int SourceGlobalFile(GameStats* Game);
+int SourceFile(GameStats* Game,FILE* PrefsFile);
+int WritePrefsFile(GameStats* Game);
+int OldPrefsFile(GameStats* Game);
+
+/* These are the functions defined in drawing.c */
+void StartCurses();
+void PrintInfo();
+void AskPrefs(GameStats* Game);
+void Help();
+void PrintBestTimes(char* FileName);
+int DrawBoard(GameStats* Game);
+void DrawCursor(GameStats* Game);
+void UndrawCursor(GameStats* Game);
+int Pan(GameStats* Game);
+int Center(GameStats* Game);
+int CenterY(GameStats* Game);
+int CenterX(GameStats* Game);
+
+/* These are the functions defined in game.c */
+int CheckColor(int NewVal);
+int CheckFast(int NewVal);
+int CheckHeight(int NewVal);
+int CheckLineDraw(int NewVal);
+int CheckNumMines(int NewVal, int Height, int Width);
+int CheckPercent(int NewVal);
+int CheckWidth(int NewVal);
+int InitGame(GameStats* Game);
+int ReadyGame(GameStats* Game);
+void SwitchCharSet(GameStats* Game);
+void InitCharSet(GameStats* Game,int Value);
+void SetCharSet(int Value);
+int ParseArgs(GameStats* Game, int Argc, char** Argv);
+int SourceEnv(GameStats* Game);
+void DumpGame(GameStats* Game);
+
+/* These are the functions defined in play.c */
+int GetInput(GameStats* Game);
+void MoveLeft(GameStats* Game, int Num);
+void MoveRight(GameStats* Game, int Num);
+void MoveUp(GameStats* Game, int Num);
+void MoveDown(GameStats* Game, int Num);
+void Boom();
+int ClickSquare(GameStats* Game, int ThisX, int ThisY);
+int DoubleClickSquare(GameStats* Game, int ThisX, int ThisY);
+
+/* These are the functions defined in error.c */
+int SweepError(char* ErrMsg);
+int InitErrorWin(GameStats* Game);
+void ClearError();
+int RedrawErrorWin();
+void SweepAlert();
+
+/* These are the functions defined in bests.c */
+int MigrateBestTimes(FILE* ScoresFile);
+BestTimeNode* LoadNodeList(char* Filename);
+int SortBestTimes(BestTimeNode* Head);
+int CompNodeAttribs(BestTimeNode* Node1, BestTimeNode* Node2);
+int CompNodeTimes(BestTimeNode* Node1, BestTimeNode* Node2);
+void SortNodeList(BestTimeNode** Head);
+void ISortNodeList(BestTimeNode** Head, BestTimeNode* Tail);
+void QSortNodeList(BestTimeNode** Head, BestTimeNode* Tail, int NumNodes);
+void DumpNodeFile(char* Filename);
+void DumpNodeList(BestTimeNode* Head, FILE* Dump);
+void FreeNode(BestTimeNode* Node);
+int AddNodeToFile(char* Filename, BestTimeNode* NewNode);
+BestTimeNode* InitNode(GameStats* Game);
+int WriteNodeList(char* Filename, BestTimeNode* Head);
+BestTimeNode* GenerateFakeNode();
+
+/* These are the functions defined in hash.c */
+
+#endif /* __SWEEP_H__ */
