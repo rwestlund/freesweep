@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.42 1999-08-06 07:25:25 hartmann Exp $
+# $Id: Makefile.in,v 1.43 1999-08-07 01:53:15 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -67,7 +67,7 @@ install-bin: $(TARGET)
 	./install-sh -c -m 0644 -o root -g games sweeprc @PREFSDIR@/sweeprc
 
 install-man:
-	
+	./install-sh -c -m 0444 -o root -g games freesweep.6 @mandir@/man6/freesweep.6
 
 distclean:
 	@make sterile
