@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.17 1999-02-24 04:33:11 hartmann Exp $
+* $Id: game.c,v 1.18 1999-02-24 05:40:18 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -72,6 +72,10 @@ int InitGame(GameStats* Game)
 /* Get the game ready for a reconfigure */
 void Wipe(GameStats *Game)
 {
+	if (Game->Percent != 0)
+	{
+		Game->NumMines=0;
+	}
 	Game->MarkedMines=0;
 	Game->BadMarkedMines=0;
 	Game->LargeBoardX=Game->LargeBoardY=0;

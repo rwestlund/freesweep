@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.21 1999-02-24 03:59:46 psilord Exp $
+* $Id: main.c,v 1.22 1999-02-24 05:40:18 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -56,8 +56,6 @@ int main(int argc, char** argv)
 	noutrefresh();
 
 	/* set up signal handler and stuff */
-	signal(SIGALRM, sighandler);
-	alarm(1);
 
 	while (1)
 	{
@@ -73,6 +71,7 @@ int main(int argc, char** argv)
 		doupdate();
 		Center(Game);
 
+		StartTimer();
 	/*	This is the main loop.*/
 		while (Game->Status==INPROG)
 		{
@@ -87,6 +86,7 @@ int main(int argc, char** argv)
 			Game->Time = g_tick;
 		}
 		g_tick = 0;
+		StopTimer();
 
 		/* Update the final action of the player */
 		Pan(Game);
