@@ -49,7 +49,7 @@ AC_CHECK_LIB(m,main)
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(strings.h unistd.h)
+AC_CHECK_HEADERS(strings.h unistd.h sys/file.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -62,5 +62,7 @@ AC_CHECK_FUNCS(snprintf)
 AC_CHECK_FUNCS(strdup)
 AC_CHECK_FUNCS(memset)
 AC_CHECK_FUNCS(memmove)
+AC_CHECK_FUNCS(flock)
+AC_CHECK_FUNCS(lockf)
 
 AC_OUTPUT(Makefile sweep.h)

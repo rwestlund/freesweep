@@ -6,14 +6,7 @@ void SaveGame(GameStats* Game, char *fname)
 {
 	FILE *fo = NULL;
 
-	fo = fopen(fname, "w");
-	if (fo == NULL)
-	{
-		SweepError("Could not open save game file!");
-
-		/* XXX fix up the exit to be nice */
-		exit(EXIT_FAILURE);
-	}
+	fo = xfopen(fname, "w");
 	
 	/* dump the stats out */
 	fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"

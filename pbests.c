@@ -13,6 +13,8 @@ static char* FPTBTF(void);
 static void Unpack(struct BestFileDesc *bfd, FILE *abyss);
 static void Pack(struct BestFileDesc *bfd, FILE *fp);
 static int BECmpFunc(const void *l, const void *r);
+static void tlockf(FILE *fp, char * name);
+static void tunlockf(FILE *fp);
 
 static void DumpBFD(struct BestFileDesc *bfd, int valid);
 
@@ -471,6 +473,50 @@ static void DumpBFD(struct BestFileDesc *bfd, int valid)
 }
 
 
+void tlockf(FILE *fp, char *name)
+{
+	int fd;
+	fflush(fp);
+	
+	fd = fileno(fp);
+	lseek(fd, 0L, SEEK_SET);
 
+#if defined(HAVE_FLOCK) && defined(HAVE_LOCKF)
+	if(flock(fd, LOCK_EX) == -1)
+#elif defined(HAVE_FLOCK)
+	if(flock(fd, LOCK_EX) == -1)
+#elif defined(HAVE_LOCKF)
+	if(lockf(fd, F_LOCK, 0L) == -1)
+#else
+#error "Need flock() or lockf()"
+#endif
 
+	{
+		SweepError("Cannot lock best times file: %s\n", name);
+		exit(EXIT_FAILURE);
+	}
 
+}
+
+void tunlockf(FILE *fp)
+{
+	int fd;
+	fflush(fp);
+	
+	fd = fileno(fp);
+	lseek(fd, 0L, SEEK_SET);
+
+#if defined(HAVE_FLOCK) && defined(HAVE_LOCKF)
+	if(flock(fd, LOCK_EX) == -1)
+#elif defined(HAVE_FLOCK)
+	if(flock(fd, LOCK_EX) == -1)
+#elif defined(HAVE_LOCKF)
+	if(lockf(fd, F_LOCK, 0L) == -1)
+#else
+#error "Need flock() or lockf()"
+#endif
+	{
+		SweepError("Cannot unlock best times file\n");
+		exit(EXIT_FAILURE);
+	}
+}
