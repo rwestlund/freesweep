@@ -11,7 +11,6 @@ static void SaveBestTimesFile(struct BestFileDesc *bfd);
 static struct BestEntry* NewBestEntry(GameStats *Game);
 static char* FPTBTF(void);
 static void Unpack(struct BestFileDesc *bfd, FILE *abyss);
-static void Zorch(char *p, struct BestEntry *b);
 static void Pack(struct BestFileDesc *bfd, FILE *fp);
 static int BECmpFunc(const void *l, const void *r);
 
@@ -159,77 +158,14 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 			b = &bfd->ents[i];	/* save me typing */
 	
 			/* get all the data out and into the entry */
-			Zorch(p, b);
+			sscanf(p, "%[^(](a%dm%dt%d)%s", 
+				b->name, &b->area, &b->mines, &b->time, b->date);
 			fprintf(DebugLog, "Found --> %s, %u, %u, %u, %s\n",
 				b->name, b->area, b->mines, b->time, b->date);
 
 			while(*p++ != '\n');
 		}
 	}
-}
-
-/* rip out the information from the p -> '\n' area of the string and place
- * into b */
-void Zorch(char *p, struct BestEntry *b)
-{
-	char *n = NULL, *en = NULL, *s = NULL, *es = NULL, *d = NULL, *ed = NULL;
-	char *a = NULL, *m = NULL, *t = NULL;
-	char *tmp = NULL;
-
-	/* get out name */
-	n = p;
-	en = strchr(n, '('); if (en == NULL) goto BAD;
-	memcpy(b->name, n, en - n);
-	b->name[en-n] = 0;
-	fprintf(DebugLog, "Name -> '%s'\n", b->name);
-
-	/* get out the date */
-	d = strchr(p, ')'); if (d == NULL) goto BAD;
-	d++;
-	ed = strchr(p, '\n'); if (ed == NULL) goto BAD;
-	memcpy(b->date, d, ed - d);
-	b->date[ed - d] = 0;
-	fprintf(DebugLog, "Date -> '%s'\n", b->date);
-
-	/* get out the stats */
-	s = strchr(p, '('); if (s == NULL) goto BAD;
-	s++;
-	es = strchr(p, ')'); if (es == NULL) goto BAD;
-	es++;
-	tmp = (char*)xmalloc(es-s + 1);
-	memcpy(tmp, s, es - s);
-	tmp[es - s] = 0;
-
-	/* set up pointers to the strings in questions */
-	a = tmp+1;
-	s = strchr(a, 'm'); if (s == NULL) goto BAD;
-	m = s+1;
-	*s = 0;
-	s = strchr(m, 't'); if (s == NULL) goto BAD;
-	t = s+1;
-	*s = 0;
-	s = strchr(t, ')'); if (s == NULL) goto BAD;
-	*s = 0;
-
-	b->area = atoi(a);
-	b->mines = atoi(m);
-	b->time = atoi(t);
-
-	fprintf(DebugLog, "Area -> '%u'\n", b->area);
-	fprintf(DebugLog, "Mines -> '%u'\n", b->mines);
-	fprintf(DebugLog, "Time -> '%u'\n", b->time);
-
-	free(tmp);
-	return;
-	BAD:
-		if (tmp != NULL)
-		{
-			free(tmp);
-		}
-		/* XXX so sue me again, I hate typing */
-		SweepError("Besttimes file is corrupt!");
-		/* XXX fix me */
-		exit(EXIT_FAILURE);
 }
 
 void BFDSort(struct BestFileDesc *bfd)

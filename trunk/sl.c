@@ -42,22 +42,9 @@ GameStats* LoadGame(char *fname)
 	VViewable=(LINES-6);
 	HViewable=((COLS-INFO_W-2)/3);
 
-	/* get space for the new board */
-	if ((Game=malloc(sizeof(GameStats)))==NULL)
-	{
-		SweepError("Out of Memory.");
-		/* XXX clean this up */
-		exit(EXIT_FAILURE);
-	}
+	Game = (GameStats*)xmalloc(sizeof(GameStats));
 
-	/* open the file for reading */
-	fi = fopen(fname, "r");
-	if (fi == NULL)
-	{
-		SweepError("Could not find file to load");
-		/* XXX clean this up */
-		exit(EXIT_FAILURE);
-	}
+	fi = xfopen(fname, "r");
 
 	/* Load the Game Stats */
 	fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
