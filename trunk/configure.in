@@ -10,7 +10,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses=[/usr/local] path to the ncurses drawing package ], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
+AC_ARG_WITH(ncurses, [  --with-ncurses[=/usr/local]
+                          path to the ncurses drawing package ], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
 
 AC_SUBST(NCURSES_HINT)
 
@@ -18,6 +19,11 @@ dnl Checks for libraries.
 dnl look for ncurses in the suggested location, if given.
 if test "$NCURSES_HINT" = "no" ; then
 	AC_CHECK_LIB(curses,main)
+	if test "$ac_cv_lib_curses_main" = 'no' ; then
+		AC_WARN([No curses library was found. Consider installing])
+		AC_WARN([ncurses, from ftp://ftp.gnu.org/pub/ncurses])
+		exit 1
+	fi
 else
 	if test "$NCURSES_HINT" = 'yes' || test "$NCURSES_HINT" = 'default' ; then
 
@@ -41,6 +47,11 @@ else
 
 	if test "$ac_cv_lib_ncurses_main" = 'no' ; then
 		AC_CHECK_LIB(curses,main)
+		if test "$ac_cv_lib_curses_main" = 'no' ; then
+			AC_WARN([No curses library was found. Consider installing])
+			AC_WARN([ncurses, from ftp://ftp.gnu.org/pub/ncurses])
+			exit 1
+		fi
 	fi
 fi
 
