@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: drawing.c,v 1.23 2002-12-20 08:44:53 hartmann Exp $
+*  $Id: drawing.c,v 1.24 2002-12-24 05:44:39 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -772,7 +772,6 @@ int DrawBoard(GameStats* Game)
 					break;
 				case MINE:
 					waddch(Game->Board,CharSet.Mine);
-/*					waddch(Game->Board,'+');*/
 					break;
 				case MARKED:
 					waddch(Game->Board,CharSet.Mark);
@@ -781,7 +780,15 @@ int DrawBoard(GameStats* Game)
 					waddch(Game->Board,CharSet.FalseMark);
 					break;
 				case DETONATED:
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,6,NULL);
+					}
 					waddch(Game->Board,CharSet.Bombed);
+					if (Game->Color != 0 && (has_colors() == TRUE))
+					{
+						wcolor_set(Game->Board,1,NULL);
+					}
 					break;
 				default:
 					break;
