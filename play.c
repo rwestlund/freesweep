@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.7 1999-02-12 02:51:38 psilord Exp $
+* $Id: play.c,v 1.8 1999-02-12 03:09:17 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -155,6 +155,7 @@ int GetInput(GameStats* Game)
 					Boom();
 					SetMine(Game->CursorX,Game->CursorY,DETONATED);
 					CharSet.FalseMark='x';
+					CharSet.Mine='o';
 					Game->Status=LOSE;
 #ifdef DEBUG_LOG
 					fprintf(DebugLog,"Mine exposed! Setting Status to LOSE.\n");

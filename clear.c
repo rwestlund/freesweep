@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: clear.c,v 1.5 1999-02-11 05:56:53 psilord Exp $
+* $Id: clear.c,v 1.6 1999-02-12 03:09:17 psilord Exp $
 *********************************************************************/
 
 #include <stdio.h>
@@ -512,6 +512,7 @@ void SuperClear(GameStats *Game)
 			Game->Status = LOSE;
 			SetMine(x,y,DETONATED);
 			CharSet.FalseMark='x';
+			CharSet.Mine='o';
 			break;
 		/* they marked correctly, and I can expand stuff */
 		case SUPERCLICK:
