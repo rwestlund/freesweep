@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.3 1999-02-11 08:38:22 hartmann Exp $
+* $Id: main.c,v 1.4 1999-02-11 08:50:20 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -90,6 +90,7 @@ int main(int argc, char** argv)
 		DrawCursor(Game);
 		DrawBoard(Game);
 		doupdate();
+		UndrawCursor(Game);
 		/* FOO */
 		/* Wait for a keystroke, and print an error to that effect. */
 		napms(2000);
