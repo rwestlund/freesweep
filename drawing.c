@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.5 1999-02-11 08:55:36 hartmann Exp $
+* $Id: drawing.c,v 1.6 1999-02-12 00:45:50 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -32,6 +32,7 @@ void StartCurses()
 	intrflush(stdscr, TRUE);
 	cbreak();
 	nonl();
+
 #ifdef SWEEP_MOUSE
 	Mask=REPORT_MOUSE_POSITION|BUTTON1_CLICKED|BUTTON1_DOUBLE_CLICKED|BUTTON3_CLICKED;
 	Mask=mousemask(Mask,NULL);

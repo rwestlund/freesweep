@@ -4,18 +4,21 @@ AC_INIT(sweep.h)
 dnl Find out where we're building
 AC_CANONICAL_HOST
 
-dnl Look for ncurses in a variable.
-NCURSES=/usr/local
-AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses)
-
-dnl /usr/local hides lots of good stuff.
-LIBS="-L/usr/local/lib -L$NCURSES/lib $LIBS"
-
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PATH_PROG(DATE, date)
+
+dnl Set CFLAGS right.
+CFLAGS="-I$NCURSES/include -I/usr/local/include $CFLAGS"
+
+dnl Look for ncurses in a variable.
+NCURSES=/usr/local
+AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses)
+
+dnl /usr/local hides lots of good stuff.
+LIBS="-L$NCURSES/lib -L/usr/local/lib $LIBS"
 
 dnl Checks for libraries.
 dnl Replace `main' with a function in -lm:
