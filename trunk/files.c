@@ -1,4 +1,4 @@
-/********************************************************************* * $Id: files.c,v 1.6 1999-07-25 03:33:11 hartmann Exp $
+/********************************************************************* * $Id: files.c,v 1.7 1999-08-09 05:18:22 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -131,7 +131,7 @@ int SourceGlobalFile(GameStats* Game)
 	if ((PrefsFile=fopen(GLOBAL_PREFS_FILE,"r"))==NULL)
 	{
 /*		The global file is invalid or non-existant. */
-		fprintf(stderr,"Unable to open the global prefernces file GLOBAL_PREFS_FILE\n");
+		fprintf(stderr,"Unable to open the global prefernces file %s\n", GLOBAL_PREFS_FILE);
 /*		perror("SourceGlobalFile::fopen"); */
 		return 1;
 	}

@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.43 1999-08-07 01:53:15 hartmann Exp $
+# $Id: Makefile.in,v 1.44 1999-08-09 05:18:21 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -56,18 +56,12 @@ pure:
 	@make clean
 	@make "PURIFY=$(PURE_ARGS)"
 
-install:
-	@-make install-bin
-	@-make install-man
-
-install-bin: $(TARGET)
+install: $(TARGET) $(TARGET).6
 	touch sweeptimes
 	./install-sh -c -m 2555 -o root -g games -s $(TARGET) $(bindir)/$(TARGET)
 	./install-sh -c -m 0664 -o root -g games sweeptimes @SCORESDIR@/sweeptimes
 	./install-sh -c -m 0644 -o root -g games sweeprc @PREFSDIR@/sweeprc
-
-install-man:
-	./install-sh -c -m 0444 -o root -g games freesweep.6 @mandir@/man6/freesweep.6
+	./install-sh -c -m 0444 -o root -g games $(TARGET).6 @mandir@/man6/$(TARGET).6
 
 distclean:
 	@make sterile
