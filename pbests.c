@@ -35,19 +35,16 @@ void UpdateBestTimesFile(GameStats *Game, char *filename)
 
 	LoadBestTimesFile(bfd, filename); 
 
-	fprintf(DebugLog, "***LOADED COPY\n");
 	DumpBFD(bfd, FALSE);
 	fflush(NULL);
 
 	InsertEntry(bfd, b);
 
-	fprintf(DebugLog, "***INSERTED COPY\n");
 	DumpBFD(bfd, TRUE);
 	fflush(NULL);
 
 	BFDSort(bfd);
 
-	fprintf(DebugLog, "***SORTED/SAVED COPY\n");
 	DumpBFD(bfd, TRUE);
 	fflush(NULL);
 
@@ -83,7 +80,6 @@ void LoadBestTimesFile(struct BestFileDesc *bfd, char *truename)
 	{
 		abyss = xfopen(truename, "w");
 
-		fprintf(DebugLog, "Creating Besttimes file....\n");
 		tlockf(abyss, truename);
 		fprintf(abyss, "0\n0\n");
 		tunlockf(abyss);
@@ -148,9 +144,6 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 		/* walk through memory looking for newlines and building the entries
 	 	* as you go */
 		p = space;
-		fprintf(DebugLog, "Doing %d entries....\n", bfd->numents);
-		fprintf(DebugLog, "Full string -> '%s'\n", p);
-		fflush(NULL);
 		for (i = 0; i < bfd->numents; i++)
 		{
 			b = &bfd->ents[i];	/* save me typing */
@@ -158,8 +151,6 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 			/* get all the data out and into the entry */
 			sscanf((char *)p, "%[^(](a%dm%dt%d)%s", 
 				b->name, &b->area, &b->mines, &b->time, b->date);
-			fprintf(DebugLog, "Found --> %s, %u, %u, %u, %s\n",
-				b->name, b->area, b->mines, b->time, b->date);
 
 			while(*p++ != '\n');
 		}
@@ -325,12 +316,9 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 		b = &bfd->ents[i];
 		sprintf(mbuf[i].buf, "%s(a%um%ut%u)%s\n", 
 			b->name, b->area, b->mines, b->time, b->date);
-		fprintf(DebugLog, "Created mbuf -> %s", mbuf[i].buf);
-		fflush(0);
 
 		mbuf[i].len = strlen(mbuf[i].buf);
 		
-/*		fprintf(DebugLog, "Encrypting -> '%s'", mbuf[i].buf);*/
 		/* encrypt the data */
 		for (j = 0; j < mbuf[i].len; j++)
 		{
@@ -342,24 +330,15 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 
 	/* now that the data is encrypted and ready, shove it out to the file */
 
-	fprintf(DebugLog, "***About to write into file\n");
-	fflush(0);
 	/* number of entries */
 	fprintf(fp, "%u\n", bfdnum);
-	fprintf(DebugLog, "%u entries...\n", bfdnum);
-	fflush(0);
 
 	/* byte size of file */
 	fprintf(fp, "%u\n", totalsize);
-	fprintf(DebugLog, "%u bytes...\n", totalsize);
-	fflush(0);
 
 	/* the data */
 	for (i = 0; i < bfdnum; i++)
 	{
-		fprintf(DebugLog, "Writing -> ");
-		fwrite(mbuf[i].buf, mbuf[i].len, 1, DebugLog);
-		fflush(NULL);
 		fwrite(mbuf[i].buf, mbuf[i].len, 1, fp);
 	}
 
