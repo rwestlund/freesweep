@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.16 1999-02-24 03:33:00 psilord Exp $
+* $Id: sweep.h.in,v 1.17 1999-02-25 20:52:09 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -218,6 +218,7 @@ int Pan(GameStats* Game);
 int Center(GameStats* Game);
 int CenterY(GameStats* Game);
 int CenterX(GameStats* Game);
+void PrintStats(GameStats *Game);
 
 /* These are the functions defined in game.c */
 int CheckColor(int NewVal);

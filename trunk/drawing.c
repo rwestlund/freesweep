@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.13 1999-02-22 06:09:09 hartmann Exp $
+* $Id: drawing.c,v 1.14 1999-02-25 20:52:09 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -44,7 +44,8 @@ void PrintInfo()
 {
 	WINDOW* InfoWin;
 	InfoWin=newwin(6,21,0,(COLS-INFO_W));
-	wborder(InfoWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
+	wborder(InfoWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,
+		CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
 	mvwprintw(InfoWin,1,2,"-=- FreeSweep -=-");
 	mvwprintw(InfoWin,2,2,"by Gus! & Psilord");
 	wmove(InfoWin,3,1);
@@ -54,6 +55,33 @@ void PrintInfo()
 	wnoutrefresh(InfoWin);
 	delwin(InfoWin);
 	return;
+}
+
+/* Vomit some stats to the screen */
+void PrintStats(GameStats *Game)
+{
+	static WINDOW *sw = NULL;
+	char buf[21];
+
+	/* XXX Should I be making a new window each time? Can't I just clear the
+	 * one I already have? Does it matter? */
+
+	sw=newwin(6,21,5,(COLS-INFO_W));
+	wborder(sw,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,
+		CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,
+		CharSet.LRCorner);
+
+	sprintf(buf, "Time: %d", Game->Time);
+	mvwprintw(sw, 1, 1, buf);
+	sprintf(buf, "Loc: %d, %d", Game->CursorX, Game->CursorY);
+	mvwprintw(sw, 2, 1, buf);
+	sprintf(buf, "Mines: %d", Game->NumMines);
+	mvwprintw(sw, 3, 1, buf);
+	sprintf(buf, "Marks: %d", Game->MarkedMines + Game->BadMarkedMines);
+	mvwprintw(sw, 4, 1, buf);
+	move(0,0);
+	wnoutrefresh(sw);
+	delwin(sw);
 }
 
 void AskPrefs(GameStats* Game)
