@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.12 1999-02-23 05:25:44 hartmann Exp $
+* $Id: game.c,v 1.13 1999-02-23 07:09:25 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -206,7 +206,7 @@ int ReadyGame(GameStats* Game)
 
 int ParseArgs(GameStats* Game, int Argc, char** Argv)
 {
-	int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0;
+	int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0, GPLFlag=0;
 	extern int opterr, optind;
 	extern char* optarg;
 
@@ -236,7 +236,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 				FastFlag++;
 				break;
 			case 'g':
-
+				GPLFlag++;
 				break;
 			case 'h':
 				/* Set height to optarg */
@@ -277,6 +277,12 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	if (SaveFlag>1)
 	{
 		fprintf(stderr,"Only one -s can be specified.\n");
+		ErrorFlag++;
+	}
+
+	if (GPLFlag>1)
+	{
+		fprintf(stderr,"Only one -g can be specified.\n");
 		ErrorFlag++;
 	}
 
@@ -323,6 +329,19 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 		endwin();
 		exit(EXIT_SUCCESS);
 	}
+
+	if (GPLFlag==1)
+	{
+		StartCurses();
+		InitCharSet(Game,Game->LineDraw);
+		PrintGPL(NULL);
+		clear();
+		noutrefresh();
+		doupdate();
+		endwin();
+		exit(EXIT_SUCCESS);
+	}
+
 
 	/* XXX FOO This needs to dump the best times to stdout! */
 	if (DumpFlag==1)
