@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.28 1999-05-22 02:42:15 hartmann Exp $
+dnl $Id: configure.in,v 1.29 1999-05-25 06:21:02 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -44,7 +44,7 @@ else
 	if test "$NCURSES_HINT" = 'yes' || test "$NCURSES_HINT" = 'default' ; then
 
 		dnl Linux uses ncurses, but not in /usr/local
-		if test "$host_os" = 'linux' ; then
+		if test "$host_os" = 'linux' || test "$host_os" = 'linux-gnu' ; then
 			NCURSES_HINT='/usr'
 		else
 			dnl Set NCURSES_HINT to /usr/local, which is it's default.
