@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.39 2000-04-02 00:55:21 hartmann Exp $
+dnl $Id: configure.in,v 1.40 2000-10-30 00:37:35 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -93,6 +93,17 @@ AC_TYPE_SIGNAL
 AC_CHECK_FUNCS(strdup memset memmove fileno lockf flock get_current_dir_name)dnl
 
 # Look for lesser but similar functions.
+AC_DEFUN([AC_FUNC_SNPRINTF],
+[AC_CACHE_CHECK(for working snprintf, ac_cv_func_snprintf,
+[AC_TRY_RUN([#include <stdio.h>
+int main () { exit (!(3 <= snprintf(NULL,0,"%d",100))); }
+], ac_cv_func_snprintf=yes, ac_cv_func_snprintf=no,
+ac_cv_func_snprintf=no)])
+if test $ac_cv_func_snprintf = yes; then
+  AC_DEFINE(HAVE_SNPRINTF)
+  fi
+  ])
+
 AC_CHECK_FUNCS(snprintf)dnl
 if test "${ac_cv_func_snprintf}" = 'no' ; then
 	AC_MSG_WARN([Consider getting a system with snprintf.])
