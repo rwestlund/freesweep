@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.31 1999-03-06 22:35:06 hartmann Exp $
+# $Id: Makefile.in,v 1.32 1999-03-07 01:27:06 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -28,20 +28,21 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 .PHONY: clean sterile lines distclean
 #######################################################################
 %.o: %.c $(HEADS) Makefile
-	@echo Building $<
+	@echo 'Building $<'
 	@/bin/rm -f $*.o 
 	@[ -d $(SYSTEM_TYPE) ]|| mkdir $(SYSTEM_TYPE)
 	$(CC) $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o -c $<
 	@@LN_S@ $(SYSTEM_TYPE)/$*.o .
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
-	@echo Linking
+	@echo 'Linking'
 	@/bin/rm -f $(TARGET)
 	(cd $(SYSTEM_TYPE); $(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET))
-	@echo "Making symlink to ./$(TARGET)"
+	@echo 'Making symlink to ./$(TARGET)'
 	@@LN_S@ $(SYSTEM_TYPE)/$(TARGET) .
 
 configure: configure.in
+	@echo 'Creating configure script'
 	@autoconf
 
 clean:
@@ -67,5 +68,5 @@ tags: $(SRCS) $(HEADS) $(MISC)
 	@ctags $(SRCS) $(HEADS)
 
 lines: $(SRCS) $(HEADS)
-	@echo "Total lines of code:"
+	@echo 'Total lines of code:'
 	@wc -l $(SRCS) $(HEADS)
