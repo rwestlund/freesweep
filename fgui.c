@@ -174,11 +174,11 @@ char* Choose(struct FileBuf *fb)
 	Display(fgui, fb, find, cursor, nlines-3);
 	wrefresh(fgui);
 
-	/* most of the nlines -3 stuff is because the first line is reserved for
+	/* most of the nlines-3 stuff is because the first line is reserved for
 	 * the path. */
 
 	in=wgetch(fgui);
-	while(1)
+	while(in != ' ')
 	{
 		switch (in)
 		{
@@ -215,9 +215,10 @@ char* Choose(struct FileBuf *fb)
 		in=wgetch(fgui);
 	}
 
-	return NULL;
+	return strdup(fb[find + cursor - 1].fpath);
 }
 
+/* draw the part of the FiseBuf I have specified in the window */
 void Display(WINDOW *fgui, struct FileBuf *fb, int find, 
 	int cursor, int amount)
 {
