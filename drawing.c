@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.10 1999-02-18 04:54:28 hartmann Exp $
+* $Id: drawing.c,v 1.11 1999-02-18 19:37:59 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -52,6 +52,7 @@ void PrintInfo()
 	mvwprintw(InfoWin,4,2,"Hit \'?\' for help");
 	move(0,0);
 	wnoutrefresh(InfoWin);
+	delwin(InfoWin);
 	return;
 }
 
