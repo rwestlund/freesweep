@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: pbests.c,v 1.28 1999-08-12 03:37:15 hartmann Exp $
+*  $Id: pbests.c,v 1.29 2000-11-07 05:31:09 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -88,7 +88,7 @@ void LoadBestTimesFile(struct BestFileDesc *bfd, char *truename)
 	abyss = fopen(truename, "r+");
 	if (abyss == NULL)
 	{
-		abyss = xfopen(truename, "w");
+		abyss = fopen(truename, "w");
 
 		tlockf(abyss, truename);
 		fprintf(abyss, "0\n0\n");
@@ -274,7 +274,7 @@ void SaveBestTimesFile(struct BestFileDesc *bfd, char *name)
 {
 	FILE *fp = NULL;
 
-	fp = xfopen(name, "w");
+	fp = fopen(name, "w");
 
 	tlockf(fp, name);
 	
