@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.14 1999-02-17 07:54:07 hartmann Exp $
+# $Id: Makefile.in,v 1.15 1999-02-18 01:09:09 psilord Exp $
 ######################################################################
 
 SRCS = bests.c clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c utils.c
@@ -17,6 +17,9 @@ CFLAGS = -Wall -DSYSTEM_TYPE=\"$(SYSTEM_TYPE)\" -DUSER=\"$(USER)\" -DVERSION=\"$
 LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 
+# for systems that have purify
+PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
+
 .SUFFIXES: .c .o
 .PHONY: clean sterile lines distclean
 #######################################################################
@@ -24,7 +27,7 @@ LDFLAGS = @LDFLAGS@
 	@echo Building $<
 	@/bin/rm -f $*.o 
 	@[ -d $(SYSTEM_TYPE) ]|| mkdir $(SYSTEM_TYPE)
-	@$(CC) -c $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o $<
+	@$(PURIFY) $(CC) -c $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o $<
 	@@LN_S@ $(SYSTEM_TYPE)/$*.o .
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
@@ -39,6 +42,10 @@ configure: configure.in
 
 clean:
 	@-/bin/rm -rf $(CLEANUP) $(SYSTEM_TYPE)
+
+pure:
+	@make clean
+	@make "PURIFY=$(PURE_ARGS)"
 
 distclean:
 	@make sterile
