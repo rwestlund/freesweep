@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.9 1999-02-12 03:45:30 psilord Exp $
+* $Id: play.c,v 1.10 1999-02-12 07:25:19 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -279,6 +279,7 @@ int GetInput(GameStats* Game)
 			break;
 
 		case 'a':
+		case 'A':
 			/* FOO - needs to redraw everything. */
 			if (Multiplier!=1)
 			{
@@ -296,6 +297,7 @@ int GetInput(GameStats* Game)
 			}
 			else
 			{
+				SweepError("Toggling character set.");
 				SwitchCharSet(Game);
 				PrintInfo();
 				RedrawErrorWin();
