@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.6 1999-02-12 03:45:29 psilord Exp $
+* $Id: game.c,v 1.7 1999-02-12 04:00:38 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -58,6 +58,7 @@ int InitGame(GameStats* Game)
 	Game->Color=DEFAULT_COLOR;
 	Game->NumMines=DEFAULT_NUMMINES;
 	Game->MarkedMines=0;
+	Game->BadMarkedMines=0;
 	Game->Fast=DEFAULT_FASTSTART;
 	Game->Alert=DEFAULT_ALERT;
 	Game->LargeBoardX=Game->LargeBoardY=0;
