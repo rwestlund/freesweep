@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: sl.c,v 1.9 2000-04-02 00:52:11 hartmann Exp $
+*  $Id: sl.c,v 1.10 2000-11-07 05:29:03 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -14,7 +14,11 @@ void SaveGame(GameStats* Game, char *fname)
 {
 	FILE *fo = NULL;
 
-	fo = xfopen(fname, "w");
+	if ( ( fo = fopen(fname, "w") ) == NULL )
+	{
+		SweepError("Unable to save game");
+		return;
+	}
 	
 	/* dump the stats out */
 	fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
@@ -45,17 +49,23 @@ GameStats* LoadGame(char *fname)
 
 	Game = (GameStats*)xmalloc(sizeof(GameStats));
 
-	fi = xfopen(fname, "r");
+	if (( fi = fopen(fname, "r") ) == NULL )
+	{
+		return NULL;
+	}
 
 	/* Load the Game Stats */
-	fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-			"%u\n%u\n%u\n",
-			&Game->Height, &Game->Width, &Game->Percent, &Game->NumMines, 
-			&Game->MarkedMines, &Game->BadMarkedMines, &Game->Color, 
-			&Game->Fast, &Game->Alert, 
-			&Game->LineDraw, &Game->CursorX, &Game->CursorY,
-			&Game->LargeBoardX, &Game->LargeBoardY, &Game->Status,
-			&Game->FocusX, &Game->FocusY, &Game->Time);
+	if ( fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+		"%u\n%u\n%u\n",
+		&Game->Height, &Game->Width, &Game->Percent, &Game->NumMines, 
+		&Game->MarkedMines, &Game->BadMarkedMines, &Game->Color, 
+		&Game->Fast, &Game->Alert, 
+		&Game->LineDraw, &Game->CursorX, &Game->CursorY,
+		&Game->LargeBoardX, &Game->LargeBoardY, &Game->Status,
+		&Game->FocusX, &Game->FocusY, &Game->Time) == 0 )
+	{
+		return NULL;
+	}
 
 	/* make the field I need to write into */
 	if ((Game->Field=calloc((Game->Height*(
@@ -100,8 +110,7 @@ GameStats* LoadGame(char *fname)
 
 	if ((Game->Border==NULL)||(Game->Board==NULL))
 	{
-		perror("ReadyGame::AllocWin");
-		exit(EXIT_FAILURE);
+		return NULL;
 	}
 
 	/* Set the game clock as the real clock */
