@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.23 1999-02-25 20:52:09 psilord Exp $
+* $Id: main.c,v 1.24 1999-02-25 22:38:25 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -87,6 +87,7 @@ int main(int argc, char** argv)
 			Game->Time = g_tick;
 		}
 		g_tick = 0;
+		Game->Time = g_tick;	/* If we won, the game is already saved */
 		StopTimer();
 
 		/* Update the final action of the player */
