@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.29 1999-03-05 08:41:41 hartmann Exp $
+* $Id: main.c,v 1.30 1999-03-05 19:07:17 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -10,6 +10,8 @@ int main(int argc, char** argv)
 
 	/* Set up the curses cleaner in case of disaster */
 	signal(SIGSEGV, sighandler);
+	signal(SIGBUS, sighandler);
+	signal(SIGILL, sighandler);
 
 #ifdef DEBUG_LOG
 	if ((DebugLog=fopen("debug.log","a"))==0)
