@@ -1,3 +1,7 @@
+dnl
+dnl $Id: configure.in,v 1.24 1999-03-07 01:47:04 hartmann Exp $
+dnl
+
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(sweep.h.in)
 
