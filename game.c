@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.2 1999-02-10 23:49:26 hartmann Exp $
+* $Id: game.c,v 1.3 1999-02-11 08:38:21 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -151,6 +151,8 @@ int ReadyGame(GameStats* Game)
 		perror("ReadyGame::AllocField");
 		exit(EXIT_FAILURE);
 	}
+
+#ifdef false
 	if (Game->Percent!=0)
 	{
 		MinesToSet=(Game->Percent*Game->Width*Game->Height)/100;
@@ -179,6 +181,7 @@ int ReadyGame(GameStats* Game)
 			}
 		}
 	}
+#endif /*false*/
 
 	Game->CursorX=(Game->Width-1)/2;
 	Game->CursorY=Game->Height/2;
@@ -205,25 +208,21 @@ int ReadyGame(GameStats* Game)
 	if (Game->LargeBoardX && Game->LargeBoardY)
 	{
 		Game->Border=newwin((LINES-4),(COLS-INFO_W),0,0);
-/*		Game->Board=newwin(VViewable,(3*HViewable),1,1);*/
 		Game->Board=derwin(Game->Border,VViewable,(3*HViewable),1,1);
 	}
 	else if (Game->LargeBoardX)
 	{
 		Game->Border=newwin((Game->Height+2),(COLS-INFO_W),0,0);
-/*		Game->Board=newwin(Game->Height,(3*HViewable),1,1);*/
 		Game->Board=derwin(Game->Border,Game->Height,(3*HViewable),1,1);
 	}
 	else if (Game->LargeBoardY)
 	{
 		Game->Border=newwin((LINES-4),((3*Game->Width)+2),0,0);
-/*		Game->Board=newwin(VViewable,(3*Game->Width),1,1);*/
 		Game->Board=derwin(Game->Border,VViewable,(3*Game->Width),1,1);
 	}
 	else
 	{
 		Game->Border=newwin((Game->Height+2),((3*Game->Width)+2),0,0);
-/*		Game->Board=newwin(Game->Height,(3*Game->Width),1,1);*/
 		Game->Board=derwin(Game->Border,Game->Height,(3*Game->Width),1,1);
 	}
 
@@ -482,4 +481,54 @@ void DumpGame(GameStats* Game)
 	fflush(DebugLog);
 #endif /* DEBUG_LOG */
 	return;
+}
+
+int ReReadyGame(GameStats* Game)
+{
+	int MinesToSet=0, RandX=0, RandY=0, VViewable=0, HViewable=0;
+	unsigned char CellVal;
+
+	VViewable=(LINES-6);
+	HViewable=((COLS-INFO_W-2)/3);
+
+	/* Set all of Game->Field to 0 */
+	memset(Game->Field, ((Game->Height*(( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2) , 0);
+#ifdef DEBUG_LOG
+	fprintf(DebugLog,"Setting %d bytes of memory at %X to 0\n", ((Game->Height*(( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2), Game->Field );
+	fflush(DebugLog);
+#endif /* DEBUG_LOG */
+
+	if (Game->Percent!=0)
+	{
+		MinesToSet=(Game->Percent*Game->Width*Game->Height)/100;
+	}
+	else
+	{
+		MinesToSet=Game->NumMines;
+	}
+
+	/* Yeah, I know it's a crappy way to get a random number. */
+	srand(time(NULL));
+
+	while (MinesToSet>0)
+	{
+		RandX=rand()%Game->Width;
+		RandY=rand()%Game->Height;
+		GetMine(RandX,RandY,CellVal);
+
+		/* This is gonna be ugly... */
+		if (!( (abs((((Game->Width)/2)-RandX))<2) && (abs((((Game->Height)/2)-RandY))<2)))
+		{
+			if (CellVal!=MINE)
+			{
+				SetMine(RandX,RandY,MINE);
+				MinesToSet--;
+			}
+		}
+	}
+
+	Game->CursorX=(Game->Width-1)/2;
+	Game->CursorY=Game->Height/2;
+
+	return 0;
 }

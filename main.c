@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.2 1999-02-10 23:49:26 hartmann Exp $
+* $Id: main.c,v 1.3 1999-02-11 08:38:22 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -51,44 +51,59 @@ int main(int argc, char** argv)
 	clear();
 	noutrefresh();
 
-	/* Make sure the right character set is in use. */
-	InitCharSet(Game,Game->LineDraw);
-
-	ReadyGame(Game);
 	InitErrorWin(Game);
-	PrintInfo();
+	ReadyGame(Game);
 	noutrefresh();
-	doupdate();
-	Center(Game);
 
-/*	This is the main loop.*/
-	while (Game->Status==0)
+	while (1)
 	{
+
+		/* Make sure the right character set is in use. */
+		InitCharSet(Game,Game->LineDraw);
+
+		/* Touch a couple windows */
+		RedrawErrorWin();
+
+		ReReadyGame(Game);
+		PrintInfo();
+		noutrefresh();
+		doupdate();
+		Center(Game);
+
+	/*	This is the main loop.*/
+		while (Game->Status==0)
+		{
+			Pan(Game);
+			DrawCursor(Game);
+			DrawBoard(Game);
+			doupdate();
+			UndrawCursor(Game);
+			SweepError(NULL);
+			GetInput(Game);
+			napms(20);
+		}
+
+		/* It might be nice to log this before reseting it. */
+		Game->Status=0;
+
 		Pan(Game);
 		DrawCursor(Game);
 		DrawBoard(Game);
 		doupdate();
-		UndrawCursor(Game);
-		SweepError(NULL);
-		GetInput(Game);
-		napms(20);
+		/* FOO */
+		/* Wait for a keystroke, and print an error to that effect. */
+		napms(2000);
+/*		clear();*/
+		refresh();
+
 	}
+
+	endwin();
 
 #ifdef DEBUG_LOG
 	fprintf(DebugLog,"========================================\n");
 	fclose(DebugLog);
 #endif /* DEBUG_LOG */
 
-	Pan(Game);
-	DrawCursor(Game);
-	DrawBoard(Game);
-	doupdate();
-	/* FOO */
-	/* Wait for a keystroke, and print an error to that effect. */
-	napms(2000);
-	clear();
-	refresh();
-
-	endwin();
 	return 0;
 }
