@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.2 1999-02-10 23:49:27 hartmann Exp $
+* $Id: play.c,v 1.3 1999-02-11 18:50:35 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -12,6 +12,7 @@ int GetInput(GameStats* Game)
 	unsigned char RetVal;
 	int Multiplier=1;
 	int UserInput=0;
+	GameStats *LGame = NULL;
 
 #ifdef SWEEP_MOUSE
 	MEVENT MouseInput;
@@ -315,6 +316,24 @@ int GetInput(GameStats* Game)
 			CharSet.Mine='+';
 			break;
 #endif /* DEBUG_LOG */
+
+		/* XXX Save a game */
+		case 'p':
+		case 'P':
+			SaveGame(Game, "./foo.svg");
+			SweepError("Done Saving");
+			break;
+
+		/* XXX load a game */
+		case 'O':
+		case 'o':
+			free(Game->Field);
+			delwin(Game->Board);
+			delwin(Game->Border);
+			free(Game);
+			Game = LoadGame("./foo.svg");
+			SweepError("Done Loading");
+			break;
 
 		case ERR:
 #ifdef DEBUG_LOG

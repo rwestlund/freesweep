@@ -1,8 +1,8 @@
 ######################################################################
-# $Id: Makefile.in,v 1.4 1999-02-11 06:58:36 hartmann Exp $
+# $Id: Makefile.in,v 1.5 1999-02-11 18:50:34 psilord Exp $
 ######################################################################
 
-SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c
+SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c sl.c
 HEADS = sweep.h defaults.h
 MISC = README Makefile sweeprc configure.in install-sh configure.in Makefile.in config.guess configure config.sub
 TARGET = newsweep
