@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.8 1999-02-13 01:52:13 hartmann Exp $
+* $Id: sweep.h,v 1.9 1999-02-13 04:23:11 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -154,7 +154,7 @@ struct BestEntry
 	unsigned int mines;
 	unsigned int time;
 
-	char username[MAX_NAME+1];
+	char name[MAX_NAME+1];
 	char date[MAX_DATE+1];
 	char *attribs;
 };

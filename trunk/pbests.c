@@ -10,32 +10,25 @@ static void SaveBestTimesFile(struct BestFileDesc *bfd);
 static struct BestEntry* NewBestEntry(GameStats *Game);
 static char* FPTBTF(void);
 void Unpack(struct BestFileDesc *bfd, FILE *abyss);
-void Zorch(char *p, char *q, struct BestEntry *b);
 
 /* the one function that does it all */
 void UpdateBestTimesFile(GameStats *Game)
 {
-	/* Make entry for Game */
-	/* Read best times file into n + 1 array size */
-	/* Sort best times File up to n */
-	/* Determine where the entry goes, or who it replaces */
-	/* if it gets added, then add it to correct location moving all other
-		entries up one spot by hand (memove?) */
-	/* else replace it and do nothing else */
-	/* Write out either n or n + 1 entries to file */
-
-	struct BestFileDesc *bfd;
+	struct BestFileDesc *bfd = NULL;
+	struct BestEntry *b = NULL;
 
 	bfd = NewBFD();
+	b = NewBestEntry(Game);
 
 	LoadBestTimesFile(bfd); 
 
 	BFDSort(bfd);
 
-	InsertEntry(bfd, NewBestEntry(Game));
+	InsertEntry(bfd, b);
 
 	SaveBestTimesFile(bfd);
 
+	free(b);
 	free(bfd);
 }
 
@@ -89,7 +82,8 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	unsigned int numents = 0;
 	unsigned int size = 0;
 	unsigned int i = 0;
-	char *p = NULL, *q = NULL;
+	char *p = NULL;
+	struct BestEntry *b = NULL;
 
 	/* how many entries do I have? */
 	fscanf(abyss, "%u\n", &numents);
@@ -102,6 +96,7 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 		/* XXX fix me */
 		exit(EXIT_FAILURE);
 	}
+	bfd->numents = numents;
 	
 	/* how many bytes do I need to read? */
 	fscanf(abyss, "%u\n", &size);
@@ -117,22 +112,18 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 
 	/* walk through memory looking for newlines and building the entries
 	 * as you go */
-	p = q = space;
+	p = space;
 	for (i = 0; i < numents; i++)
 	{
-		while(*q++ != '\n');	/* yes, I want that semicolon there */
+		b = &bfd->ents[i];	/* save me typing */
 
 		/* get all the data out and into the entry */
-		Zorch(p, q-1, &bfd->ents[i]);
+		/* XXX This could overflow if someone fucked with the data */
+		sscanf(p, "%s|a%um%ut%u|%s\n", b->name, &b->area, &b->mines, &b->time,
+				b->date);
 
-		p = q;
+		while(*p++ != '\n');	/* yes, I want that semicolon there */
 	}
-
-}
-
-/* get the fields of data out from between the p and q pointers */
-void Zorch(char *p, char *q, struct BestEntry *b)
-{
 }
 
 void BFDSort(struct BestFileDesc *bfd)
