@@ -5,11 +5,16 @@ freesweep \- a curses minesweeper-style game
 
 .SH SYNOPSIS
 .TP 6
-\fBfreesweep\fP [\fI-% percent\fP] [\fI-a\fP] [\fI-b\fP] [\fI-d\fP] [\fI-f\fP] [\fI-g\fP] [\fI-h height\fP]
-[\fI-i\fP] [\fI-m mines\fP] [\fI-s\fP] [\fI-v\fP] [\fI-w width\fP]
+\fBfreesweep\fP [\fB-%\fP \fIpercent\fP | \fB\-\-percent=\fP\fIpercent\fP] [\fB-a\fP] [\fB-b\fP] [\fB-d\fP] [\fB-f\fP] [\fB-g\fP] [\fB-h height\fP]
+[\fB-i\fP] [\fB-m mines\fP] [\fB-s\fP] [\fB-v\fP] [\fB-w width\fP]
 
 .SH DESCRIPTION
 \fBfreesweep\fP is a curses-based minesweeper game for *nix.
+
+.SH OPTIONS
+
+.TP
+\fB\-h\fP \fIn\fP, \fB\-\-height=\fP\fIn\fP
 
 .SH FILES
 .TP 10
@@ -19,7 +24,7 @@ The user's sweep resource file.
 .I ~/.sweeptimes
 The user's sweep best times file.
 .TP 10
-.I ${prefix}/share/sweeprc
+.I "datadir/sweeprc"
 The global default sweep resource file.
 
 .SH AUTHORS
