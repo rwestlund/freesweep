@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.16 1999-02-17 07:16:46 hartmann Exp $
+* $Id: play.c,v 1.17 1999-02-17 07:48:26 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -277,6 +277,7 @@ int GetInput(GameStats* Game)
 			/* Make a node for now. */
 /*			AddNodeToFile(NULL,GenerateFakeNode());*/
 /*			AddNodeToFile(NULL,InitNode(Game));*/
+			UpdateBestTimesFile(Game);
 #ifdef DEBUG_LOG
 			fprintf(DebugLog,"Quitting quietly.\n========================================\n");
 			fclose(DebugLog);
