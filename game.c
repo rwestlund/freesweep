@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.16 1999-02-24 03:59:46 psilord Exp $
+* $Id: game.c,v 1.17 1999-02-24 04:33:11 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -77,6 +77,10 @@ void Wipe(GameStats *Game)
 	Game->LargeBoardX=Game->LargeBoardY=0;
 	Game->FocusX=Game->FocusY=0;
 	Game->Time=0;
+	if (Game->Percent != 0)
+	{
+		Game->NumMines=0;
+	}
 	wclear(Game->Board);
 	wnoutrefresh(Game->Board);
 	wclear(Game->Border);
