@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.51 2002-12-24 02:35:26 hartmann Exp $
+# $Id: Makefile.in,v 1.52 2002-12-24 04:23:57 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -48,8 +48,8 @@ $(TARGET): $(OBJS) $(HEADS) $(MISC)
 configure: configure.in
 	autoconf
 
-config.h.in: acconfig.h
-	autoheader
+#config.h.in: acconfig.h
+#	autoheader
 
 clean:
 	@-@RM@ -rf $(CLEANUP)
