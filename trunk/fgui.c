@@ -176,7 +176,7 @@ char* Choose(struct FileBuf *fb)
 	WINDOW *gui = NULL, *fgui = NULL;
 	int nlines, ncols, bx, by;
 	int xdist, ydist;
-	char in;
+	chtype in;
 	int cursor = 1; /* where the cursor starts in relation to the window */
 	int find = 0;	/* the index of the top of the fb display */
 
@@ -213,13 +213,13 @@ char* Choose(struct FileBuf *fb)
 	/* most of the nlines-3 stuff is because the first line is reserved for
 	 * the path. */
 
-	in=wgetch(fgui);
-	while(in != ' ')
+	in=getch();
+	while ((in != ' ') && (in != KEY_RIGHT))
 	{
 		switch (in)
 		{
 			/* move the cursor down */
-			case 'j':
+			case 'j': case KEY_DOWN:
 
 				if (cursor < (nlines - 3) && cursor < fb[0].numents)
 				{
@@ -232,7 +232,7 @@ char* Choose(struct FileBuf *fb)
 				}
 				break;
 			/* move the cursor up */
-			case 'k':
+			case 'k': case KEY_UP:
 				if (cursor > 1)
 				{
 					cursor--;
@@ -248,7 +248,7 @@ char* Choose(struct FileBuf *fb)
 		werase(fgui);
 		Display(fgui, fb, find, cursor, nlines-3);
 		wrefresh(fgui);
-		in=wgetch(fgui);
+		in=getch();
 	}
 	
 	werase(fgui);
@@ -295,6 +295,3 @@ char* FSGUI(void)
 
 	return file;;
 }
-
-
-
