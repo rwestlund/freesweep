@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: pbests.c,v 1.27 1999-08-09 05:25:36 hartmann Exp $
+*  $Id: pbests.c,v 1.28 1999-08-12 03:37:15 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -439,10 +439,11 @@ char* FPTGBTF(void)
 	char *fp = NULL;
 
 	/* get me some memory for the string */
-	fp = (char*)xmalloc(strlen(SCORESDIR) + 11);
+	fp = (char*)xmalloc(strlen(mkstr(SCORESDIR)) + 11);
 
 	/* make the full path */
-	strcpy(fp, SCORESDIR "/sweeptimes");
+	strcpy(fp, mkstr(SCORESDIR));
+	strcat(fp, "/sweeptimes");
 
 	return fp;
 }
