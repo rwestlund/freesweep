@@ -7,9 +7,6 @@ settings in the interactive setup. Use of -s without -f is discouraged.
 	Old preference file formats are supported by converting them to the
 new format and deleting the previous version.
 
-	The Makefile assumes multiple architecture builds, and identifies the
-system with a string given off by the GNU config.guess script.
-
 	While the game is playable on any terminal supported by ncurses,
 the help and high scores windows are designed to use a screen 80 columns wide.
 
@@ -30,8 +27,6 @@ game and start a new one, counting the game as neither a win nor a loss.
 but instead of restarting with the same game, run AskPrefs() to determine
 what the user wants for the new games.
 
-	Time in seconds should work. Basically, I'm thinking a volatile int
-that gets incremented by a signal handler. At the end of the main loop, check
-to see if the int has gotten set, and then increment Game->Time.
+Now that file locking is done, add the group best times file.
 
 See what purify is bitching about in the load/save game code.
