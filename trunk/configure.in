@@ -77,4 +77,11 @@ AC_CHECK_FUNCS(flock)
 AC_CHECK_FUNCS(lockf)
 AC_CHECK_FUNCS(fileno)
 
+AC_ARG_WITH(debug, [  --with-debug[=debug.log]], DEBUG_LOG=$with_debug)
+
+if test "$DEBUG_LOG" != 'no' ; then
+	CFLAGS="$CFLAGS -DDEBUG_LOG=1"
+fi
+
+
 AC_OUTPUT(Makefile sweep.h)
