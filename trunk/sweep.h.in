@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.23 1999-05-06 22:02:25 psilord Exp $
+* $Id: sweep.h.in,v 1.24 1999-05-07 01:13:05 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -208,9 +208,12 @@ typedef struct _CoordPair
 } CoordPair;
 
 /* stuff needed for the file gui */
+/* this is not very well designed, but oh well */
 struct FileBuf
 {
 	char *fpath;
+	char *path;
+	int numents;
 	struct FileBuf *next;
 	struct FileBuf *prev;
 };
