@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.15 1999-03-03 06:08:02 psilord Exp $
+* $Id: drawing.c,v 1.16 1999-03-03 07:31:34 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -634,7 +634,6 @@ int DrawBoard(GameStats* Game)
 	move(0,0);
 
 	wnoutrefresh(Game->Board);
-	move(0,0);
 	return 0;
 }
 
@@ -690,8 +689,6 @@ void PrintBestTimes(char* Filename)
 
 void DrawCursor(GameStats* Game)
 {
-/*	mvwaddch(Game->Board,Game->CursorY,(3*Game->CursorX),'<');*/
-/*	mvwaddch(Game->Board,Game->CursorY,(3*Game->CursorX)+2,'>');*/
 	mvwaddch(Game->Board,(Game->CursorY-Game->FocusY),(3*(Game->CursorX-Game->FocusX)),'<');
 	mvwaddch(Game->Board,(Game->CursorY-Game->FocusY),(3*(Game->CursorX-Game->FocusX))+2,'>');
 	move(0,0);
@@ -736,33 +733,19 @@ int Pan(GameStats* Game)
 	HViewable=((COLS-INFO_W-2)/3)-1;
 
 	/* See if the current cursor is even in the focus. */
-	if ((Game->CursorY < Game->FocusY) || ((Game->FocusY+VViewable) < Game->CursorY))
+	if ((Game->CursorY < Game->FocusY) ||
+		((Game->FocusY+VViewable) < Game->CursorY) ||
+		((Game->CursorY-Game->FocusY) < 2) ||
+		(((Game->FocusY+VViewable)-Game->CursorY) <= 2))
 	{
-		CenterY(Game);
-	}
-	else if ((Game->CursorY-Game->FocusY) < 2)
-	{
-		/* Try to pan up. */
-		CenterY(Game);
-	}
-	else if (((Game->FocusY+VViewable)-Game->CursorY) <= 2)
-	{
-		/* Try to pan down. */
 		CenterY(Game);
 	}
 
-	if ((Game->CursorX < Game->FocusX) || ((Game->FocusX+HViewable) < Game->CursorX))
+	if ((Game->CursorX < Game->FocusX) ||
+		((Game->FocusX+HViewable) < Game->CursorX) ||
+		((Game->CursorX-Game->FocusX) < 2) ||
+		(((Game->FocusX+HViewable)-Game->CursorX) < 2))
 	{
-		CenterX(Game);
-	}
-	else if ((Game->CursorX-Game->FocusX) < 2)
-	{
-		/* Try to pan left. */
-		CenterX(Game);
-	}
-	else if (((Game->FocusX+HViewable)-Game->CursorX) < 2)
-	{
-		/* Try to pan right. */
 		CenterX(Game);
 	}
 

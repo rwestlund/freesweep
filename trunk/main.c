@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.25 1999-03-03 06:08:02 psilord Exp $
+* $Id: main.c,v 1.26 1999-03-03 07:31:35 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -51,8 +51,10 @@ int main(int argc, char** argv)
 	clear();
 	noutrefresh();
 
-	InitErrorWin(Game);
-	InitStatsWin();
+	if (InitErrorWin(Game) + InitStatsWin() > 0)
+	{
+		/* Do something bad. */
+	}
 	ReadyGame(Game);
 	noutrefresh();
 
