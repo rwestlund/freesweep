@@ -1,11 +1,12 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.10 1999-02-22 06:22:02 hartmann Exp $
+* $Id: sweep.h.in,v 1.11 1999-02-22 07:10:11 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
 #define __SWEEP_H__
 
 /* The library header files. */
+
 #include <unistd.h>
 #include <strings.h>
 #include <errno.h>
@@ -23,6 +24,11 @@
 
 #ifdef HAVE_LIBNCURSES
 #include "@NCURSES_HINT@/include/curses.h"
+
+#if defined HAVE_FLOCK && defined HAVE_SYS_FILE_H
+#include <sys/file.h>
+#endif
+
 
 #ifdef NCURSES_MOUSE_VERSION
 #define SWEEP_MOUSE
