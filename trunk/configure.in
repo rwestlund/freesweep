@@ -1,9 +1,9 @@
 dnl
-dnl $Id: configure.in,v 1.25 1999-04-26 06:51:05 hartmann Exp $
+dnl $Id: configure.in,v 1.26 1999-05-01 19:38:32 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(sweep.h.in)
+AC_INIT(sweep.h.in)dnl
 
 dnl Find out where we're building
 AC_CANONICAL_HOST
@@ -12,64 +12,70 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PATH_PROG(TAR, tar)
-AC_PATH_PROG(GZIP, gzip)
-AC_PATH_PROG(RM, rm)
+AC_PATH_PROG(TAR, tar)dnl
+AC_PATH_PROG(GZIP, gzip)dnl
+AC_PATH_PROG(RM, rm)dnl
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses[=DIR]    ncurses package root in DIR [/usr/local]], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
-AC_SUBST(NCURSES_HINT)
+AC_ARG_WITH(ncurses, [  --with-ncurses[=DIR]    ncurses package root in DIR [/usr/local]], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')dnl
+AC_SUBST(NCURSES_HINT)dnl
 
 dnl Check for debugging file
-AC_ARG_ENABLE(debug-log, [  --enable-debug-log      Enables debugging file, debug.log.], DEBUG_LOG=$with_debug)
+AC_ARG_ENABLE(debug-log,
+[  --enable-debug-log      Enables debugging file, debug.log.], DEBUG_LOG=$with_debug)
 if test "$DEBUG_LOG" != 'no' ; then
-	AC_DEFINE(DEBUG_LOG)
+	AC_DEFINE(DEBUG_LOG)dnl
 fi
+
+dnl Group best times files
+AC_ARG_ENABLE(group-best-times,
+[  --enable-group-best-times[=DIR]
+                          Enable group best times file in DIR [PREFIX/share]], DFL_GROUP_PATH=$enable_group_best_times, eval DFL_GROUP_PATH='/usr/local/share')
 
 dnl Checks for libraries.
 dnl look for ncurses in the suggested location, if given.
-if test "$NCURSES_HINT" = "no" ; then
-	AC_CHECK_LIB(curses,main)
+if test "$NCURSES_HINT" = 'no' ; then
+	AC_CHECK_LIB(curses,main)dnl
 	if test "$ac_cv_lib_curses_main" = 'no' ; then
 		AC_MSG_ERROR([No curses library was found. Consider installing
-ncurses, from ftp://ftp.gnu.org/pub/ncurses])
+ncurses, from ftp://ftp.gnu.org/pub/ncurses/])dnl
 	fi
 else
 	if test "$NCURSES_HINT" = 'yes' || test "$NCURSES_HINT" = 'default' ; then
 
 		dnl Linux uses ncurses, but not in /usr/local
-		if test "$host_os" = linux ; then
-			NCURSES_HINT=/usr
+		if test "$host_os" = 'linux' ; then
+			NCURSES_HINT='/usr'
 		else
 			dnl Set NCURSES_HINT to /usr/local, which is it's default.
-			NCURSES_HINT=/usr/local
+			NCURSES_HINT='/usr/local'
 		fi
 	fi
 
 	CFLAGS="-I$NCURSES_HINT/include $CFLAGS"
-	AC_SUBST(NCURSES_HINT)
+	AC_SUBST(NCURSES_HINT)dnl
 
 	dnl Look in $NCURSES_HINT/lib for libraries
 	LIBS="-L$NCURSES_HINT/lib $LIBS"
 
 	dnl Replace `main' with a function in -lncurses:
-	AC_CHECK_LIB(ncurses,main)
+	AC_CHECK_LIB(ncurses,main)dnl
 
 	if test "$ac_cv_lib_ncurses_main" = 'no' ; then
-		AC_CHECK_LIB(curses,main)
+		AC_CHECK_LIB(curses,main)dnl
 		if test "$ac_cv_lib_curses_main" = 'no' ; then
 			AC_MSG_ERROR([No curses library was found. Consider installing
-ncurses, from ftp://ftp.gnu.org/pub/ncurses])
+ncurses, from ftp://ftp.gnu.org/pub/ncurses])dnl
 		fi
 	fi
 fi
 
 dnl Replace `main' with a function in -lm:
-AC_CHECK_LIB(m,main)
+AC_CHECK_LIB(m,main)dnl
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(strings.h unistd.h sys/file.h)
+AC_CHECK_HEADERS(strings.h unistd.h sys/file.h)dnl
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -77,13 +83,19 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(snprintf getopt strdup memset memmove flock lockf fileno)
+AC_CHECK_FUNCS(snprintf getopt strdup memset memmove flock lockf fileno)dnl
 
 dnl If neither locking mechanism is there, disable group scores.
 if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then
-	AC_MSG_WARN([Neither lockf nor flock was found. Group best times files will be disabled.])
+	AC_MSG_WARN([Neither lockf nor flock was found. Best times files will be risky.])dnl
 else
-	AC_DEFINE(USE_GROUP_BEST_FILE)
+	AC_DEFINE(USE_GROUP_BEST_FILE)dnl
 fi
 
-AC_OUTPUT(Makefile sweep.h)
+dnl Group best times location, if any.
+if test "$DFL_GROUP_PATH" != 'no' ; then
+	AC_SUBST(DFL_GROUP_PATH)dnl
+	AC_DEFINE(USE_GROUP_BEST_FILE)dnl
+fi
+
+AC_OUTPUT(Makefile sweep.h)dnl

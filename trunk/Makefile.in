@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.34 1999-04-26 06:51:04 hartmann Exp $
+# $Id: Makefile.in,v 1.35 1999-05-01 19:38:32 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -30,23 +30,19 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 %.o: %.c $(HEADS) Makefile
 	@echo 'Building $<'
 	@@RM@ -f $*.o 
-	@[ -d $(SYSTEM_TYPE) ]|| mkdir $(SYSTEM_TYPE)
-	$(CC) $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o -c $<
-	@@LN_S@ $(SYSTEM_TYPE)/$*.o .
+	$(CC) $(CFLAGS) -c $<
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
 	@echo 'Linking'
 	@@RM@ -f $(TARGET)
-	(cd $(SYSTEM_TYPE); $(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET))
-	@echo 'Making symlink to ./$(TARGET)'
-	@@LN_S@ $(SYSTEM_TYPE)/$(TARGET) .
+	$(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 configure: configure.in
 	@echo 'Creating configure script'
 	@autoconf
 
 clean:
-	@-@RM@ -rf $(CLEANUP) $(SYSTEM_TYPE)
+	@-@RM@ -rf $(CLEANUP)
 
 pure:
 	@make clean
