@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: sl.c,v 1.8 1999-08-09 05:25:36 hartmann Exp $
+*  $Id: sl.c,v 1.9 2000-04-02 00:52:11 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -109,8 +109,3 @@ GameStats* LoadGame(char *fname)
 
 	return Game;
 }
-
-
-
-
-
