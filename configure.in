@@ -11,28 +11,35 @@ AC_PROG_MAKE_SET
 dnl AC_PATH_PROG(DATE, date)
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses, NCURSES=/usr/local)
+AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
 
-if test "$NCURSES" = "no" ; then
-	LIBS="-lcurses $LIBS"
+AC_SUBST(NCURSES_HINT)
+
+if test "$NCURSES_HINT" = "no" ; then
+	AC_CHECK_LIB(curses,main)
 else
-	dnl Linux uses ncurses, but not in /usr/local
-	if test "$host_os" = 'linux' ; then
-		NCURSES=/usr
+	if test "$NCURSES_HINT" = 'yes' || test "$NCURSES_HINT" = 'default' ; then
+
+		dnl Linux uses ncurses, but not in /usr/local
+		if test "$host_os" = linux ; then
+			NCURSES_HINT=/usr
+		else
+			dnl Set NCURSES_HINT to /usr/local, which is it's default.
+			NCURSES_HINT=/usr/local
+		fi
 	fi
 
-	dnl Set CFLAGS right.
-	CFLAGS="-I$NCURSES/include -I/usr/local/include $CFLAGS"
-	AC_SUBST(NCURSES)
+	CFLAGS="-I$NCURSES_HINT/include $CFLAGS"
+	AC_SUBST(NCURSES_HINT)
 
-	dnl Look in $NCURSES/lib for libraries
-	LIBS="-L$NCURSES/lib -L/usr/local/lib $LIBS"
+	dnl Look in $NCURSES_HINT/lib for libraries
+	LIBS="-L$NCURSES_HINT/lib $LIBS"
 
 	dnl Replace `main' with a function in -lncurses:
 	AC_CHECK_LIB(ncurses,main)
 
 	if test "$ac_cv_lib_ncurses_main" = 'no' ; then
-		LIBS="-lcurses $LIBS"
+		AC_CHECK_LIB(curses,main)
 	fi
 fi
 
