@@ -1,3 +1,13 @@
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: fgui.c,v 1.12 1999-08-09 05:25:35 hartmann Exp $
+*                                                                     *
+**********************************************************************/
+
 #include "sweep.h"
 
 /* percentages of screen space utilized from LINES and COLS */

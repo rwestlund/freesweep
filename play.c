@@ -1,6 +1,12 @@
-/*********************************************************************
-* $Id: play.c,v 1.36 1999-07-25 03:27:27 hartmann Exp $
-*********************************************************************/
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: play.c,v 1.37 1999-08-09 05:25:36 hartmann Exp $
+*                                                                     *
+**********************************************************************/
 
 #include "sweep.h"
 

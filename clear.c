@@ -1,6 +1,12 @@
-/*********************************************************************
-* $Id: clear.c,v 1.8 1999-03-16 05:36:43 hartmann Exp $
-*********************************************************************/
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: clear.c,v 1.9 1999-08-09 05:25:35 hartmann Exp $
+*                                                                     *
+**********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
