@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: error.c,v 1.5 1999-04-12 04:01:42 hartmann Exp $
+* $Id: error.c,v 1.6 1999-07-27 04:44:19 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -28,9 +28,13 @@ void SweepError(char* format, ...)
 		ClearError();
 
 		va_start(args, format);
-		
+#if defined HAVE_VSNPRINTF
 		vsnprintf(NewErrMsg,41,format,args);
-
+#elif HAVE_VSPRINTF
+		vsprintf(NewErrMsg,format,args);
+#else
+#error "Need either vsnprintf() (preferred) or vsprintf()"
+#endif
 		va_end(args);
 
 		mvwprintw(ErrWin,0,0,NewErrMsg);
@@ -108,7 +112,13 @@ void SweepMessage(char* format, ...)
 	}
 	
 	va_start(args, format);
+#if defined HAVE_VSNPRINTF
 	vsnprintf(NewErrMsg,41,format,args);
+#elif HAVE_VSPRINTF
+		vsprintf(NewErrMsg,format,args);
+#else
+#error "Need either vsnprintf() (preferred) or vsprintf()"
+#endif
 	va_end(args);
 	mvwprintw(ErrWin,0,0,NewErrMsg);
 	wnoutrefresh(ErrWin);
