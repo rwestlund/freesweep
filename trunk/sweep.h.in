@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.28 1999-07-29 04:17:21 hartmann Exp $
+* $Id: sweep.h.in,v 1.29 1999-08-04 06:19:16 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -64,8 +64,7 @@
 /* These are all the defines used in freesweep */
 /* These are defines for convenience */
 #define DELIMITERS " \t="
-/*#define DFL_GROUP_PATH "@DFL_GROUP_PATH@"*/
-#define DFL_GROUP_PATH "@prefix@/share"
+#define DFL_GROUP_PATH "@SCORESDIR@/share"
 #define MAGIC_NUMBER 128
 
 #ifdef __CYGWIN__
@@ -75,6 +74,8 @@
 #define DFL_PREFS_FILE ".sweeprc"
 #define DFL_BESTS_FILE ".sweeptimes"
 #endif /* __CYGWIN__ */
+
+#define GLOBAL_PREFS_FILE "@PREFSDIR@/sweeprc"
 
 /* used for the superclick feature in the game */
 #define SUPERCLICK 0

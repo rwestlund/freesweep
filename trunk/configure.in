@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.34 1999-07-30 05:01:50 hartmann Exp $
+dnl $Id: configure.in,v 1.35 1999-08-04 06:19:14 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -15,6 +15,14 @@ AC_PROG_MAKE_SET
 AC_PATH_PROG(TAR, tar)dnl
 AC_PATH_PROG(GZIP, gzip)dnl
 AC_PATH_PROG(RM, rm)dnl
+
+dnl Set the prefsdir to something
+AC_ARG_WITH(prefsdir, [  --with-prefsdir=DIR    put the shared best time file in DIR [/usr/local/share]], PREFSDIR=$with_scoresdir, PREFSDIR='/usr/local/share')dnl
+AC_SUBST(PREFSDIR)dnl
+
+dnl Set the scoresdir to something
+AC_ARG_WITH(scoresdir, [  --with-scoresdir=DIR    put the shared best time file in DIR [/usr/local/share]], SCORESDIR=$with_scoresdir, SCORESDIR='/usr/local/share')dnl
+AC_SUBST(SCORESDIR)dnl
 
 dnl Look for ncurses in a variable.
 AC_ARG_WITH(ncurses, [  --with-ncurses[=DIR]    ncurses package root in DIR [/usr/local]], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')dnl

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: defaults.h,v 1.7 1999-07-29 04:17:21 hartmann Exp $
+* $Id: defaults.h,v 1.8 1999-08-04 06:19:15 hartmann Exp $
 *********************************************************************/
 
 #ifndef __DEFAULTS_H__
@@ -15,12 +15,5 @@
 #define DEFAULT_NUMMINES 0
 #define DEFAULT_FASTSTART 0
 #define DEFAULT_ALERT 0
-
-/* Don't use Linedraw by default if not using ncurses. */
-#ifdef HAVE_LIBNCURSES
-#define DEFAULT_LINEDRAW 1
-#else /* HAVE_LIBNCURSES */
-#define DEFAULT_LINEDRAW 0
-#endif /* HAVE_LIBNCURSES */
 
 #endif /* __DEFAULTS_H__ */

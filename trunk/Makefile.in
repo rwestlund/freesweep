@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.40 1999-07-28 04:33:04 hartmann Exp $
+# $Id: Makefile.in,v 1.41 1999-08-04 06:19:14 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -47,6 +47,9 @@ clean:
 pure:
 	@make clean
 	@make "PURIFY=$(PURE_ARGS)"
+
+man:
+	@@CPP@ @DEFS@ $(TARGET).6.cpp
 
 distclean:
 	@make sterile
