@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: play.c,v 1.37 1999-08-09 05:25:36 hartmann Exp $
+*  $Id: play.c,v 1.38 2000-11-02 03:48:14 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -435,6 +435,10 @@ int GetInput(GameStats* Game)
 			free(Game);
 			Game = LoadGame("./foo.svg");
 			SweepError("Done Loading");
+			break;
+
+		case 'i':
+			SaveGameImage(Game, "foo.ppm");
 			break;
 
 		case ERR:
