@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: error.c,v 1.2 1999-02-10 23:49:25 hartmann Exp $
+* $Id: error.c,v 1.3 1999-02-17 06:58:19 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -14,32 +14,33 @@ static int ErrAlert;
 /* SweepError() is the method for putting erros into the console window
 at the bottom of the screen. Passing a null pointer as the message will
 invoke a call to ClearError(). */
-int SweepError(char* ErrMsg)
+void SweepError(char* format, ...)
 {
 	char NewErrMsg[40];
+	va_list args;
 
-	if (ErrMsg==NULL)
+	if (format==NULL)
 	{
 		ClearError();
 	}
 	else 
 	{
 		ClearError();
-		strncpy(NewErrMsg,ErrMsg,39);
-		if (index(NewErrMsg,'%')!=NULL)
-		{
-			mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
-		}
-		else
-		{
-			mvwprintw(ErrWin,0,0,NewErrMsg);
-		}
+
+		va_start(args, format);
+		
+		vsnprintf(NewErrMsg,39,format,args);
+
+		va_end(args);
+
+		mvwprintw(ErrWin,0,0,NewErrMsg);
+
 		SweepAlert();
 	}
 	wnoutrefresh(ErrWin);
 	move(0,0);
 	noutrefresh();
-	return 0;
+	return;
 }
 
 int InitErrorWin(GameStats* Game)
@@ -91,5 +92,28 @@ void SweepAlert()
 			beep();
 			break;
 	}
+	return;
+}
+
+void SweepMessage(char* format, ...)
+{
+	char NewErrMsg[40];
+	va_list args;
+
+	if (format==NULL)
+	{
+		ClearError();
+	}
+	else 
+	{
+		ClearError();
+		va_start(args, format);
+		vsnprintf(NewErrMsg,39,format,args);
+		va_end(args);
+		mvwprintw(ErrWin,0,0,NewErrMsg);
+	}
+	wnoutrefresh(ErrWin);
+	move(0,0);
+	noutrefresh();
 	return;
 }
