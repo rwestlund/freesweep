@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.39 1999-07-24 23:39:49 hartmann Exp $
+# $Id: Makefile.in,v 1.40 1999-07-28 04:33:04 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -25,7 +25,7 @@ FILES = $(SRCS) $(MISC) $(HEADS)
 PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 
 .SUFFIXES: .c .o
-.PHONY: clean sterile lines distclean maintainer-clean
+.PHONY: clean sterile lines distclean maintainer-clean mrproper
 #######################################################################
 %.o: %.c $(HEADS) Makefile
 	@echo 'Building $<'
@@ -54,9 +54,12 @@ distclean:
 maintainer-clean:
 	@make sterile
 
+mrproper:
+	@make sterile
+
 sterile:
 	-make clean
-	@-@RM@ -f *.o core made $(TARGET) a.out sweep.h configure Makefile freesweep.6
+	@-@RM@ -f *.o core made $(TARGET) a.out sweep.h configure Makefile freesweep.6 debug.log
 
 tar: $(SRCS) $(MISC)
 	(cd ../ ; @LN_S@ sweep $(TARGET_DIR))
@@ -68,4 +71,4 @@ tags: $(SRCS) $(HEADS) $(MISC)
 
 lines: $(SRCS) $(HEADS)
 	@echo 'Total lines of code:'
-	@wc -l $(SRCS) $(HEADS)
+	@wc -l $(SRCS) $(HEADS) | sort -rn

@@ -8,25 +8,37 @@ freesweep \- a curses minesweeper-style game
 \fBfreesweep\fP
 [\fB\-%\fP\ \fIvalue\fP]
 [\fB\-a\fP]
-[\fB\-b\fP]
-[\fB\-d\fP]
 [\fB\-f\fP\ |\ \fB\-i\fP]
-[\fB\-g\fP]
 [\fB\-h\fP\ \fIvalue\fP]
 [\fB\-m\fP\ \fIvalue\fP]
 [\fB\-s\fP]
-[\fB\-v\fP]
 [\fB\-w\fP\ \fIvalue\fP]
 [\fB\-\-alt\-charset\fP]
-[\fB\-\-dump\-best\-times\fP]
 [\fB\-\-fast\fP]
 [\fB\-\-height=\fP\fIvalue\fP]
 [\fB\-\-interactive\fP\ |\ \fB\-\-save\-prefs\fP]
 [\fB\-\-mines=\fP\fIvalue\fP]
 [\fB\-\-percent=\fP\fIvalue\fP]
-[\fB\-\-show\-best\-times\fP]
-[\fB\-\-show\-gpl\fP]
 [\fB\-\-width=\fP\fIvalue\fP]
+.TP 6
+\fBfreesweep\fP
+[\fB\-a\fP]
+[\fB\-b\fP\ |\ \fB\-d\fP]
+[\fB\-\-alt\-charset\fP]
+[\fB\-\-dump\-best\-times\fP\ |\ \fB\-\-show\-best\-times\fP]
+.TP 6
+\fBfreesweep\fP
+[\fB\-a\fP]
+[\fB\-g\fP]
+[\fB\-\-show\-gpl\fP]
+.TP 6
+\fBfreesweep\fP
+[\fB\-v\fP]
+[\fB\-\-version\fP]
+.TP 6
+\fBfreesweep\fP
+[\fB\-H\fP]
+[\fB\-\-help\fP]
 
 .SH DESCRIPTION
 \fBfreesweep\fP is a curses-based minesweeper game for *nix.
@@ -36,7 +48,8 @@ freesweep \- a curses minesweeper-style game
 .TP
 \fB\-%\fP\ \fIvalue\fP, \fB\-\-percent=\fP\fIvalue\fP
 Sets the number of mines to \fIvalue\fP percent of the number of squares on
-the board, rounded to the nearest integer.
+the board, rounded to the nearest integer. This option cannot be used with
+the \-m or \-\-mines options.
 .TP
 \fB\-a\fP, \fB\-\-alt\-charset\fP
 Switch character sets between standard ASCII and PC-style linedraw characters.
@@ -69,22 +82,29 @@ version 2 of the license is displayed; however, freesweep is licensed under
 version 2 or later of the GNU GPL, so this license may be superceded in the
 future.
 .TP
+\fB\-H\fP, \fB\-\-help\fP
+Print the lost of valid command line options, then exit.
+.TP
 \fB\-h\fP\ \fIvalue\fP, \fB\-\-height=\fP\fIvalue\fP
 Set height to \fIvalue\fP. If the interactive dialog is run initially, any
 value passed for height will be listed as the default.
 .TP
 \fB\-i\fP, \fB\-\-interactive\fP
 Force the interactive menu to be run initially. This is primarily used to
-override the FastStart option specified in the
+override the FastStart option specified in the preferences file. It cannot
+be used with the \fB\-f\-fP or \fB\-\-fast\fP options.
 .TP
 \fB\-m\fP\ \fIvalue\fP, \fB\-\-mines=\fP\fIvalue\fP
-
+Set the number of mines to \fIvalue\fP. This option cannot be used with
+the \-% or \-\-percent options.
 .TP
 \fB\-s\fP, \fB\-\-save\-prefs\fP
-
+Save any preferences passed on the command line. This option is normally used
+with the FastStart option (specified with \fB\-f\fP or \fB\-\-fast\fP)
 .TP
 \fB\-v\fP, \fB\-\-version\fP
-Display version information.
+Display version information and exit. Use of this option overrides all other
+options.
 .TP
 \fB\-w\fP\ \fIvalue\fP, \fB\-\-width=\fP\fIvalue\fP
 Set width to \fIvalue\fP. If the interactive dialog is run initially, any
@@ -93,6 +113,16 @@ value passed for width will be listed as the default.
 
 
 .SH COMMANDS
+When started normally, freesweep will conduct a dialog to query the following
+information from the player: height and width of the board, number of mines
+(as either an integer or in terms of size of the board), if PC-style line
+drawing characters are to be used, if future games should use FastStart mode,
+how to announce alerts (beep, visual bell, or none), and if the newly
+entered preferences should be saved. This dialog is skipped if the \-f or
+\-\-fast flags are passed, or if the FastStart option is selected in the
+preference file.
+
+
 In normal play, freesweep waits for keystrokes, and then reacts according
 to the recieved value. Some keystrokes may be modified by a preceding
 integer; these are noted in the list below by a preceding \fIn\fP. The
@@ -136,8 +166,12 @@ The user's sweep resource file.
 .I ~/.sweeptimes
 The user's sweep best times file.
 .TP 10
-\fI${prefix}/share/sweeprc\fP
+\fI@datadir@/sweeprc\fP
 The global default sweep resource file.
+
+The global preference file is read first, then the player's preference file.
+Any command line options are considered next, and lastly any input from the
+interactive dialog.
 
 .SH AUTHORS
 Gus Hartmann <hartmann@upl.cs.wisc.edu>
