@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.11 1999-02-22 06:22:02 hartmann Exp $
+* $Id: game.c,v 1.12 1999-02-23 05:25:44 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -122,7 +122,7 @@ void SwitchCharSet(GameStats* Game)
 	return;
 }
 
-void InitCharSet(GameStats* Game, int Value)
+int InitCharSet(GameStats* Game, int Value)
 {
 	if (Value==1)
 	{
@@ -134,7 +134,7 @@ void InitCharSet(GameStats* Game, int Value)
 		Game->LineDraw=0;
 		SetCharSet(0);
 	}
-	return;
+	return 0;
 }
 
 int ReadyGame(GameStats* Game)
@@ -146,7 +146,7 @@ int ReadyGame(GameStats* Game)
 
 	if ((Game->Field=calloc((Game->Height*(
 		( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2,
-		sizeof(char)))<=0)
+		sizeof(char)))==NULL)
 	{
 		perror("ReadyGame::AllocField");
 		exit(EXIT_FAILURE);
