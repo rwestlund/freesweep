@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.18 1999-02-23 19:08:56 psilord Exp $
+* $Id: main.c,v 1.19 1999-02-24 03:32:59 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -88,6 +88,13 @@ int main(int argc, char** argv)
 		}
 		g_tick = 0;
 
+		/* Update the final action of the player */
+		Pan(Game);
+		DrawCursor(Game);
+		DrawBoard(Game);
+		doupdate();
+		UndrawCursor(Game);
+
 		/* see what happened */
 		switch(Game->Status)
 		{
@@ -95,35 +102,28 @@ int main(int argc, char** argv)
 				ReReadyGame(Game);
 				break;
 			case RECONF:
+				StopTimer();
+				clear();
+				noutrefresh();
+				Wipe(Game);
+/*				InitGame(Game);*/
 				AskPrefs(Game);
-				ReReadyGame(Game);
+				ReadyGame(Game);
+				clear();
+				noutrefresh();
+				StartTimer();
 			case WIN:
+				napms(2000);
 				break;
 			case LOSE:
+				napms(2000);
 				break;
-
+			default:
+				break;
 		}
 
 		/* It might be nice to log this before reseting it. */
 		Game->Status=INPROG;
-
-		Pan(Game);
-		DrawCursor(Game);
-		DrawBoard(Game);
-		doupdate();
-		UndrawCursor(Game);
-
-		/* I want a wait on some things, not on others */
-		switch(Game->Status)
-		{
-			case LOSE:
-			case WIN:
-				/* Sleep a couple seconds before the next game. */
-				napms(2000);
-			break;
-			default:
-				break;
-		}
 
 		flushinp();
 	}
