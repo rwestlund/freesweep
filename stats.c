@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: stats.c,v 1.10 2002-12-19 07:04:05 hartmann Exp $
+*  $Id: stats.c,v 1.11 2002-12-20 08:44:53 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -88,7 +88,7 @@ void PrintStats(GameStats *Game)
 	{
 		if (Game->Color != 0 && (has_colors() == TRUE))
 		{
-			wcolor_set(StatsWin,5,NULL);
+			wcolor_set(StatsWin,6,NULL);
 		}
 		else
 		{
@@ -98,7 +98,7 @@ void PrintStats(GameStats *Game)
 		mvwprintw(StatsWin, 4, 12, "%3.2f%%", percentage);
 		if (Game->Color != 0 && (has_colors() == TRUE))
 		{
-			wcolor_set(StatsWin,6,NULL);
+			wcolor_set(StatsWin,1,NULL);
 		}
 		else
 		{
