@@ -15,6 +15,8 @@ static void Zorch(char *p, struct BestEntry *b);
 static void Pack(struct BestFileDesc *bfd, FILE *fp);
 static int BECmpFunc(const void *l, const void *r);
 
+static void DumpBFD(struct BestFileDesc *bfd, int valid);
+
 /* need a simple line buffer */
 struct MBuf
 {
@@ -35,11 +37,24 @@ void UpdateBestTimesFile(GameStats *Game)
 
 	LoadBestTimesFile(bfd); 
 
+	fprintf(DebugLog, "***LOADED COPY\n");
+	DumpBFD(bfd, FALSE);
+	fflush(NULL);
+
 	InsertEntry(bfd, b);
 
-/*	BFDSort(bfd);*/
+	fprintf(DebugLog, "***INSERTED COPY\n");
+	DumpBFD(bfd, TRUE);
+	fflush(NULL);
+
+	BFDSort(bfd);
+
+	fprintf(DebugLog, "***SORTED/SAVED COPY\n");
+	DumpBFD(bfd, TRUE);
+	fflush(NULL);
 
 	SaveBestTimesFile(bfd);
+	fflush(NULL);
 
 	free(b);
 	free(bfd->ents);
@@ -74,6 +89,7 @@ void LoadBestTimesFile(struct BestFileDesc *bfd)
 	{
 		abyss = xfopen(truename, "wb");
 
+		fprintf(DebugLog, "Creating Besttimes file....\n");
 		fprintf(abyss, "0\n0\n");
 		fclose(abyss);
 		goto again;		/* XXX So sue me, I'm lazy */
@@ -93,7 +109,7 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	unsigned int numents = 0;
 	unsigned int size = 0;
 	unsigned int i = 0;
-	char *p = NULL, *q = NULL;
+	char *p = NULL;
 	struct BestEntry *b = NULL;
 
 	/* how many entries do I have? */
@@ -118,11 +134,13 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	/* see if there is any hope in hell */
 	if (size != 0)
 	{
-		space = (unsigned char*)xmalloc(sizeof(unsigned char) * size);
+		space = (unsigned char*)xmalloc(sizeof(unsigned char) * size + 1);
+		/* this also null terminates any string I put into it */
+		memset(space, 0, sizeof(unsigned char) * size + 1);
 	
 		/* read it in */
 		fread(space, size, 1, abyss);
-	
+
 		/* convert it to real ascii */
 		for (i = 0; i < size; i++)
 		{
@@ -132,34 +150,85 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 		/* walk through memory looking for newlines and building the entries
 	 	* as you go */
 		p = space;
+		fprintf(DebugLog, "Doing %d entries....\n", bfd->numents);
+		fprintf(DebugLog, "Full string -> '%s'\n", p);
+		fflush(NULL);
 		for (i = 0; i < bfd->numents; i++)
 		{
 			b = &bfd->ents[i];	/* save me typing */
 	
 			/* get all the data out and into the entry */
-			/* XXX This could overflow if someone fucked with the data */
 			Zorch(p, b);
+			fprintf(DebugLog, "Found --> %s, %u, %u, %u, %s\n",
+				b->name, b->area, b->mines, b->time, b->date);
 
 			while(*p++ != '\n');
 		}
 	}
 }
 
+/* rip out the information from the p -> '\n' area of the string and place
+ * into b */
 void Zorch(char *p, struct BestEntry *b)
 {
-	char *t = NULL;
-	char *q = NULL;
+	char *n = NULL, *en = NULL, *s = NULL, *es = NULL, *d = NULL, *ed = NULL;
+	char *a = NULL, *m = NULL, *t = NULL;
+	char *tmp = NULL;
 
-	q = strchr(p, '\n');
-	if (q == NULL)
-	{
-		SweepError("BestTimes file is corrupted.");
-		/* XXX FIX ME */
+	/* get out name */
+	n = p;
+	en = strchr(n, '('); if (en == NULL) goto BAD;
+	memcpy(b->name, n, en - n);
+	b->name[en-n] = 0;
+	fprintf(DebugLog, "Name -> '%s'\n", b->name);
+
+	/* get out the date */
+	d = strchr(p, ')'); if (d == NULL) goto BAD;
+	d++;
+	ed = strchr(p, '\n'); if (ed == NULL) goto BAD;
+	memcpy(b->date, d, ed - d);
+	b->date[ed - d] = 0;
+	fprintf(DebugLog, "Date -> '%s'\n", b->date);
+
+	/* get out the stats */
+	s = strchr(p, '('); if (s == NULL) goto BAD;
+	s++;
+	es = strchr(p, ')'); if (es == NULL) goto BAD;
+	es++;
+	tmp = (char*)xmalloc(es-s + 1);
+	memcpy(tmp, s, es - s);
+	tmp[es - s] = 0;
+
+	/* set up pointers to the strings in questions */
+	a = tmp+1;
+	s = strchr(a, 'm'); if (s == NULL) goto BAD;
+	m = s+1;
+	*s = 0;
+	s = strchr(m, 't'); if (s == NULL) goto BAD;
+	t = s+1;
+	*s = 0;
+	s = strchr(t, ')'); if (s == NULL) goto BAD;
+	*s = 0;
+
+	b->area = atoi(a);
+	b->mines = atoi(m);
+	b->time = atoi(t);
+
+	fprintf(DebugLog, "Area -> '%u'\n", b->area);
+	fprintf(DebugLog, "Mines -> '%u'\n", b->mines);
+	fprintf(DebugLog, "Time -> '%u'\n", b->time);
+
+	free(tmp);
+	return;
+	BAD:
+		if (tmp != NULL)
+		{
+			free(tmp);
+		}
+		/* XXX so sue me again, I hate typing */
+		SweepError("Besttimes file is corrupt!");
+		/* XXX fix me */
 		exit(EXIT_FAILURE);
-	}
-
-	t = (char*)xmalloc(sizeof(char) * (q - p));
-
 }
 
 void BFDSort(struct BestFileDesc *bfd)
@@ -186,31 +255,31 @@ int BECmpFunc(const void *l, const void *r)
 
 	if (bl->area < br->area)
 	{
-		return -1;
+		return 1;
 	}
 	else if (bl->area > br->area)
 	{
-		return 1;
+		return -1;
 	}
 	else if (bl->area == br->area)
 	{
 		if (bl->mines < br->mines)
 		{
-			return -1;
+			return 1;
 		}
 		else if (bl->mines > br->mines)
 		{
-			return 1;
+			return -1;
 		}
 		else if (bl->mines == br->mines)
 		{
 			if (bl->time < br->time)
 			{
-				return -1;
+				return 1;
 			}
 			else if (bl->time > br->time)
 			{
-				return 1;
+				return -1;
 			}
 			else if (bl->time == br->time)
 			{
@@ -270,7 +339,7 @@ void SaveBestTimesFile(struct BestFileDesc *bfd)
 
 	name = FPTBTF();
 
-	fp = xfopen(name, "wb");
+	fp = xfopen(name, "w");
 
 	/* convert the bfd to a mess and write it out */
 	Pack(bfd, fp);
@@ -302,7 +371,7 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 	 * in the buflines array */
 
 	/* this is: three unsigned ints converted to ascii + maximum name len +
-	 * maximum date len + 2 pipe separators + 3 letters + 1 newline + 1 null */
+	 * maximum date len + 2 paren separators + 3 letters + 1 newline + 1 null */
 	maxsize = 3 * (unsigned int)ceil(log10(pow(2, sizeof(unsigned int)*8))) 
 				+ MAX_NAME + MAX_DATE + 2 + 3 + 1 + 1;
 	
@@ -311,16 +380,19 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 	for (i = 0; i < bfdnum; i++)
 	{
 		/* make a new line */
-		mbuf[i].buf = (char*)xmalloc(sizeof(char) * maxsize);
+		mbuf[i].buf = (char*)xmalloc(sizeof(char) * maxsize + 1);
 
 		/* print the line into the buffer */
 		b = &bfd->ents[i];
-		sprintf(mbuf[i].buf, "%s|a%um%ut%u|%s\n", 
+		sprintf(mbuf[i].buf, "%s(a%um%ut%u)%s\n", 
 			b->name, b->area, b->mines, b->time, b->date);
+		fprintf(DebugLog, "Created mbuf -> %s", mbuf[i].buf);
+		fflush(0);
+
+		mbuf[i].len = strlen(mbuf[i].buf);
 		
 /*		fprintf(DebugLog, "Encrypting -> '%s'", mbuf[i].buf);*/
 		/* encrypt the data */
-		mbuf[i].len = strlen(mbuf[i].buf);
 		for (j = 0; j < mbuf[i].len; j++)
 		{
 /*			mbuf[i].buf[j] ^= MAGIC_NUMBER;*/
@@ -331,15 +403,24 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 
 	/* now that the data is encrypted and ready, shove it out to the file */
 
+	fprintf(DebugLog, "***About to write into file\n");
+	fflush(0);
 	/* number of entries */
 	fprintf(fp, "%u\n", bfdnum);
+	fprintf(DebugLog, "%u entries...\n", bfdnum);
+	fflush(0);
 
 	/* byte size of file */
 	fprintf(fp, "%u\n", totalsize);
+	fprintf(DebugLog, "%u bytes...\n", totalsize);
+	fflush(0);
 
 	/* the data */
 	for (i = 0; i < bfdnum; i++)
 	{
+		fprintf(DebugLog, "Writing -> ");
+		fwrite(mbuf[i].buf, mbuf[i].len, 1, DebugLog);
+		fflush(NULL);
 		fwrite(mbuf[i].buf, mbuf[i].len, 1, fp);
 	}
 
@@ -420,5 +501,36 @@ char* FPTBTF(void)
 
 	return fp;
 }
+
+
+static void DumpBFD(struct BestFileDesc *bfd, int valid)
+{
+	int i = 0;
+
+	fprintf(DebugLog, "BFD DUMP START\n");
+	fprintf(DebugLog, "Numents -> %u\n", bfd->numents);
+	fprintf(DebugLog, "Replflag -> %s\n", 
+		bfd->replflag?"TRUE":"FALSE");
+	for (i = 0; i < bfd->numents; i++)
+	{
+		fprintf(DebugLog, "- %s %u %u %u %s\n", bfd->ents[i].name,
+			bfd->ents[i].area, bfd->ents[i].mines, bfd->ents[i].time,
+			bfd->ents[i].date);
+	}
+	if (valid == TRUE)
+	{
+		if (bfd->replflag == FALSE)
+		{
+			fprintf(DebugLog, "AND\n");
+			fprintf(DebugLog, "- %s %u %u %u %s\n", bfd->ents[i].name,
+				bfd->ents[i].area, bfd->ents[i].mines, bfd->ents[i].time,
+				bfd->ents[i].date);
+		}
+	}
+	fprintf(DebugLog, "BFD DUMP END\n");
+}
+
+
+
 
 
