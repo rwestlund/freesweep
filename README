@@ -1,5 +1,18 @@
 	This will eventually be a readme file. For now, just a list of notes.
 
+	Freesweep is licensed under the GNU GPL, version 2 or above. See
+the file COPYING, or hit 'g' while playing the game to see it. The code
+is copyright Gus Hartmann and Peter Keller.
+
+	We need to have some sort of standard header in all the files
+the mentions the copyright and GNU GPL.
+
+	Bugs should be mailed to sweep@cs.wisc.edu, if it works, or
+hartmann@cs.wisc.edu otherwise.
+
+	If no file locking mechanism is found, group-writable best times
+will be disabled.
+
 	The -s command line option will save any settings passed on the
 command line. This will occur even if the user selects against saving
 settings in the interactive setup. Use of -s without -f is discouraged.

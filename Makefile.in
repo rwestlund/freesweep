@@ -1,9 +1,9 @@
 ######################################################################
-# $Id: Makefile.in,v 1.33 1999-03-07 01:52:23 hartmann Exp $
+# $Id: Makefile.in,v 1.34 1999-04-26 06:51:04 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
-VERSION = 0.84
+VERSION = 0.85
 
 SRCS = clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c stats.c tick.c utils.c
 HEADS = sweep.h defaults.h
@@ -29,14 +29,14 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 #######################################################################
 %.o: %.c $(HEADS) Makefile
 	@echo 'Building $<'
-	@/bin/rm -f $*.o 
+	@@RM@ -f $*.o 
 	@[ -d $(SYSTEM_TYPE) ]|| mkdir $(SYSTEM_TYPE)
 	$(CC) $(CFLAGS) -o $(SYSTEM_TYPE)/$*.o -c $<
 	@@LN_S@ $(SYSTEM_TYPE)/$*.o .
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
 	@echo 'Linking'
-	@/bin/rm -f $(TARGET)
+	@@RM@ -f $(TARGET)
 	(cd $(SYSTEM_TYPE); $(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET))
 	@echo 'Making symlink to ./$(TARGET)'
 	@@LN_S@ $(SYSTEM_TYPE)/$(TARGET) .
@@ -46,7 +46,7 @@ configure: configure.in
 	@autoconf
 
 clean:
-	@-/bin/rm -rf $(CLEANUP) $(SYSTEM_TYPE)
+	@-@RM@ -rf $(CLEANUP) $(SYSTEM_TYPE)
 
 pure:
 	@make clean
@@ -57,11 +57,11 @@ distclean:
 
 sterile:
 	-make clean
-	-/bin/rm -f */*.o */core */made */$(TARGET) */a.out sweep.h
+	@-@RM@ -f */*.o */core */made */$(TARGET) */a.out sweep.h
 
 tar: $(SRCS) $(MISC)
 	(cd ../ ; @LN_S@ sweep $(TARGET_DIR))
-	(cd ../ ; tar cvfh $(TARGET_DIR).tar $(FILES:%=$(TARGET_DIR)/%))
+	(cd ../ ; @TAR@ cvfh $(TARGET_DIR).tar $(FILES:%=$(TARGET_DIR)/%))
 	(cd ../ ; rm $(TARGET_DIR))
 
 tags: $(SRCS) $(HEADS) $(MISC)

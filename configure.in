@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.24 1999-03-07 01:47:04 hartmann Exp $
+dnl $Id: configure.in,v 1.25 1999-04-26 06:51:05 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -12,6 +12,9 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_PATH_PROG(TAR, tar)
+AC_PATH_PROG(GZIP, gzip)
+AC_PATH_PROG(RM, rm)
 
 dnl Look for ncurses in a variable.
 AC_ARG_WITH(ncurses, [  --with-ncurses[=DIR]    ncurses package root in DIR [/usr/local]], NCURSES_HINT=$with_ncurses, NCURSES_HINT='default')
@@ -28,9 +31,8 @@ dnl look for ncurses in the suggested location, if given.
 if test "$NCURSES_HINT" = "no" ; then
 	AC_CHECK_LIB(curses,main)
 	if test "$ac_cv_lib_curses_main" = 'no' ; then
-		AC_WARN([No curses library was found. Consider installing])
-		AC_WARN([ncurses, from ftp://ftp.gnu.org/pub/ncurses])
-		exit 1
+		AC_MSG_ERROR([No curses library was found. Consider installing
+ncurses, from ftp://ftp.gnu.org/pub/ncurses])
 	fi
 else
 	if test "$NCURSES_HINT" = 'yes' || test "$NCURSES_HINT" = 'default' ; then
@@ -56,9 +58,8 @@ else
 	if test "$ac_cv_lib_ncurses_main" = 'no' ; then
 		AC_CHECK_LIB(curses,main)
 		if test "$ac_cv_lib_curses_main" = 'no' ; then
-			AC_WARN([No curses library was found. Consider installing])
-			AC_WARN([ncurses, from ftp://ftp.gnu.org/pub/ncurses])
-			exit 1
+			AC_MSG_ERROR([No curses library was found. Consider installing
+ncurses, from ftp://ftp.gnu.org/pub/ncurses])
 		fi
 	fi
 fi
@@ -76,13 +77,13 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(snprintf)
-AC_CHECK_FUNCS(getopt)
-AC_CHECK_FUNCS(strdup)
-AC_CHECK_FUNCS(memset)
-AC_CHECK_FUNCS(memmove)
-AC_CHECK_FUNCS(flock)
-AC_CHECK_FUNCS(lockf)
-AC_CHECK_FUNCS(fileno)
+AC_CHECK_FUNCS(snprintf getopt strdup memset memmove flock lockf fileno)
+
+dnl If neither locking mechanism is there, disable group scores.
+if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then
+	AC_MSG_WARN([Neither lockf nor flock was found. Group best times files will be disabled.])
+else
+	AC_DEFINE(USE_GROUP_BEST_FILE)
+fi
 
 AC_OUTPUT(Makefile sweep.h)
