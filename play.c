@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.21 1999-02-18 02:12:19 psilord Exp $
+* $Id: play.c,v 1.22 1999-02-18 04:05:03 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -311,19 +311,19 @@ int GetInput(GameStats* Game)
 			{
 				if ((Multiplier%2)!=0)
 				{
-					SweepError("Toggling character set.");
+					SweepMessage("Toggling character set.");
 					SwitchCharSet(Game);
 					PrintInfo();
 					RedrawErrorWin();
 				}
 				else
 				{
-					SweepError("Not toggling character set.");
+					SweepMessage("Not toggling character set.");
 				}
 			}
 			else
 			{
-				SweepError("Toggling character set.");
+				SweepMessage("Toggling character set.");
 				SwitchCharSet(Game);
 				PrintInfo();
 				RedrawErrorWin();
