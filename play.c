@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.13 1999-02-13 01:52:13 hartmann Exp $
+* $Id: play.c,v 1.14 1999-02-16 20:04:52 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -12,6 +12,7 @@ int GetInput(GameStats* Game)
 	unsigned char RetVal;
 	int Multiplier=1;
 	int UserInput=0;
+	char buf[256]; /* misc printf type output */
 
 #ifdef SWEEP_MOUSE
 	MEVENT MouseInput;
@@ -234,6 +235,17 @@ int GetInput(GameStats* Game)
 			RedrawErrorWin();
 			noutrefresh();
 			doupdate();
+			break;
+		
+		/* The accepted values to print coordinates of cursor on board */
+		case 'c':
+			if (Multiplier!=1)
+			{
+				SweepError("Can only display coordinates once.");
+				Multiplier=1;
+			}
+			sprintf(buf, "Location: (%u, %u)", Game->CursorX, Game->CursorY);
+			SweepError(buf);
 			break;
 
 		/* The accepted values to suspend the game. */
