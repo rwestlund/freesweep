@@ -124,7 +124,8 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	{
 		/* one more than I need, for later */
 		bfd->ents = (struct BestEntry*)
-					xmalloc(sizeof(struct BestEntry)*numents + 1);
+					xmalloc(sizeof(struct BestEntry)*numents + 
+					sizeof(struct BestEntry));
 	}
 	bfd->numents = numents;	/* yes, this could be zero */
 
