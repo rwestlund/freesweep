@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: image.c,v 1.2 2000-11-03 21:28:49 hartmann Exp $
+*  $Id: image.c,v 1.3 2000-11-07 05:31:26 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -16,7 +16,11 @@ void SaveGameImage(GameStats* Game, char *fname)
 	unsigned char value;
 	FILE *fo = NULL;
 
-	fo = xfopen(fname, "w");
+	if ( (fo = fopen(fname, "w") ) == NULL )
+	{
+		SweepError("Unable to save game image");
+		return;
+	}
 	
 	/* dump the stats out */
 	fprintf(fo, "P6\n%d\n%d\n255\n", Game->Width, Game->Height);
