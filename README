@@ -28,6 +28,7 @@ game and start a new one, counting the game as neither a win nor a loss.
 but instead of restarting with the same game, run AskPrefs() to determine
 what the user wants for the new games.
 
-Now that file locking is done, add the group best times file.
+Fix up the error condition for what happens when you can't write to the
+best times file and shit. Just quitting doesn't seem to good.
 
 See what purify is bitching about in the load/save game code.
