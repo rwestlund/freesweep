@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.19 1999-02-24 05:46:32 hartmann Exp $
+* $Id: game.c,v 1.20 1999-02-25 07:24:21 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -463,7 +463,7 @@ int ReReadyGame(GameStats* Game)
 	Game->MarkedMines = 0;
 	Game->BadMarkedMines = 0;
 
-	Game->CursorX=(Game->Width-1)/2;
+	Game->CursorX=Game->Width/2;
 	Game->CursorY=Game->Height/2;
 
 	return 0;
