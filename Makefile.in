@@ -1,14 +1,14 @@
 ######################################################################
-# $Id: Makefile.in,v 1.45 1999-08-09 05:32:24 hartmann Exp $
+# $Id: Makefile.in,v 1.46 2000-10-31 02:51:29 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
-VERSION = 0.87
+VERSION = 0.88
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c play.c sl.c stats.c tick.c utils.c
 HEADS = sweep.h defaults.h
 MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in freesweep.6.in CHANGES
-CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status
+CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status config.h config.h.in
 
 #SYSTEM_TYPE = @host@
 
@@ -21,7 +21,7 @@ exec_prefix = @exec_prefix@
 bindir = @bindir@
 
 CC = @CC@
-CFLAGS = -Wall -DVERSION=\"$(VERSION)\" @CFLAGS@ @DEFS@ 
+CFLAGS = -Wall -DVERSION=\"$(VERSION)\" @CFLAGS@
 LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 OBJS = $(SRCS:.c=.o)
@@ -36,18 +36,18 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 .PHONY: clean sterile lines distclean maintainer-clean mrproper
 #######################################################################
 %.o: %.c $(HEADS) Makefile
-	@echo 'Building $<'
 	@@RM@ -f $*.o 
 	$(CC) $(CFLAGS) -c $<
 
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
-	@echo 'Linking'
 	@@RM@ -f $(TARGET)
 	$(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET)
 
 configure: configure.in
-	@echo 'Creating configure script'
-	@autoconf
+	autoconf
+
+config.h.in: acconfig.h
+	autoheader
 
 clean:
 	@-@RM@ -rf $(CLEANUP)
