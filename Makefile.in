@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.37 1999-05-22 02:42:15 hartmann Exp $
+# $Id: Makefile.in,v 1.38 1999-07-22 04:43:23 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -7,7 +7,7 @@ VERSION = 0.86
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c play.c sl.c stats.c tick.c utils.c
 HEADS = sweep.h defaults.h
-MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in
+MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in freesweep.6.in
 CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status
 
 SYSTEM_TYPE = @host@

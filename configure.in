@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.29 1999-05-25 06:21:02 hartmann Exp $
+dnl $Id: configure.in,v 1.30 1999-07-22 04:43:23 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -98,4 +98,4 @@ if test "$DFL_GROUP_PATH" != 'no' ; then
 	AC_DEFINE(USE_GROUP_BEST_FILE)dnl
 fi
 
-AC_OUTPUT(Makefile sweep.h)dnl
+AC_OUTPUT(Makefile sweep.h freesweep.6)dnl
