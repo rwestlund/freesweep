@@ -572,7 +572,7 @@ NCURSES=/usr/local
 # Check whether --with-ncurses or --without-ncurses was given.
 if test "${with_ncurses+set}" = set; then
   withval="$with_ncurses"
-  NCURSES=$enableval
+  NCURSES=$with_ncurses
 fi
 
 

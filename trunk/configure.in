@@ -5,8 +5,7 @@ dnl Find out where we're building
 AC_CANONICAL_HOST
 
 dnl Look for ncurses in a variable.
-NCURSES=/usr/local
-AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$enableval)
+AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses)
 
 dnl /usr/local hides lots of good stuff.
 LIBS="-L/usr/local/lib -L$NCURSES/lib $LIBS"
