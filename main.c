@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.15 1999-02-19 06:20:41 psilord Exp $
+* $Id: main.c,v 1.16 1999-02-22 07:45:50 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -83,8 +83,6 @@ int main(int argc, char** argv)
 			UndrawCursor(Game);
 			SweepError(NULL);
 			GetInput(Game);
-			/* XXX see about this, it fuxks up the timer code */
-/*			napms(20);*/
 			SweepMessage("%u", g_tick);
 			Game->Time = g_tick;
 		}
