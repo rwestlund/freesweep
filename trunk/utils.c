@@ -30,3 +30,17 @@ FILE* xfopen(char *name, char *type)
 
 	return fp;
 }
+
+#ifndef HAVE_STRDUP
+char *strdup(char *s)
+{
+	char *c = NULL;
+
+	c = (char*)xmalloc(strlen(s) + 1);
+	
+	strcpy(c, s);
+
+	return(c);
+
+}
+#endif
