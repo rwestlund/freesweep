@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.7 1999-02-12 20:18:57 hartmann Exp $
+* $Id: drawing.c,v 1.8 1999-02-16 04:31:19 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -469,7 +469,8 @@ void AskPrefs(GameStats* Game)
 void Help()
 {
 	WINDOW* HelpWin;
-	int Input=0, CurrentLine=0;
+	int Input=0, CurrentLine=0, LinesLeft=0, CurrentY=0;
+#define HELP_MESSAGES 12
 	char* Messages[]=
 	{
 		"Arrow keys and vi-style movement keys move the cursor.",
@@ -481,6 +482,7 @@ void Help()
 		"\'.\' repeats the last command.",
 		"\'a\' toggles the character set.",
 		"\'?\' displays this help screen.",
+		"\'g\' displays the GNU General Public License.",
 		"\'q\' quits the game.",
 		"Any non-zero number multiplies the next action."
 	};
@@ -494,30 +496,78 @@ void Help()
 	mvwprintw(HelpWin,1,2,"Time out - Freesweep Help");
 	mvwhline(HelpWin,2,1,CharSet.HLine,COLS-2);
 	mvwprintw(HelpWin,3,2,"Useful Keys:");
+	mvwprintw(HelpWin,LINES-1,1,"--Press \'q\' to quit, space for more, any other key to continue.--");
 
 	/* Be sure to update this to account for all of the error messages. */
-	for (CurrentLine=0;CurrentLine<11;CurrentLine++)
+	LinesLeft=HELP_MESSAGES;
+	while (LinesLeft> (LINES - 6))
 	{
-		mvwprintw(HelpWin,CurrentLine+4,6,Messages[CurrentLine]);
-	}
+		CurrentY=4;
+		while (CurrentY< (LINES -2 ))
+		{
+			mvwprintw(HelpWin,CurrentY++,8,Messages[CurrentLine++]);
+			LinesLeft--;
+		}
+		/* Now get a keystroke to continue. */
+		wmove(HelpWin,0,0);
+		wrefresh(HelpWin);
+		Input=wgetch(HelpWin);
 
-	mvwprintw(HelpWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
+		switch (Input)
+		{
+			case 'q':
+				clear();
+				refresh();
+				endwin();
+				exit(EXIT_SUCCESS);
+				break;
+
+			case ' ':
+				wmove(HelpWin,3,0);
+				wclrtobot(HelpWin);
+				wborder(HelpWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+				mvwprintw(HelpWin,LINES-1,1,"--Press \'q\' to quit, space for more, any other key to continue.--");
+				wrefresh(HelpWin);
+				break;
+
+			default:
+				wclear(HelpWin);
+				delwin(HelpWin);
+				clear();
+				noutrefresh();
+				return;
+				break;
+		}
+	}
+	/* Now print the last few lines */
+	wborder(HelpWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+	mvwprintw(HelpWin,LINES-1,1,"--Press \'q\' to quit, or any other key to continue.--");
+	CurrentY=4;
+	while (LinesLeft > 0)
+	{
+			mvwprintw(HelpWin,CurrentY++,8,Messages[CurrentLine++]);
+			LinesLeft--;
+	}
 	wmove(HelpWin,0,0);
 	wrefresh(HelpWin);
 	Input=wgetch(HelpWin);
-	if ((Input=='q')||(Input=='Q'))
+
+	switch (Input)
 	{
-		clear();
-		refresh();
-		endwin();
-		exit(EXIT_SUCCESS);
-	}
-	else
-	{
-		wclear(HelpWin);
-		delwin(HelpWin);
-		clear();
-		noutrefresh();
+		case 'q':
+			clear();
+			refresh();
+			endwin();
+			exit(EXIT_SUCCESS);
+			break;
+
+		default:
+			wclear(HelpWin);
+			delwin(HelpWin);
+			clear();
+			noutrefresh();
+			return;
+			break;
 	}
 	return;
 }
