@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.22 1999-02-24 05:40:18 psilord Exp $
+* $Id: main.c,v 1.23 1999-02-25 20:52:09 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 		ReReadyGame(Game);
 		PrintInfo();
 		noutrefresh();
+		PrintStats(Game);
 		doupdate();
 		Center(Game);
 
@@ -75,6 +76,7 @@ int main(int argc, char** argv)
 	/*	This is the main loop.*/
 		while (Game->Status==INPROG)
 		{
+			PrintStats(Game);
 			Pan(Game);
 			DrawCursor(Game);
 			DrawBoard(Game);
@@ -82,7 +84,6 @@ int main(int argc, char** argv)
 			UndrawCursor(Game);
 			SweepError(NULL);
 			GetInput(Game);
-			SweepMessage("%u", g_tick);
 			Game->Time = g_tick;
 		}
 		g_tick = 0;
