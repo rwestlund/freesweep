@@ -14,10 +14,8 @@
    Leave the following blank line there!!  Autoheader needs it.  */
 
 
-/* Set this to be blah blah blah. */
-#ifndef DEBUG_LOG
-#define DEBUG_LOG debug.log
-#endif
+/* Comment this out to have a debug log file. */
+#undef DEBUG_LOG
 
 /* Set this blah blah blah. */
 #undef SCORESDIR
