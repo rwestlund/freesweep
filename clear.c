@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: clear.c,v 1.2 1999-02-11 00:57:24 psilord Exp $
+* $Id: clear.c,v 1.3 1999-02-11 01:00:56 psilord Exp $
 *********************************************************************/
 
 #include <stdio.h>
@@ -12,7 +12,6 @@
 #define DONOTHING 2
 
 
-
 static void InsertChildren(struct Mark **ht, GameStats *Game, int x, int y);
 static int CalcSquareNumber(GameStats *Game, int xx, int yy);
 static int ExposeSquare(GameStats *Game, int xx, int yy, int total);
@@ -20,6 +19,7 @@ static unsigned char* InitLookupTable(void);
 static struct Mark* NewMark(int x, int y);
 static int SuperCount(GameStats* Game);
 
+/* I should clean these up */
 int g_num = 0;
 unsigned char *g_table = NULL;
 int g_table_w;
