@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.36 1999-08-06 07:25:25 hartmann Exp $
+dnl $Id: configure.in,v 1.37 1999-08-09 05:18:21 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -32,7 +32,7 @@ AC_SUBST(NCURSES_HINT)dnl
 dnl Check for debugging file
 AC_ARG_ENABLE(debug-log,
 [  --enable-debug-log      Enables debugging file, debug.log.], DEBUG_LOG=$with_debug)
-if test "$DEBUG_LOG" != 'no' ; then
+if test "$DEBUG_LOG" = 'yes' ; then
 	AC_DEFINE(DEBUG_LOG)dnl
 fi
 
