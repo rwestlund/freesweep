@@ -1,8 +1,8 @@
 	This will eventually be a readme file. For now, just a list of notes.
 
 	Freesweep is licensed under the GNU GPL, version 2 or above. See
-the file COPYING, or hit 'g' while playing the game to see it. The code
-is copyright Gus Hartmann and Peter Keller.
+the file COPYING, run freesweep with the -g flag, or hit 'g' while playing
+the game to see it. The code is copyright Gus Hartmann and Peter Keller.
 
 	We need to have some sort of standard header in all the files
 the mentions the copyright and GNU GPL.
@@ -17,9 +17,6 @@ will be disabled.
 command line. This will occur even if the user selects against saving
 settings in the interactive setup. Use of -s without -f is discouraged.
 
-	Old preference file formats are supported by converting them to the
-new format and deleting the previous version.
-
 	While the game is playable on any terminal supported by curses/ncurses,
 the help and high scores windows are designed to use a screen 80 columns wide.
 
@@ -29,10 +26,6 @@ the help and high scores windows are designed to use a screen 80 columns wide.
 work, reporting "Unknown keystroke." Unfortunately, somehow this leaves an
 extra 'o' lying around, leading to a saved game getting loaded. Really
 fucking bizarre- Sun's curses doesn't have the arrows-under-X problem.
-
-	There should be a stats window, under the info win, on the right
-side of the screen, with the elapsed game time, the number of mines marked,
-and the total number of mines, and your current location in the board.
 
 Fix up the error condition for what happens when you can't write to the
 best times file and shit. Just quitting doesn't seem to good.
