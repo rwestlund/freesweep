@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.32 1999-03-05 23:25:24 hartmann Exp $
+* $Id: play.c,v 1.33 1999-03-06 22:04:14 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -425,9 +425,6 @@ int GetInput(GameStats* Game)
 			break;
 
 		case ERR:
-#ifdef DEBUG_LOG
-			fprintf(DebugLog,"Got no keystroke.\n");
-#endif /* DEBUG_LOG */
 			return 1;
 			break;
 

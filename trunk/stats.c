@@ -55,13 +55,13 @@ void PrintStats(GameStats *Game)
 	{
 		wstandout(StatsWin);
 		mvwprintw(StatsWin, 3, 7, "%d", Game->MarkedMines + Game->BadMarkedMines);
-		mvwprintw(StatsWin, 4, 13, "%3.2f%%", percentage);
+		mvwprintw(StatsWin, 4, 12, "%3.2f%%", percentage);
 		wstandend(StatsWin);
 	}
 	else
 	{
 		mvwprintw(StatsWin, 3, 7, "%d", Game->MarkedMines + Game->BadMarkedMines);
-		mvwprintw(StatsWin, 4, 13, "%3.2f%%", percentage);
+		mvwprintw(StatsWin, 4, 12, "%3.2f%%", percentage);
 	}
 
 	wnoutrefresh(StatsWin);
