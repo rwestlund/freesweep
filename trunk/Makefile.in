@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.3 1999-02-11 01:46:27 hartmann Exp $
+# $Id: Makefile.in,v 1.4 1999-02-11 06:58:36 hartmann Exp $
 ######################################################################
 
 SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c
@@ -58,9 +58,3 @@ tags: $(SRCS) $(HEADS) $(MISC)
 lines: $(SRCS) $(HEADS)
 	@echo "Total lines of code:"
 	@wc -l $(SRCS) $(HEADS)
-
-ci: $(SRCS)
-	@ci $(SRCS) $(HEADS)
-
-co:
-	@co $(SRCS) $(HEADS)
