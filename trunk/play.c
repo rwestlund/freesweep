@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.17 1999-02-17 07:48:26 psilord Exp $
+* $Id: play.c,v 1.18 1999-02-17 07:49:06 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -273,11 +273,8 @@ int GetInput(GameStats* Game)
 				SweepError("Can only quit once.");
 				Multiplier=1;
 			}
-			/* FOO! */
-			/* Make a node for now. */
-/*			AddNodeToFile(NULL,GenerateFakeNode());*/
-/*			AddNodeToFile(NULL,InitNode(Game));*/
-			UpdateBestTimesFile(Game);
+/*			UpdateBestTimesFile(Game);*/
+
 #ifdef DEBUG_LOG
 			fprintf(DebugLog,"Quitting quietly.\n========================================\n");
 			fclose(DebugLog);
