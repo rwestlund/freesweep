@@ -11,21 +11,28 @@ AC_PROG_MAKE_SET
 dnl AC_PATH_PROG(DATE, date)
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses, NCURSES=/usr/local)
+AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses)
 
-dnl Set CFLAGS right.
-CFLAGS="-DNCURSES=$NCURSES -I$NCURSES/include -I/usr/local/include $CFLAGS"
-AC_SUBST(NCURSES)
+if test "$NCURSES" = "no"  ; then
+	LIBS="-lcurses $LIBS"
+else
+	dnl Set CFLAGS right.
+	CFLAGS="-I$NCURSES/include -I/usr/local/include $CFLAGS"
+	AC_SUBST(NCURSES)
+
+	dnl Look in $NCURSES/lib for libraries
+	LIBS="-L$NCURSES/lib $LIBS"
+
+	dnl Replace `main' with a function in -lncurses:
+	AC_CHECK_LIB(ncurses,main)
+fi
 
 dnl /usr/local hides lots of good stuff.
-LIBS="-L$NCURSES/lib -L/usr/local/lib $LIBS"
+LIBS="$LIBS -L/usr/local/lib"
 
 dnl Checks for libraries.
 dnl Replace `main' with a function in -lm:
-AC_CHECK_LIB(m, main)
-dnl Replace `main' with a function in -lncurses:
-AC_CHECK_LIB(ncurses, main)
-
+AC_CHECK_LIB(m,main)
 
 dnl Checks for header files.
 AC_HEADER_STDC
