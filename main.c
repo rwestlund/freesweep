@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.14 1999-02-19 06:10:06 psilord Exp $
+* $Id: main.c,v 1.15 1999-02-19 06:20:41 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -85,6 +85,7 @@ int main(int argc, char** argv)
 			GetInput(Game);
 			/* XXX see about this, it fuxks up the timer code */
 /*			napms(20);*/
+			SweepMessage("%u", g_tick);
 			Game->Time = g_tick;
 		}
 		g_tick = 0;
