@@ -1,4 +1,4 @@
-/********************************************************************* * $Id: files.c,v 1.3 1999-02-18 19:38:00 psilord Exp $
+/********************************************************************* * $Id: files.c,v 1.4 1999-02-22 06:09:09 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -270,7 +270,7 @@ int OldPrefsFile(GameStats* Game)
 			}
 		}
 		/* Write the preferences in the new file format. */
-		if (((WritePrefsFile(Game))+(MigrateBestTimes(PrefsFile)))==0)
+		if ((WritePrefsFile(Game))==0)
 		{
 			fclose(PrefsFile);
 			unlink(PathBuffer);

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.8 1999-02-19 07:27:00 psilord Exp $
+* $Id: sweep.h.in,v 1.9 1999-02-22 06:09:09 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -154,16 +154,6 @@ struct Mark
 	struct Mark *next;
 };
 
-/* This is the format for the high scores records. */
-typedef struct _BestTimeNode
-{
-	char Username[MAX_NAME+1];
-	char* Attributes;
-	int Time;
-	char Date[MAX_DATE+1];
-	struct _BestTimeNode* Next;
-} BestTimeNode;
-
 /* this is the _NEW_ format for the best times score */
 struct BestEntry
 {
@@ -261,24 +251,6 @@ void SweepMessage(char* format, ...);
 void* xmalloc(size_t num);
 FILE* xfopen(char *name, char *type);
 
-
-/* These are the functions defined in bests.c */
-int MigrateBestTimes(FILE* ScoresFile);
-BestTimeNode* LoadNodeList(char* Filename);
-int SortBestTimes(BestTimeNode* Head);
-int CompNodeAttribs(BestTimeNode* Node1, BestTimeNode* Node2);
-int CompNodeTimes(BestTimeNode* Node1, BestTimeNode* Node2);
-void SortNodeList(BestTimeNode** Head);
-void ISortNodeList(BestTimeNode** Head, BestTimeNode* Tail);
-void QSortNodeList(BestTimeNode** Head, BestTimeNode* Tail, int NumNodes);
-void DumpNodeFile(char* Filename);
-void DumpNodeList(BestTimeNode* Head, FILE* Dump);
-void FreeNode(BestTimeNode* Node);
-int AddNodeToFile(char* Filename, BestTimeNode* NewNode);
-BestTimeNode* InitNode(GameStats* Game);
-int WriteNodeList(char* Filename, BestTimeNode* Head);
-BestTimeNode* GenerateFakeNode();
-
 /* this is in pbests.c, which will eventually become bests.c */
 void UpdateBestTimesFile(GameStats *Game);
 
@@ -312,4 +284,4 @@ void PrintGPL();
 extern volatile unsigned int g_tick;
 RETSIGTYPE sighandler(int signo);
 
-#endif  __SWEEP_H__ 
+#endif /* __SWEEP_H__ */
