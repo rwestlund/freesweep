@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.34 2000-11-07 05:28:13 hartmann Exp $
+* $Id: sweep.h.in,v 1.35 2001-06-11 00:30:36 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -35,11 +35,10 @@
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <signal.h>
 
 #ifdef HAVE_LIBNCURSES
-#include "@NCURSES_HINT@/include/curses.h"
+#include "@NCURSES_INCLUDE@/ncurses.h"
 #define DEFAULT_LINEDRAW 1
 #else /* HAVE_LIBNCURSES */
 #include <curses.h>
@@ -145,6 +144,10 @@
 #ifndef mvgetnstr
 #define mvgetnstr(y, x, str, n) (wmove(stdscr, y, x)==ERR?ERR:wgetnstr(stdscr, str, n));
 #endif /* mvgetnstr */
+
+#ifndef ValidCoordinate
+#define ValidCoordinate(x,y) ( ( (x>=0) && (x<Game->Width) && (y>=0) && (y<Game->Height) )  ? 1 : 0 )
+#endif
 
 /* These are all the structs used in freesweep */
 /* This is the struct containing all the various drawing characters. */
@@ -327,6 +330,8 @@ void InsertMark(struct Mark **ht, int x, int y);
 char DeleteRandomMark(struct Mark **ht, int *x, int *y);
 void Clear(GameStats *Game);
 void SuperClear(GameStats *Game);
+int FindNearest(GameStats *Game);
+int FindNearestBad(GameStats *Game);
 
 /* These are the functions in fgui.c */
 char* FSGUI(void);
