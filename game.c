@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.8 1999-02-17 07:54:07 hartmann Exp $
+* $Id: game.c,v 1.9 1999-02-19 02:04:42 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -199,89 +199,6 @@ int ReadyGame(GameStats* Game)
 	{
 		perror("ReadyGame::AllocWin");
 		exit(EXIT_FAILURE);
-	}
-
-	return 0;
-}
-
-int SourceEnv(GameStats* Game)
-{
-	int Value;
-	char* ValueBuffer;
-
-	if ((ValueBuffer=getenv("SWEEP_COLOR"))!=NULL)
-	{
-		if (strncasecmp(ValueBuffer,"True",4)==0)
-		{
-			Game->Color=1;
-		}
-		else if (strncasecmp(ValueBuffer,"False",5)==0)
-		{
-			Game->Color=0;
-		}
-		else
-		{
-			fprintf(stderr,"Invalid value \"%s\" for $SWEEP_COLOR.\n",ValueBuffer);
-			fprintf(stderr,"$SWEEP_COLOR must be either true or false.\n");
-		}
-	}
-
-	if ((ValueBuffer=getenv("SWEEP_FASTSTART"))!=NULL)
-	{
-		if (strncasecmp(ValueBuffer,"True",4)==0)
-		{
-			Game->Fast=1;
-		}
-		else if (strncasecmp(ValueBuffer,"False",5)==0)
-		{
-			Game->Fast=0;
-		}
-		else
-		{
-			fprintf(stderr,"Invalid value \"%s\" for $SWEEP_FASTSTART.\n",ValueBuffer);
-			fprintf(stderr,"$SWEEP_FASTSTART must be either true or false.\n");
-		}
-	}
-
-	if ((ValueBuffer=getenv("SWEEP_HEIGHT"))!=NULL)
-	{
-		Value=atoi(ValueBuffer);
-		((CheckHeight(Value)>0)?Game->Height=Value:fprintf(stderr,"Invalid value for Height in $SWEEP_HEIGHT.\n"));
-	}
-
-	if ((ValueBuffer=getenv("SWEEP_LINEDRAW"))!=NULL)
-	{
-		if (strncasecmp(ValueBuffer,"True",4)==0)
-		{
-			Game->LineDraw=1;
-		}
-		else if (strncasecmp(ValueBuffer,"False",5)==0)
-		{
-			Game->LineDraw=0;
-		}
-		else
-		{
-			fprintf(stderr,"Invalid value \"%s\" for $SWEEP_LINEDRAW.\n",ValueBuffer);
-			fprintf(stderr,"$SWEEP_LINEDRAW must be either true or false.\n");
-		}
-	}
-
-	if ((ValueBuffer=getenv("SWEEP_PERCENT"))!=NULL)
-	{
-		Value=atoi(ValueBuffer);
-		((CheckPercent(Value)>0)?Game->Percent=Value:fprintf(stderr,"Invalid value \"%s\" for Percent in $SWEEP_PERCENT.\n",ValueBuffer)); 
-	}
-
-	if ((ValueBuffer=getenv("SWEEP_MINES"))!=NULL)
-	{
-		Value=atoi(ValueBuffer);
-		((CheckNumMines(Value,Game->Height,Game->Width)>0)?Game->NumMines=Value:fprintf(stderr,"Invalid value \"%s\" for NumMines in $SWEEP_MINES.\n",ValueBuffer));
-	}
-	
-	if ((ValueBuffer=getenv("SWEEP_WIDTH"))!=NULL)
-	{
-		Value=atoi(ValueBuffer);
-		((CheckWidth(Value)>0)?Game->Width=Value:fprintf(stderr,"Invalid value \"%s\" for Width in $SWEEP_WIDTH.\n",ValueBuffer));
 	}
 
 	return 0;
