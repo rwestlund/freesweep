@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.27 1999-02-24 05:04:53 hartmann Exp $
+* $Id: play.c,v 1.28 1999-02-24 05:45:18 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -130,6 +130,7 @@ int GetInput(GameStats* Game)
 			if (Game->MarkedMines == Game->NumMines && 
 				Game->BadMarkedMines == 0)
 			{
+				StopTimer();
 				YouWin();
 				Game->Status = WIN;
 #ifdef DEBUG_LOG
@@ -148,6 +149,7 @@ int GetInput(GameStats* Game)
 				#endif
 
 			}
+			StartTimer();
 			break;
 		
 		/* the accepted key to make a 'new' game */
@@ -198,6 +200,7 @@ int GetInput(GameStats* Game)
 					fprintf(DebugLog,"Mine exposed! Setting Status to LOSE.\n");
 					fflush(DebugLog);
 #endif /* DEBUG_LOG */
+					StartTimer();
 					break;
 				case UNKNOWN:
 					Clear(Game);
