@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: utils.c,v 1.6 1999-08-09 05:25:36 hartmann Exp $
+*  $Id: utils.c,v 1.7 2000-11-07 05:25:03 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -23,20 +23,6 @@ void* xmalloc(size_t num)
 	}
 
 	return vec;
-}
-
-FILE* xfopen(char *name, char *type)
-{
-	FILE *fp = NULL; 
-
-	fp = fopen(name, type);
-	if (fp == NULL)
-	{
-		SweepError("Could not open file: %s", name);
-		exit(EXIT_FAILURE);
-	}
-
-	return fp;
 }
 
 #ifndef HAVE_STRDUP
@@ -76,8 +62,7 @@ DIR* xopendir(const char *path)
 
 	if (dirent == NULL)
 	{
-		SweepError("Could not open directory: %s", path);
-		exit(EXIT_FAILURE);
+		return NULL;
 	}
 
 	return dirent;
