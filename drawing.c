@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.16 1999-03-03 07:31:34 hartmann Exp $
+* $Id: drawing.c,v 1.17 1999-03-05 23:25:24 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -484,7 +484,7 @@ void Help()
 {
 	WINDOW* HelpWin;
 	int Input=0, CurrentLine=0, LinesLeft=0, CurrentY=0;
-#define HELP_MESSAGES 12
+#define HELP_MESSAGES 13
 	char* Messages[]=
 	{
 		"Arrow keys and vi-style movement keys move the cursor.",
@@ -493,10 +493,13 @@ void Help()
 		"\'r\' redraws the screen.",
 		"\'0\' moves the cursor to the upper left corner.",
 		"\'$\' moves the cursor to the lower right corner.",
+		"\'c\' centers the cursor.",
 		"\'.\' repeats the last command.",
 		"\'a\' toggles the character set.",
 		"\'?\' displays this help screen.",
 		"\'g\' displays the GNU General Public License.",
+		"\'n\' starts a new game.",
+		"\'x\' prompts for new game parameters.",
 		"\'q\' quits the game.",
 		"Any non-zero number multiplies the next action."
 	};
