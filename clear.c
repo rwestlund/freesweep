@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: clear.c,v 1.6 1999-02-12 03:09:17 psilord Exp $
+* $Id: clear.c,v 1.7 1999-02-25 17:37:52 psilord Exp $
 *********************************************************************/
 
 #include <stdio.h>
@@ -329,170 +329,6 @@ struct Mark* NewMark(int x, int y)
 	return (m);
 }
 
-
-/* calculate if I should superclick, die, or do nothing. */
-int SuperCount(GameStats* Game)
-{
-	unsigned char SquareVal;
-	int MinesFound=0,BadFound=0;
-	int ThisX, ThisY;
-
-	ThisX=Game->CursorX;
-	ThisY=Game->CursorY;
-
-	/* Check the above squares */
-	if (ThisY > 0)
-	{
-		/* Check upper-left */
-		if (ThisX > 0)
-		{
-			GetMine(ThisX-1,ThisY-1,SquareVal);
-			switch (SquareVal)
-			{
-				case MINE:
-					MinesFound++;
-					break;
-				case BAD_MARK:
-					BadFound++;
-					break;
-				default:
-					break;
-			}
-		}
-
-		/* Check directly above */
-		GetMine(ThisX,ThisY-1,SquareVal);
-		switch (SquareVal)
-		{
-			case MINE:
-				MinesFound++;
-				break;
-			case BAD_MARK:
-				BadFound++;
-				break;
-			default:
-				break;
-		}
-
-		/* Check upper-right */
-		if (ThisX < Game->Width)
-		{
-			GetMine(ThisX+1,ThisY-1,SquareVal);
-			switch (SquareVal)
-			{
-				case MINE:
-					MinesFound++;
-					break;
-				case BAD_MARK:
-					BadFound++;
-					break;
-				default:
-					break;
-			}
-		}
-	}
-
-	if (ThisX > 0)
-	{
-		GetMine(ThisX-1,ThisY,SquareVal);
-		switch (SquareVal)
-		{
-			case MINE:
-				MinesFound++;
-				break;
-			case BAD_MARK:
-				BadFound++;
-				break;
-			default:
-				break;
-		}
-	}
-
-	if (ThisX < Game->Width)
-	{
-		GetMine(ThisX+1,ThisY,SquareVal);
-		switch (SquareVal)
-		{
-			case MINE:
-				MinesFound++;
-				break;
-			case BAD_MARK:
-				BadFound++;
-				break;
-			default:
-				break;
-		}
-	}
-
-	/* Check the below squares */
-	if (ThisY < Game->Height)
-	{
-		/* Check lower-left */
-		if (ThisX > 0)
-		{
-			GetMine(ThisX-1,ThisY+1,SquareVal);
-			switch (SquareVal)
-			{
-				case MINE:
-					MinesFound++;
-					break;
-				case BAD_MARK:
-					BadFound++;
-					break;
-				default:
-					break;
-			}
-		}
-
-		/* Check directly below */
-		GetMine(ThisX,ThisY+1,SquareVal);
-		switch (SquareVal)
-		{
-			case MINE:
-				MinesFound++;
-				break;
- 			case BAD_MARK:
-				BadFound++;
-				break;
-			default:
-				break;
-		}
-	
-		/* Check lower-right */
-		if (ThisX < Game->Width)
-		{
-			GetMine(ThisX+1,ThisY+1,SquareVal);
-			switch (SquareVal)
-			{
-				case MINE:
-					MinesFound++;
-					break;
- 				case BAD_MARK:
-					BadFound++;
-					break;
-				default:
-					break;
-			}
-		}
-	}
-
-	/* some incorrectly marked mines */
-	if (BadFound != 0)
-	{
-		return DIE;
-	}
-	/* some correctly marked, some not marked mines */
-	else if (MinesFound != 0 && BadFound == 0)
-	{
-		return DONOTHING;
-	}
-	/* all mines correctly marked */
-	else
-	{
-		return SUPERCLICK;
-	}
-}
-
 void SuperClear(GameStats *Game)
 {
 	int val;
@@ -542,4 +378,165 @@ void SuperClear(GameStats *Game)
 	}
 }
 
+/* calculate if I should superclick, die, or do nothing. */
+int SuperCount(GameStats* Game)
+{
+	unsigned char retval;
+	int MinesFound=0,BadFound=0;
+	int x, y;
 
+	x = Game->CursorX;
+	y = Game->CursorY;
+
+	/* Check the above squares */
+	if (y-1 >= 0)
+	{
+		/* Check upper-left */
+		if (x-1 >= 0)
+		{
+			GetMine(x-1, y-1, retval);
+			switch (retval)
+			{
+				case MINE:
+					MinesFound++;
+					break;
+ 				case BAD_MARK:
+					BadFound++;
+					break;
+				default:
+					break;
+			}
+		}
+
+		/* Check directly above */
+		GetMine(x, y-1, retval);
+		switch (retval)
+		{
+			case MINE:
+				MinesFound++;
+				break;
+ 			case BAD_MARK:
+				BadFound++;
+				break;
+			default:
+				break;
+		}
+	
+		/* Check upper-right */
+		if (x+1 < Game->Width)
+		{
+			GetMine(x+1, y-1, retval);
+			switch (retval)
+			{
+				case MINE:
+					MinesFound++;
+					break;
+ 				case BAD_MARK:
+					BadFound++;
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	if (x-1 >= 0)
+	{
+		GetMine(x-1, y, retval);
+		switch (retval)
+		{
+			case MINE:
+				MinesFound++;
+				break;
+ 			case BAD_MARK:
+				BadFound++;
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (x+1 < Game->Width)
+	{
+		GetMine(x+1, y, retval);
+		switch (retval)
+		{
+			case MINE:
+				MinesFound++;
+				break;
+ 			case BAD_MARK:
+				BadFound++;
+				break;
+			default:
+				break;
+		}
+	}
+
+	/* Check the below squares */
+	if (y+1 < Game->Height)
+	{
+		/* Check lower-left */
+		if (x-1 >= 0)
+		{
+			GetMine(x-1, y+1, retval);
+			switch (retval)
+			{
+				case MINE:
+					MinesFound++;
+					break;
+ 				case BAD_MARK:
+					BadFound++;
+					break;
+				default:
+					break;
+			}
+		}
+
+		/* Check directly below */
+		GetMine(x, y+1, retval);
+		switch (retval)
+		{
+			case MINE:
+				MinesFound++;
+				break;
+ 			case BAD_MARK:
+				BadFound++;
+				break;
+			default:
+				break;
+		}
+	
+		/* Check lower-right */
+		if (x+1 < Game->Width)
+		{
+			GetMine(x+1, y+1, retval);
+			switch (retval)
+			{
+				case MINE:
+					MinesFound++;
+					break;
+ 				case BAD_MARK:
+					BadFound++;
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
+	/* some incorrectly marked mines */
+	if (BadFound != 0)
+	{
+		return DIE;
+	}
+	/* some correctly marked, some not marked mines */
+	else if (MinesFound != 0 && BadFound == 0)
+	{
+		return DONOTHING;
+	}
+	/* all mines correctly marked */
+	else
+	{
+		return SUPERCLICK;
+	}
+}
