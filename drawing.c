@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.17 1999-03-05 23:25:24 hartmann Exp $
+* $Id: drawing.c,v 1.18 1999-03-06 22:04:14 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -653,6 +653,7 @@ void PrintBestTimes(char* Filename)
 		perror("PrintHighs::AllocWin");
 		exit(EXIT_FAILURE);
 	}
+	nodelay(BestTimesWin,FALSE);
 	wborder(BestTimesWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
 	mvwprintw(BestTimesWin,1,2,"Best times");
 	mvwhline(BestTimesWin,2,1,CharSet.HLine,COLS-2);
@@ -673,7 +674,12 @@ void PrintBestTimes(char* Filename)
 	wmove(BestTimesWin,0,0);
 	wrefresh(BestTimesWin);
 	Input=wgetch(BestTimesWin);
-	if ((Input=='q')||(Input=='Q'))
+#ifdef DEBUG_LOG
+	fprintf(DebugLog, "Leaving Bets Times view with %c\n", Input);
+	fflush(DebugLog);
+#endif /* DEBUG_LOG */
+
+	if (Input=='q')
 	{
 		clear();
 		refresh();
