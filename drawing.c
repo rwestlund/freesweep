@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.12 1999-02-19 02:04:42 hartmann Exp $
+* $Id: drawing.c,v 1.13 1999-02-22 06:09:09 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -642,11 +642,8 @@ int DrawBoard(GameStats* Game)
 */
 void PrintBestTimes(char* Filename)
 {
-	int Input=0,CurrentLine=0,Time=0;
-	char* Decoder;
-	char* Buffer;
+	int Input=0;
 	WINDOW* BestTimesWin;
-	BestTimeNode *Current, *Head;
 
 	if ((BestTimesWin=newwin(0,0,0,0))==NULL)
 	{
@@ -669,107 +666,6 @@ void PrintBestTimes(char* Filename)
 	mvwprintw(BestTimesWin,3,62,"Date");
 	mvwhline(BestTimesWin,4,54,CharSet.HLine,24);
 
-	Head=Current=LoadNodeList(Filename);
-	
-	CurrentLine=5;
-	while (Current!=NULL)
-	{
-		if (CurrentLine==LINES-1)
-		{
-			mvwprintw(BestTimesWin,LINES-1,1,"--Press \'q\' to quit, Space for more best times, any other key to continue.--");
-			wmove(BestTimesWin,0,0);
-			wrefresh(BestTimesWin);
-			Input=wgetch(BestTimesWin);
-			if ((Input=='q')||(Input=='Q'))
-			{
-				clear();
-				refresh();
-				endwin();
-				exit(EXIT_SUCCESS);
-			}
-			else if (Input==' ')
-			{
-				wmove(BestTimesWin,5,0);
-				wclrtobot(BestTimesWin);
-				wborder(BestTimesWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-				CurrentLine=5;
-			}
-			else
-			{
-				wclear(BestTimesWin);
-				delwin(BestTimesWin);
-				clear();
-				noutrefresh();
-				FreeNode(Head);
-				return;
-			}
-		}
-	
-		mvwprintw(BestTimesWin,CurrentLine,4,"%s",Current->Username);
-
-		/* Make a copy of the Attributes string. */
-		if  ((Buffer=strdup(Current->Attributes))==NULL)
-		{
-			perror("PrintBestTimes::AttribDup");
-			return;
-		}
-
-		/* Get the width, delimited by a 'w' on one side, and a 'h' on the other. */
-		if ((Decoder=strtok(Buffer,"wh"))==NULL)
-		{
-
-		}
-		else
-		{
-			mvwprintw(BestTimesWin,CurrentLine,30-strlen(Decoder),"%s",Decoder);
-		}
-
-		/* Get the height, delimited by a 'h' on one side, and a 'm' on the other. */
-		if ((Decoder=strtok(NULL,"hm"))==NULL)
-		{
-			fprintf(stderr,"Invalid entry in %s.\n",DFL_BESTS_FILE);
-			return;
-		}
-		else
-		{
-			mvwprintw(BestTimesWin,CurrentLine,21-strlen(Decoder),"%s",Decoder);
-		}
-
-		/* Get the number of mines, delimited by an 'm' on one side, and a 't' on the other. */
-		if ((Decoder=strtok(NULL,"mt"))==NULL)
-		{
-			fprintf(stderr,"Invalid entry in %s.\n",DFL_BESTS_FILE);
-			return;
-		}
-		else
-		{
-			mvwprintw(BestTimesWin,CurrentLine,40-strlen(Decoder),"%s",Decoder);
-		}
-
-		Time=Current->Time;
-		if (Time>=3600)
-		{
-			/* print time in HH:MM:SSs format. */
-			mvwprintw(BestTimesWin,CurrentLine,43-(Time/36000),"%d:%02d:%0ds",Time/3600,(Time%3600)/60,Time%60);
-		}
-		else if (Time>=60)
-		{
-			/* print time in MM:SSs format. */
-			mvwprintw(BestTimesWin,CurrentLine,45,"%2d:%02ds",Time/60,Time%60);
-		}
-		else
-		{
-			/* print time in SSs format. */
-			mvwprintw(BestTimesWin,CurrentLine,48,"%02ds",Time);
-		}
-
-		mvwprintw(BestTimesWin,CurrentLine,54,"%s",Current->Date);
-		
-		/* Increment CurrentLine. */
-		Current=Current->Next;
-		CurrentLine++;
-	}
-
 	mvwprintw(BestTimesWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
 	wmove(BestTimesWin,0,0);
 	wrefresh(BestTimesWin);
@@ -779,7 +675,6 @@ void PrintBestTimes(char* Filename)
 		clear();
 		refresh();
 		endwin();
-		FreeNode(Head);
 		exit(EXIT_SUCCESS);
 	}
 	else
@@ -789,7 +684,6 @@ void PrintBestTimes(char* Filename)
 		clear();
 		noutrefresh();
 	}
-	FreeNode(Head);
 	return;
 }
 

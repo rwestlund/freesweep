@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.9 1999-02-19 02:04:42 hartmann Exp $
+* $Id: game.c,v 1.10 1999-02-22 06:09:09 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -322,9 +322,9 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 		exit(EXIT_SUCCESS);
 	}
 
+	/* XXX FOO This needs to dump the best times to stdout! */
 	if (DumpFlag==1)
 	{
-		DumpNodeFile(NULL);
 		exit(EXIT_SUCCESS);
 	}
 
