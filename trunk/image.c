@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: image.c,v 1.1 2000-11-02 03:46:47 hartmann Exp $
+*  $Id: image.c,v 1.2 2000-11-03 21:28:49 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -21,8 +21,8 @@ void SaveGameImage(GameStats* Game, char *fname)
 	/* dump the stats out */
 	fprintf(fo, "P6\n%d\n%d\n255\n", Game->Width, Game->Height);
 	
-	for ( width = 0 ; width < Game->Width ; width++ ) {
-		for ( height = 0 ; height < Game->Height ; height++ ) {
+	for ( height = 0 ; height < Game->Height ; height++ ) {
+		for ( width = 0 ; width < Game->Width ; width++ ) {
 			if (( abs(width - Game->CursorX) < 2 ) && ( abs( Game->CursorY - height) < 10 )) {
 				fwrite("\xff\x00\x00", 1, 3, fo);
 			} else if (( abs(width - Game->CursorX) < 10 ) && ( abs(Game->CursorY - height) < 2 )) {
@@ -34,7 +34,7 @@ void SaveGameImage(GameStats* Game, char *fname)
 						fwrite("\x00\x00\x00", 1, 3, fo);
 						break;
 					case MARKED: case BAD_MARK:
-						fwrite("\x00\xff\x00", 1, 3, fo);
+						fwrite("\x00\x00\xff", 1, 3, fo);
 						break;
 					case DETONATED:
 						fwrite("\xff\x00\x00", 1, 3, fo);
