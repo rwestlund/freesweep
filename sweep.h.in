@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.14 1999-02-23 17:33:07 psilord Exp $
+* $Id: sweep.h.in,v 1.15 1999-02-23 19:08:57 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -73,9 +73,11 @@
 #define DETONATED 0xd
 
 /* These are for winning and losing. */
-#define WIN 1
 #define INPROG 0
-#define LOSE -1
+#define WIN 1
+#define LOSE 2 
+#define ABORT 3
+#define RECONF 4
 
 /* These are for the alert types. */
 #define BEEP 0
@@ -256,6 +258,8 @@ void SweepMessage(char* format, ...);
 /* These are the functions described in utils.c */
 void* xmalloc(size_t num);
 FILE* xfopen(char *name, char *type);
+void StartTimer(void);
+void StopTimer(void);
 
 /* this is in pbests.c, which will eventually become bests.c */
 void UpdateBestTimesFile(GameStats *Game, char *filename);

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.24 1999-02-23 17:33:07 psilord Exp $
+* $Id: play.c,v 1.25 1999-02-23 19:08:57 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -149,6 +149,17 @@ int GetInput(GameStats* Game)
 
 			}
 			break;
+		
+		/* the accepted key to make a 'new' game */
+		case 'n':
+			if (Multiplier != 1)
+			{
+				SweepError("Can only make a new game once.");
+				Multiplier=1;
+			}
+			Game->Status = ABORT;
+			break;
+
 
 		/* The accepted keys to expose a space. */
 		case ' ':
@@ -216,9 +227,11 @@ int GetInput(GameStats* Game)
 				SweepError("Can only display help screen once.");
 				Multiplier=1;
 			}
+			StopTimer();
 			Help();
 			PrintInfo();
 			RedrawErrorWin();
+			StartTimer();
 			break;
 
 		/* The accepted keys to display the license screen. */

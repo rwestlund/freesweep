@@ -44,3 +44,16 @@ char *strdup(char *s)
 
 }
 #endif
+
+/* start and stop the timer */
+void StartTimer(void)
+{
+	signal(SIGALRM, sighandler);
+	alarm(1);
+}
+
+/* stop the timer */
+void StopTimer(void)
+{
+	signal(SIGALRM, SIG_IGN);
+}
