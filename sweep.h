@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.4 1999-02-11 08:38:22 hartmann Exp $
+* $Id: sweep.h,v 1.5 1999-02-11 18:50:35 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -250,6 +250,10 @@ void SuperClear(GameStats *Game);
 #define UNSET(t, xx, yy) \
 	(unsigned char)((t)[(xx)/8 + yy * g_table_w]) &= \
 		~(((unsigned char)0x80)>>((xx)%8))
+
+/* functions defined in sl.c for save/load games */
+void SaveGame(GameStats* Game, char *fname);
+GameStats* LoadGame(char *fname);
 
 
 #endif /* __SWEEP_H__ */
