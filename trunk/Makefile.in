@@ -1,6 +1,5 @@
-# Generated automatically from Makefile.in by configure.
 ######################################################################
-# $Id: Makefile.in,v 1.29 1999-03-05 03:55:24 hartmann Exp $
+# $Id: Makefile.in,v 1.30 1999-03-05 23:25:24 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep

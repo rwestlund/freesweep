@@ -1,5 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
+/*********************************************************************
+* $Id: sl.c,v 1.7 1999-03-05 23:25:24 hartmann Exp $
+*********************************************************************/
+
 #include "sweep.h"
 
 void SaveGame(GameStats* Game, char *fname)

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.31 1999-03-05 03:55:25 hartmann Exp $
+* $Id: play.c,v 1.32 1999-03-05 23:25:24 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -284,14 +284,15 @@ int GetInput(GameStats* Game)
 			doupdate();
 			break;
 		
-		/* The accepted values to print coordinates of cursor on board */
+		/* The accepted values to center the cursor on board */
 		case 'c':
 			if (Multiplier!=1)
 			{
-				SweepError("Can only display coordinates once.");
+				SweepError("Can only center cursor once.");
 				Multiplier=1;
 			}
-			SweepMessage("Location: (%u, %u)", Game->CursorX, Game->CursorY);
+			Game->CursorX=Game->Width/2;
+			Game->CursorY=Game->Height/2;
 			break;
 
 		/* A test key. Sort of feature-of-the-day. */
