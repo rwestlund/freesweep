@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.12 1999-02-18 01:49:00 psilord Exp $
+* $Id: main.c,v 1.13 1999-02-19 02:24:45 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -26,7 +26,6 @@ int main(int argc, char** argv)
 
 	SourceGlobalFile(Game);
 	SourceHomeFile(Game);
-	SourceEnv(Game);
 
 	if (ParseArgs(Game,argc,argv)>0)
 	{
