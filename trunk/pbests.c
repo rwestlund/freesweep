@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: pbests.c,v 1.29 2000-11-07 05:31:09 hartmann Exp $
+*  $Id: pbests.c,v 1.30 2003-10-11 20:50:50 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -382,7 +382,11 @@ struct BestEntry* NewBestEntry(GameStats *Game)
 		SweepError("You do not have a username!");
 		buf = "unknown";
 	}
+#if defined(HAVE_STRNCPY)
+	strncpy(b->name, buf, MAX_NAME);
+#else	
 	strcpy(b->name, buf);
+#endif
 
 	/* get the real time it was completed */
 	time(&now);
@@ -396,7 +400,11 @@ struct BestEntry* NewBestEntry(GameStats *Game)
 	{
 		*p = 0;
 	}
+#if defined(HAVE_STRNCPY)
+	strncpy(b->date, buf, MAX_DATE);
+#else	
 	strcpy(b->date, buf);
+#endif
 
 	/* add _ instead of spaces for easier data format storage */
 	while((p = strchr(b->date, ' ')) != NULL)
@@ -426,8 +434,11 @@ char* FPTBTF(void)
 	fp = (char*)xmalloc(strlen(home) + strlen(DFL_BESTS_FILE) + 2);
 
 	/* make the full path */
-	strcpy(fp, home);
-	strcat(fp, "/" DFL_BESTS_FILE);
+#if defined(HAS_SNPRINTF)
+	snprintf(fp, strlen(home) + strlen(DFL_BESTS_FILE) + 2, "%s/%s", home, DFL_BESTS_FILE);
+#else
+	sprintf(fp, "%s/%s", home, DFL_BESTS_FILE);
+#endif
 
 	return fp;
 }
@@ -442,8 +453,11 @@ char* FPTGBTF(void)
 	fp = (char*)xmalloc(strlen(mkstr(SCORESDIR)) + 11);
 
 	/* make the full path */
-	strcpy(fp, mkstr(SCORESDIR));
-	strcat(fp, "/sweeptimes");
+#if defined(HAS_SNPRINTF)
+	snprintf(fp, (strlen(mkstr(SCORESDIR)) + 11), "%s/sweeptimes", mkstr(SCORESDIR));
+#else
+	sprintf(fp, "%s/sweeptimes", mkstr(SCORESDIR));
+#endif
 
 	return fp;
 }

@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: drawing.c,v 1.24 2002-12-24 05:44:39 hartmann Exp $
+*  $Id: drawing.c,v 1.25 2003-10-11 20:50:50 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -94,6 +94,7 @@ void AskPrefs(GameStats* Game)
 			Status=1;
 			mvprintw(CurrentLine,(26+L_MAX_H),"%d",Game->Height);
 		}
+		/* Maybe put help here? */
 		else
 		{
 			Value=atoi(ValueBuffer);

@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: files.c,v 1.9 2002-12-19 07:04:05 hartmann Exp $
+*  $Id: files.c,v 1.10 2003-10-11 20:50:50 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -104,9 +104,11 @@ int SourceHomeFile(GameStats* Game)
 		perror("SourceHomeFile::getenv");
 		return 1;
 	}
-	strcpy(Pathname,Buffer);
-	strcat(Pathname,"/");
-	strcat(Pathname,DFL_PREFS_FILE);
+#if defined(HAVE_SNPRINTF)
+	snprintf(Pathname, MAX_LINE, "%s/%s", Buffer, DFL_PREFS_FILE);
+#else
+	snprintf(Pathname, MAX_LINE, "%s/%s", Buffer, DFL_PREFS_FILE);
+#endif
 
 	if ((PrefsFile=fopen(Pathname,"r"))==NULL)
 	{
@@ -167,9 +169,11 @@ int WritePrefsFile(GameStats* Game)
 		return 1;
 	}
 
-	strcpy(Pathname,Buffer);
-	strcat(Pathname,"/");
-	strcat(Pathname,DFL_PREFS_FILE);
+#if defined(HAVE_SNPRINTF)
+	snprintf(Pathname, MAX_LINE, "%s/%s", Buffer, DFL_PREFS_FILE);
+#else
+	sprintf(Pathname, "%s/%s", Buffer, DFL_PREFS_FILE);
+#endif	
 
 	if ((PrefsFile=fopen(Pathname,"w"))==NULL)
 	{
