@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.24 1999-05-22 02:42:15 hartmann Exp $
+* $Id: game.c,v 1.25 1999-05-22 02:51:13 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -368,7 +368,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 #ifdef HAVE_GETOPT_LONG
 		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%%, --percent=value\tSet percent to value\n\t-a, --alt-charset\tUse the alternate character set\n\t-b, --show-best-times\tDisplay best times\n\t-d, --dump-best-times\tPrint best times to stdout\n\t-f, --fast\t\tStart in fast mode\n\t-g, --show-gpl\t\tDisplay the GNU General Public License\n\t-h, --height=value\tSet height to value\n\t-i, --interactive\tStart in interactive mode\n\t-m, --mines=value\tSet mines to value\n\t-s, --save-prefs\tSave any specified preferences\n\t-v, --version\t\tDisplay version information\n\t-w, --width=value\tSet width to value\n");
 #else
-		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% percent\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public Licwnse\t-h height\tSet height to value\t-i\t\tStart in interactive mode\n\t-m mines\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
+		fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% percent\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-h height\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m mines\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
 #endif
 		exit(EXIT_FAILURE);
 	}
