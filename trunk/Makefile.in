@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.24 1999-02-22 22:00:07 psilord Exp $
+# $Id: Makefile.in,v 1.25 1999-02-23 17:33:07 psilord Exp $
 ######################################################################
 
 SRCS = clear.c drawing.c error.c files.c game.c gpl.c main.c pbests.c play.c sl.c tick.c utils.c
@@ -13,7 +13,7 @@ SYSTEM_TYPE = @host@
 OBJS =  $(patsubst %.c,%.o,$(SRCS))
 
 CC = @CC@
-CFLAGS = -ansi -pedantic -Wall -DSYSTEM_TYPE=\"$(SYSTEM_TYPE)\" -DUSER=\"$(USER)\" -DVERSION=\"$(VERSION)\" -DDEBUG_LOG=\"debug.log\" @CFLAGS@ @DEFS@ 
+CFLAGS = -Wall -DSYSTEM_TYPE=\"$(SYSTEM_TYPE)\" -DUSER=\"$(USER)\" -DVERSION=\"$(VERSION)\" -DDEBUG_LOG=\"debug.log\" @CFLAGS@ @DEFS@ 
 LIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 

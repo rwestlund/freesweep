@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.23 1999-02-19 07:20:37 psilord Exp $
+* $Id: play.c,v 1.24 1999-02-23 17:33:07 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -12,6 +12,7 @@ int GetInput(GameStats* Game)
 	unsigned char RetVal;
 	int Multiplier=1;
 	int UserInput=0;
+	char *pathname = NULL;
 
 #ifdef SWEEP_MOUSE
 	MEVENT MouseInput;
@@ -136,7 +137,16 @@ int GetInput(GameStats* Game)
 					Game->NumMines, Game->MarkedMines, Game->BadMarkedMines);
 				fflush(DebugLog);
 #endif /* DEBUG_LOG */
-				UpdateBestTimesFile(Game);
+				pathname = FPTBTF();
+				UpdateBestTimesFile(Game, pathname);
+				free(pathname);
+
+				#ifdef USE_GROUP_BEST_FILE
+					pathname = FPTGBTF();
+					UpdateBestTimesFile(Game, pathname);
+					free(pathname);
+				#endif
+
 			}
 			break;
 

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: defaults.h,v 1.3 1999-02-18 05:25:04 hartmann Exp $
+* $Id: defaults.h,v 1.4 1999-02-23 17:33:07 psilord Exp $
 *********************************************************************/
 
 #ifndef __DEFAULTS_H__
@@ -16,6 +16,8 @@
 #define DEFAULT_FASTSTART 0
 #define DEFAULT_ALERT 0
 #define VI_KEYS
+
+#define USE_GROUP_BEST_FILE
 
 /* Don't use Linedraw by default if not using ncurses. */
 #ifdef HAVE_LIBNCURSES
