@@ -43,6 +43,8 @@ struct FileBuf* CreateFileBuf(char *dir)
 		tail = tmp;
 	}
 
+	closedir(dent);
+
 	return head;
 }
 
