@@ -9,6 +9,7 @@ static void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n);
 static void SaveBestTimesFile(struct BestFileDesc *bfd);
 static struct BestEntry* NewBestEntry(GameStats *Game);
 static char* FPTBTF(void);
+void Unpack(struct BestFileDesc *bfd, FILE *abyss);
 
 /* the one function that does it all */
 void UpdateBestTimesFile(GameStats *Game)
@@ -60,7 +61,7 @@ struct BestFileDesc* NewBFD(void)
 /* summon from the depths of the abyss the best times file */
 void LoadBestTimesFile(struct BestFileDesc *bfd)
 {
-	FILE *abyss = NULL
+	FILE *abyss = NULL;
 	char *truename = NULL;
 	
 	truename = FPTBTF();
@@ -78,7 +79,7 @@ void LoadBestTimesFile(struct BestFileDesc *bfd)
 
 	free(truename);
 
-	close(abyss);	/* you just try! */
+	fclose(abyss);	/* you just try! */
 }
 
 void Unpack(struct BestFileDesc *bfd, FILE *abyss)
