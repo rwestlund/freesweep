@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.6 1999-02-12 00:45:50 hartmann Exp $
+* $Id: drawing.c,v 1.7 1999-02-12 20:18:57 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -45,7 +45,7 @@ void PrintInfo()
 	WINDOW* InfoWin;
 	InfoWin=newwin(6,21,0,(COLS-INFO_W));
 	wborder(InfoWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
-	mvwprintw(InfoWin,1,2,"-=-FreeSweeper-=-");
+	mvwprintw(InfoWin,1,2,"-=- FreeSweep -=-");
 	mvwprintw(InfoWin,2,2,"by Gus! & Psilord");
 	wmove(InfoWin,3,1);
 	whline(InfoWin,CharSet.HLine,19);

@@ -1,15 +1,14 @@
 ######################################################################
-# $Id: Makefile.in,v 1.6 1999-02-12 00:45:49 hartmann Exp $
+# $Id: Makefile.in,v 1.7 1999-02-12 20:18:57 hartmann Exp $
 ######################################################################
 
 SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c sl.c
 HEADS = sweep.h defaults.h
 MISC = README Makefile sweeprc configure.in install-sh configure.in Makefile.in config.guess configure config.sub
-TARGET = newsweep
+TARGET = freesweep
 CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status
 VERSION = 0.81
 
-NOW = $(shell @DATE@ +%Y%m%d%H%M)
 SYSTEM_TYPE = @host@
 OBJS =  $(patsubst %.c,%.o,$(SRCS))
 
@@ -49,7 +48,7 @@ sterile:
 	@/bin/rm -f */*.o */core */made */$(TARGET) */a.out
 
 tar: $(SRCS) $(HEADS) $(MISC)
-	@(cd ../; tar -czvf $(TARGET)-$(VERSION).$(NOW).tar.gz $(addprefix ./sweep/,$(SRCS) $(HEADS) $(MISC)))
+	@(cd ../; tar -czvf $(TARGET)-$(VERSION).tar.gz $(addprefix ./sweep/,$(SRCS) $(HEADS) $(MISC)))
 
 tags: $(SRCS) $(HEADS) $(MISC)
 	@ctags $(SRCS) $(HEADS)
