@@ -32,3 +32,7 @@ See if purify bitches about what I wrote with the reconfig shit.
 See what purify is bitching about in the load/save game code.
 
 Sun's curses doesn't do standout() correctly on a Linux term.
+
+Special thanks to Pete Keller for lots of help.
+Thanks to the FSF for the license and certain chunks of code.
+Thanks to the Undergraduate Project Lab at the University of Wisconsin
