@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: utils.c,v 1.4 1999-03-05 23:25:24 hartmann Exp $
+* $Id: utils.c,v 1.5 1999-04-14 21:59:43 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -46,6 +46,36 @@ char *strdup(char *s)
 
 }
 #endif
+
+char* xgetcwd(char *buf, size_t size)
+{
+	char *path = NULL;
+
+	path = getcwd(buf, size);
+
+	if (path == NULL)
+	{
+		SweepError("Could not get current working directory.");
+		exit(EXIT_FAILURE);
+	}
+
+	return path;
+}
+
+DIR* xopendir(const char *path)
+{
+	DIR *dirent = NULL;
+
+	dirent = opendir(path);
+
+	if (dirent == NULL)
+	{
+		SweepError("Could not open directory: %s", path);
+		exit(EXIT_FAILURE);
+	}
+
+	return dirent;
+}
 
 /* start and stop the timer */
 void StartTimer(void)
