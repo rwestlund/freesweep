@@ -1,6 +1,6 @@
 # Generated automatically from Makefile.in by configure.
 ######################################################################
-# $Id: Makefile,v 1.2 1999-02-10 23:49:23 hartmann Exp $
+# $Id: Makefile,v 1.3 1999-02-11 00:36:33 hartmann Exp $
 ######################################################################
 
 SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c
@@ -40,9 +40,7 @@ configure: configure.in
 	@autoconf
 
 clean:
-	@-/bin/rm -f $(CLEANUP)
-#	@[ ! -d $(SYSTEM_TYPE) ] || (cd $(SYSTEM_TYPE); /bin/rm -f a.out core *.o made newsweep)
-#	@[ ! -d $(SYSTEM_TYPE) ] || (cd $(SYSTEM_TYPE); /bin/rm -f $(CLEANUP) )
+	@-/bin/rm -rf $(CLEANUP) $(SYSTEM_TYPE)
 
 distclean:
 	@make sterile
