@@ -1,12 +1,13 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.30 1999-08-06 07:25:26 hartmann Exp $
+* $Id: sweep.h.in,v 1.31 1999-08-12 03:37:15 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
 #define __SWEEP_H__
 
-/* The library header files. */
+#define mkstr(s) # s
 
+/* The library header files. */
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif /* HAVE_UNISTD_H */
@@ -59,7 +60,7 @@
 #define SWEEP_MOUSE
 #endif /* NCURSES_MOUSE_VERSION */
 
-#ifdef SCORESDIR
+#if defined SCORESDIR
 #define USE_GROUP_BEST_FILE
 #endif
 
