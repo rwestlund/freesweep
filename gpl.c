@@ -5,7 +5,7 @@
 void PrintGPL()
 {
 	WINDOW* GPLWin;
-	int Input=0, CurrentLine=0, CurrentY=0;
+	int Input=0, LinesLeft=0, CurrentY=0, CurrentLine=0;
 	char* Messages[]=
 	{
 "			 GNU GENERAL PUBLIC LICENSE",
@@ -359,23 +359,19 @@ void PrintGPL()
 	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
 	mvwprintw(GPLWin,1,2,"Time out - The GNU General Public License");
 	mvwhline(GPLWin,2,1,CharSet.HLine,COLS-2);
+	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, space for more, any other key to continue.--");
 
 	/* Be sure to update this to account for all of the error messages. */
-	CurrentLine=0;
-	while (CurrentLine<GPL_LINES)
+	LinesLeft=GPL_LINES;
+	while (LinesLeft> (LINES - 6))
 	{
-		for (CurrentY=4; CurrentY< (LINES - 2) ; CurrentY++ )
+		CurrentY=4;
+		while (CurrentY< (LINES -2 ))
 		{
-			if ( CurrentLine < GPL_LINES )
-			{
-				mvwprintw(GPLWin,CurrentY,2,Messages[CurrentLine++]);
-			}
-			else
-			{
-				CurrentY=LINES -1;
-			}
+			mvwprintw(GPLWin,CurrentY++,2,Messages[CurrentLine++]);
+			LinesLeft--;
 		}
-		mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
+		/* Now get a keystroke to continue. */
 		wmove(GPLWin,0,0);
 		wrefresh(GPLWin);
 		Input=wgetch(GPLWin);
@@ -393,6 +389,7 @@ void PrintGPL()
 				wmove(GPLWin,3,0);
 				wclrtobot(GPLWin);
 				wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+				mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, space for more, any other key to continue.--");
 				wrefresh(GPLWin);
 				break;
 
@@ -405,6 +402,36 @@ void PrintGPL()
 				break;
 		}
 	}
+	/* Now print the last few lines */
+	CurrentY=4;
+	while (LinesLeft > 0)
+	{
+			mvwprintw(GPLWin,CurrentY++,2,Messages[CurrentLine++]);
+			LinesLeft--;
+		
+	}
+	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, or any other key to continue.--");
+	wmove(GPLWin,0,0);
+	wrefresh(GPLWin);
+	Input=wgetch(GPLWin);
+
+	switch (Input)
+	{
+		case 'q':
+			clear();
+			refresh();
+			endwin();
+			exit(EXIT_SUCCESS);
+			break;
+
+		default:
+			wclear(GPLWin);
+			delwin(GPLWin);
+			clear();
+			noutrefresh();
+			return;
+			break;
+	}
 	return;
 }
-
