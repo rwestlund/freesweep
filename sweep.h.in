@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.35 2001-06-11 00:30:36 hartmann Exp $
+* $Id: sweep.h.in,v 1.36 2002-12-21 21:32:09 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -90,8 +90,8 @@
 
 /* These are defines for maximum accepted values */
 #define MAX_LINE 1024
-#define MAX_H 1024
-#define MAX_W 1024
+#define MAX_H 2048
+#define MAX_W 2048
 #define L_MAX_H 4
 #define L_MAX_W 4
 #define INFO_W 21
