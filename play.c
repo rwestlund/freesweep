@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.10 1999-02-12 07:25:19 hartmann Exp $
+* $Id: play.c,v 1.11 1999-02-12 17:53:59 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -96,7 +96,6 @@ int GetInput(GameStats* Game)
 		/* The non-motion keys. */
 		/* The accepted values for flagging a space as a mine. */
 		case 'f':
-		case 'F':
 		case KEY_B2:
 			if (Multiplier!=1)
 			{
@@ -184,7 +183,6 @@ int GetInput(GameStats* Game)
 
 		/* The accepted keys to redraw the screen. */
 		case 'r':
-		case 'R':
 		case KEY_REFRESH:
 		case '\f':
 			if (Multiplier!=1)
@@ -198,7 +196,6 @@ int GetInput(GameStats* Game)
 		/* The accepted keys to display the help screen. */
 		case '?':
 		case 'm':
-		case 'M':
 		case '/':
 		case KEY_HELP:
 			if (Multiplier!=1)
@@ -228,7 +225,6 @@ int GetInput(GameStats* Game)
 		/* The accepted values to suspend the game. */
 		case KEY_SUSPEND:
 		case 'z':
-		case 'Z':
 			if (Multiplier!=1)
 			{
 				SweepError("Can only suspend the program once.");
@@ -238,7 +234,6 @@ int GetInput(GameStats* Game)
 			break;
 
 		case 'q':
-		case 'Q':
 			if (Multiplier!=1)
 			{
 				SweepError("Can only quit once.");
@@ -279,7 +274,6 @@ int GetInput(GameStats* Game)
 			break;
 
 		case 'a':
-		case 'A':
 			/* FOO - needs to redraw everything. */
 			if (Multiplier!=1)
 			{
@@ -305,7 +299,6 @@ int GetInput(GameStats* Game)
 			break;
 
 		case 'd':
-		case 'D':
 				DumpGame(Game);
 			break;
 
@@ -331,13 +324,11 @@ int GetInput(GameStats* Game)
 
 		/* XXX Save a game */
 		case 'p':
-		case 'P':
 			SaveGame(Game, "./foo.svg");
 			SweepError("Done Saving");
 			break;
 
 		/* XXX load a game */
-		case 'O':
 		case 'o':
 			wclear(Game->Board);
 			wnoutrefresh(Game->Board);
