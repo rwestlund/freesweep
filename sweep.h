@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.9 1999-02-13 04:23:11 psilord Exp $
+* $Id: sweep.h,v 1.10 1999-02-17 06:58:19 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -18,6 +18,7 @@
 #include <time.h>
 #include <assert.h>
 #include <math.h>
+#include <stdarg.h>
 
 #ifdef NCURSES_MOUSE_VERSION
 #define SWEEP_MOUSE
@@ -234,11 +235,12 @@ int ClickSquare(GameStats* Game, int ThisX, int ThisY);
 int DoubleClickSquare(GameStats* Game, int ThisX, int ThisY);
 
 /* These are the functions defined in error.c */
-int SweepError(char* ErrMsg);
+void SweepError(char* format, ...);
 int InitErrorWin(GameStats* Game);
 void ClearError();
 int RedrawErrorWin();
 void SweepAlert();
+void SweepMessage(char* format, ...);
 
 /* These are the functions defined in bests.c */
 int MigrateBestTimes(FILE* ScoresFile);
