@@ -7,7 +7,7 @@ settings in the interactive setup. Use of -s without -f is discouraged.
 	Old preference file formats are supported by converting them to the
 new format and deleting the previous version.
 
-	While the game is playable on any terminal supported by ncurses,
+	While the game is playable on any terminal supported by curses/ncurses,
 the help and high scores windows are designed to use a screen 80 columns wide.
 
 	The use of the -d option overrides all other options.
@@ -30,3 +30,5 @@ correct permissions.
 See if purify bitches about what I wrote with the reconfig shit.
 
 See what purify is bitching about in the load/save game code.
+
+Sun's curses doesn't do standout() correctly on a Linux term.
