@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: fgui.c,v 1.15 2000-08-30 04:10:54 hartmann Exp $
+*  $Id: fgui.c,v 1.16 2000-11-07 05:32:36 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -44,10 +44,15 @@ struct FileBuf* CreateFileBuf(char *dir)
 #elif defined(HAVE_GET_CURRENT_DIR_NAME)
 	path = get_current_dir_name();
 #else /* Now what? No idea! */
-	assert(1);
+#error "Don't know how to proceed on systems without PATH_MAX or get_current_dir_name"
 #endif
 
 	dent = xopendir(dir);
+
+	if ( dent == NULL )
+	{
+		return NULL;
+	}
 
 	/* create a linked list of entries, don't use some of the fields for now */
 	while ((dp = readdir(dent)) != NULL)
@@ -173,7 +178,10 @@ char *FSelector(void)
 	while(S_ISDIR(buf.st_mode))
 	{
 		DestroyFileBuf(fb);
-		fb = CreateFileBuf(selection);
+		if ( ( fb = CreateFileBuf(selection) ) == NULL )
+		{
+			return NULL;
+		}
 		free(selection);
 		selection = Choose(fb);
 		stat(selection, &buf);
@@ -310,5 +318,5 @@ char* FSGUI(void)
 	file = FSelector();
 	StartTimer();
 
-	return file;;
+	return file;
 }
