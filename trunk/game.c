@@ -1,6 +1,12 @@
-/*********************************************************************
-* $Id: game.c,v 1.31 1999-07-30 05:01:50 hartmann Exp $
-*********************************************************************/
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: game.c,v 1.32 1999-08-09 05:25:35 hartmann Exp $
+*                                                                     *
+**********************************************************************/
 
 #include "sweep.h"
 

@@ -1,6 +1,12 @@
-/*********************************************************************
-* $Id: main.c,v 1.33 1999-04-17 22:11:29 hartmann Exp $
-*********************************************************************/
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: main.c,v 1.34 1999-08-09 05:25:36 hartmann Exp $
+*                                                                     *
+**********************************************************************/
 
 #include "sweep.h"
 

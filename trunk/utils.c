@@ -1,6 +1,12 @@
-/*********************************************************************
-* $Id: utils.c,v 1.5 1999-04-14 21:59:43 psilord Exp $
-*********************************************************************/
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: utils.c,v 1.6 1999-08-09 05:25:36 hartmann Exp $
+*                                                                     *
+**********************************************************************/
 
 #include "sweep.h"
 

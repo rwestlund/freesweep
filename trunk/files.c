@@ -1,5 +1,12 @@
-/********************************************************************* * $Id: files.c,v 1.7 1999-08-09 05:18:22 hartmann Exp $
-*********************************************************************/
+/**********************************************************************
+*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
+*  It may be distributed under the terms of the GNU General Purpose   *
+*  License, version 2 or above; see the file COPYING for more         *
+*  information.                                                       *
+*                                                                     *
+*  $Id: files.c,v 1.8 1999-08-09 05:25:35 hartmann Exp $
+*                                                                     *
+**********************************************************************/
 
 #include "sweep.h"
 
