@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 #include "sweep.h"
 
 static struct BestFileDesc* NewBFD(void);
@@ -86,10 +83,10 @@ void LoadBestTimesFile(struct BestFileDesc *bfd)
 	truename = FPTBTF();
 
 	again:
-	abyss = fopen(truename, "rb");
+	abyss = fopen(truename, "r+");
 	if (abyss == NULL)
 	{
-		abyss = xfopen(truename, "wb");
+		abyss = xfopen(truename, "w");
 
 		fprintf(DebugLog, "Creating Besttimes file....\n");
 		tlockf(abyss, truename);
@@ -520,17 +517,17 @@ void tunlockf(FILE *fp)
 	lseek(fd, 0L, SEEK_SET);
 
 #if defined(HAVE_FLOCK) && defined(HAVE_LOCKF)
-	if(flock(fd, LOCK_EX) == -1)
+	if(flock(fd, LOCK_UN) == -1)
 #elif defined(HAVE_FLOCK)
-	if(flock(fd, LOCK_EX) == -1)
+	if(flock(fd, LOCK_UN) == -1)
 #elif defined(HAVE_LOCKF)
-	if(lockf(fd, F_LOCK, 0L) == -1)
+	if(lockf(fd, F_ULOCK, 0L) == -1)
 #else
 #error "Need flock() or lockf()"
 #endif
 	{
-		fprintf(DebugLog, "Can't unlock file\n");
-		SweepError("Cannot unlock file\n");
+		fprintf(DebugLog, "Can't unlock file: %d\n", errno);
+		SweepError("Cannot unlock file: %d\n", errno);
 		exit(EXIT_FAILURE);
 	}
 }
