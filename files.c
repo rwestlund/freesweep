@@ -1,4 +1,4 @@
-/********************************************************************* * $Id: files.c,v 1.5 1999-02-23 05:25:44 hartmann Exp $
+/********************************************************************* * $Id: files.c,v 1.6 1999-07-25 03:33:11 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -104,7 +104,6 @@ int SourceHomeFile(GameStats* Game)
 	if ((PrefsFile=fopen(Pathname,"r"))==NULL)
 	{
 		/* The user has no personal preferences. */
-		/* Try sourcing the older preferences files. */
 		free(Pathname);
 		return 0;
 	}
