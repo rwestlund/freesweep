@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.4 1999-02-18 07:35:46 hartmann Exp $
+* $Id: sweep.h.in,v 1.5 1999-02-19 02:04:42 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -232,7 +232,6 @@ void SwitchCharSet(GameStats* Game);
 void InitCharSet(GameStats* Game,int Value);
 void SetCharSet(int Value);
 int ParseArgs(GameStats* Game, int Argc, char** Argv);
-int SourceEnv(GameStats* Game);
 void DumpGame(GameStats* Game);
 int ReReadyGame(GameStats* Game);
 

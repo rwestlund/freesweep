@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.11 1999-02-18 19:37:59 psilord Exp $
+* $Id: drawing.c,v 1.12 1999-02-19 02:04:42 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -58,7 +58,7 @@ void PrintInfo()
 
 void AskPrefs(GameStats* Game)
 {
-	char ValueBuffer[(L_MAX_W+L_MAX_H+1)];
+	char ValueBuffer[(L_MAX_W+L_MAX_H+3)];
 	int Value=0, Status=0, CurrentLine=0;
 
 	/* User input needs to be echoed to the creen at this point. */
