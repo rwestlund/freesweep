@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.14 1999-02-24 03:32:59 psilord Exp $
+* $Id: game.c,v 1.15 1999-02-24 03:41:46 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -72,6 +72,11 @@ int InitGame(GameStats* Game)
 /* Get the game ready for a reconfigure */
 void Wipe(GameStats *Game)
 {
+	Game->MarkedMines=0;
+	Game->BadMarkedMines=0;
+	Game->LargeBoardX=Game->LargeBoardY=0;
+	Game->FocusX=Game->FocusY=0;
+	Game->Time=0;
 	wclear(Game->Board);
 	wnoutrefresh(Game->Board);
 	wclear(Game->Border);
