@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.31 1999-03-16 05:36:43 hartmann Exp $
+* $Id: main.c,v 1.32 1999-04-15 05:40:31 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -124,6 +124,7 @@ int main(int argc, char** argv)
 				clear();
 				noutrefresh();
 				StartTimer();
+				break;
 			case WIN: case LOSE:
 				StopTimer();
 				DrawCursor(Game);
