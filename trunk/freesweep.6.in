@@ -35,7 +35,95 @@ freesweep \- a curses minesweeper-style game
 .SH OPTIONS
 
 .TP
-\fB\-h\fP \fIn\fP, \fB\-\-height=\fP\fIn\fP
+\fB\-%\fP\ \fIvalue\fP, \fB\-\-percent=\fP\fIvalue\fP
+Sets the number of mines to \fIvalue\fP percent of the number of squares on
+the board, rounded to the nearest integer.
+.TP
+\fB\-a\fP, \fB\-\-alt\-charset\fP
+Switch character sets between standard ASCII and PC-style linedraw characters.
+Use of this option on the command line indicates that the character set should
+be the set \fInot\fP specified in the preferences file. See the FILES section
+below.
+
+The character set can also be toggled during play using the 'a' key, which
+can be useful when a terminal fails to have the PC-style linedraw character
+set. See the COMMANDS section below.
+.TP
+\fB\-b\fP, \fB\-\-show\-best\-times\fP
+Use the curses best times viewer rather than starting a game, then exit.
+
+The best times viewer can also be accessed during play by selecting the 'b'
+key. See the COMMANDS section below.
+.TP
+\fB\-d\fP, \fB\-\-dump\-best\-times\fP
+Print the list of best times, sorted in descending order to stdout. More
+information will be placed in this manual page regarding the column format
+when it has been clearly established.
+.TP
+\fB\-f\fP, \fB\-\-fast\fP
+This option bypasses the intercative dialog normally run initially. All values
+must either be specified on the command line or in the preferences files.
+.TP
+\fB\-g\fP, \fB\-\-show\-gpl\fP
+Display the GNU General Public License, in a nice curses page viewer. Currently
+version 2 of the license is displayed; however, freesweep is licensed under
+version 2 or later of the GNU GPL, so this license may be superceded in the
+future.
+.TP
+\fB\-h\fP\ \fIvalue\fP, \fB\-\-height=\fP\fIvalue\fP
+
+.TP
+\fB\-i\fP, \fB\-\-interactive\fP
+
+.TP
+\fB\-m\fP\ \fIvalue\fP, \fB\-\-mines=\fP\fIvalue\fP
+
+.TP
+\fB\-s\fP
+
+.TP
+\fB\-v\fP
+
+.TP
+\fB\-w\fP\ \fIvalue\fP, \fB\-\-width=\fP\fIvalue\fP
+
+
+
+.SH COMMANDS
+In normal play, freesweep waits for keystrokes, and then reacts according
+to the recieved value. Some keystrokes may be modified by a preceding
+integer; these are noted in the list below by a preceding \fIn\fP. The
+following keystroke values are valid:
+
+.TP
+\fIn\fP\<arrow key\>, \fIn\fPh, \fIn\fPj, \fIn\fPk, \fIn\fPl
+The arrow keys move the cursor \fIn\fP squares in the corresponding direction,
+as limited by the boundaries of the playing field. A warning is issued should
+this occur. The default integer is one.
+
+The vi-style motion keys h, j, k, and l are also accepted, and are equivalent
+to the arrow keys.
+
+.TP
+a
+
+.TP
+g
+Display the GNU General Public License, version 2. The game clock is suspended
+for the duration of the viewing of the GNU GPL. The text is displayed one
+screenful at a time; 'q' returns to game play, any other key advances to the
+next screenful.
+
+.TP
+?
+Display a help screen, containing a listing of valid commands. The game clock
+is suspended for the duration of the viewing of this screen.
+
+.TP
+f
+
+.TP
+<space>
 
 .SH FILES
 .TP 10
@@ -61,3 +149,9 @@ of running X Windows in the lab where I learned to program, the
 at the
 \fIUniversity of Wisconsin Department of Computer Sciences\fP
 
+.SH BUGS
+The best times code is currently only partially implemented.
+
+The viewer for the GNU GPL and the best times cannot go backwards.
+
+Other bugs should be reported to <sweep@cs.wisc.edu>.
