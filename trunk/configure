@@ -791,6 +791,8 @@ fi
 if test "${with_ncurses+set}" = set; then
   withval="$with_ncurses"
   NCURSES=$with_ncurses
+else
+  NCURSES=/usr/local
 fi
 
 
@@ -800,10 +802,10 @@ else
 		CFLAGS="-I$NCURSES/include -I/usr/local/include $CFLAGS"
 	
 
-		LIBS="-L$NCURSES/lib $LIBS"
+		LIBS="-L$NCURSES/lib -L/usr/local/lib $LIBS"
 
 		echo $ac_n "checking for main in -lncurses""... $ac_c" 1>&6
-echo "configure:807: checking for main in -lncurses" >&5
+echo "configure:809: checking for main in -lncurses" >&5
 ac_lib_var=`echo ncurses'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -811,14 +813,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lncurses  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 815 "configure"
+#line 817 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:822: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+if { (eval echo configure:824: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -846,8 +848,6 @@ else
 fi
 
 fi
-
-LIBS="$LIBS -L/usr/local/lib"
 
 echo $ac_n "checking for main in -lm""... $ac_c" 1>&6
 echo "configure:854: checking for main in -lm" >&5

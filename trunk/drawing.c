@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.9 1999-02-18 04:05:01 hartmann Exp $
+* $Id: drawing.c,v 1.10 1999-02-18 04:54:28 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -76,11 +76,11 @@ void AskPrefs(GameStats* Game)
 			mvprintw(LINES-1,0,"Invalid entry for Height.");
 			mvclrtoeol(CurrentLine,(26+L_MAX_H));
 		}
-#ifdef HAVE_NCURSES
+#ifdef HAVE_LIBNCURSES
 		mvgetnstr(CurrentLine,(26+L_MAX_H),ValueBuffer,L_MAX_H);
 #else
-		mvgetnstr(CurrentLine,(26+L_MAX_H),ValueBuffer,L_MAX_H+1);
-#endif /* HAVE_NCURSES */
+		mvgetnstr(CurrentLine,(26+L_MAX_H),ValueBuffer,L_MAX_H+2);
+#endif /* HAVE_LIBNCURSES */
 		refresh();
 		if (ValueBuffer[0]==0)
 		{
@@ -116,11 +116,11 @@ void AskPrefs(GameStats* Game)
 			mvprintw(LINES-1,0,"Invalid entry for Width.");
 			mvclrtoeol(CurrentLine,(25+L_MAX_W));
 		}
-#ifdef HAVE_NCURSES
+#ifdef HAVE_LIBNCURSES
 		mvgetnstr(CurrentLine,(25+L_MAX_W),ValueBuffer,L_MAX_W);
 #else
-		mvgetnstr(CurrentLine,(25+L_MAX_W),ValueBuffer,L_MAX_W+1);
-#endif /* HAVE_NCURSES */
+		mvgetnstr(CurrentLine,(25+L_MAX_W),ValueBuffer,L_MAX_W+2);
+#endif /* HAVE_LIBNCURSES */
 		refresh();
 		if (ValueBuffer[0]==0)
 		{
@@ -164,11 +164,11 @@ void AskPrefs(GameStats* Game)
 			mvprintw(LINES-1,0,"Invalid entry for Mines.");
 			mvclrtoeol(CurrentLine,(41+L_MAX_H+L_MAX_W));
 		}
-#ifdef HAVE_NCURSES
+#ifdef HAVE_LIBNCURSES
 		mvgetnstr(CurrentLine,(41+L_MAX_H+L_MAX_W),ValueBuffer,(L_MAX_H+L_MAX_W));
 #else
-		mvgetnstr(CurrentLine,(41+L_MAX_H+L_MAX_W),ValueBuffer,(L_MAX_H+L_MAX_W)+1);
-#endif /* HAVE_NCURSES */
+		mvgetnstr(CurrentLine,(41+L_MAX_H+L_MAX_W),ValueBuffer,(L_MAX_H+L_MAX_W)+2);
+#endif /* HAVE_LIBNCURSES */
 		refresh();
 		/* If they accept the default. */
 		if (ValueBuffer[0]==0)

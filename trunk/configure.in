@@ -11,7 +11,7 @@ AC_PROG_MAKE_SET
 dnl AC_PATH_PROG(DATE, date)
 
 dnl Look for ncurses in a variable.
-AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses)
+AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing package ], NCURSES=$with_ncurses, NCURSES=/usr/local)
 
 if test "$NCURSES" = "no"  ; then
 	LIBS="-lcurses $LIBS"
@@ -21,14 +21,11 @@ else
 	AC_SUBST(NCURSES)
 
 	dnl Look in $NCURSES/lib for libraries
-	LIBS="-L$NCURSES/lib $LIBS"
+	LIBS="-L$NCURSES/lib -L/usr/local/lib $LIBS"
 
 	dnl Replace `main' with a function in -lncurses:
 	AC_CHECK_LIB(ncurses,main)
 fi
-
-dnl /usr/local hides lots of good stuff.
-LIBS="$LIBS -L/usr/local/lib"
 
 dnl Checks for libraries.
 dnl Replace `main' with a function in -lm:
