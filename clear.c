@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: clear.c,v 1.10 2001-06-11 00:32:17 hartmann Exp $
+*  $Id: clear.c,v 1.11 2002-07-12 07:06:44 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -551,13 +551,12 @@ int SuperCount(GameStats* Game)
 
 int FindNearest(GameStats *Game)
 {
-	int x, y, radius, tempradius;
-	int steps, n, dir;
+	int x, y;
+	int minx, miny, minscore, score;
 	unsigned char square;
 
 	x = Game->CursorX;
 	y = Game->CursorY;
-	radius = 1;
 
 	GetMine(x, y, square);
 	if (( square == MINE ) || ( square == UNKNOWN ))
@@ -566,89 +565,86 @@ int FindNearest(GameStats *Game)
 		return 0;
 	}
 
+	/* This should be really, really big. */
+/*	minscore = (  Game->Width ) * ( Game->Width ) * ( Game->Height ) * ( Game->Height ));*/
+/*	minscore = MAX_INT;*/
+	minscore = 0x7ffffff;
+	minx = Game->CursorX;
+	miny = Game->CursorY;
 
+	for ( x = 0 ; x < Game->Width ; x++ ) {
+		for ( y = 0 ; y < Game->Height ; y++ ) {
+			GetMine(x, y, square);
+			if (( square == MINE ) || ( square == UNKNOWN ))
+			{
+				score = (( Game->CursorX - x ) * ( Game->CursorX - x )) + (( Game->CursorY - y ) * ( Game->CursorY - y ));
+				if ( score < minscore )
+				{
+					minscore = score;
+					minx = x;
+					miny = y;
+				}
+			}
+		}
+	}
 
-for (dir = 1, steps = 1; ; dir=-dir, steps = -(steps+1)) {
-	for(n = steps; x += dir, n; ) { TEST(x,y) }; /* Search right/left */
-    for(n = steps; y += dir, n; ) { TEST(x,y) }; /* Search down/up */
-}
+	Game->CursorX = minx;
+	Game->CursorY = miny;
+
+#ifdef DEBUG_LOG
+	fprintf(DebugLog, "Minimum score of %d found at %d,%d\n", minscore, minx, miny);
+	fflush(DebugLog);
+#endif /* DEBUG_LOG */
 
 	return 0;
 }
 
 int FindNearestBad(GameStats *Game)
 {
-	int x, y, radius, tempradius;
+	int x, y;
+	int minx, miny, minscore, score;
 	unsigned char square;
 
 	x = Game->CursorX;
 	y = Game->CursorY;
-	radius = 1;
 
 	GetMine(x, y, square);
-	if ( square == BAD_MARK )
+	if (( square == BAD_MARK ) || ( Game->BadMarkedMines == 0 ))
 	{
-		/* We're *on* an unmarked square already! */
+		/* We're done here. */
 		return 0;
 	}
 
-	/* Figure out a neat algorithm here. */
-	for ( radius = 1 ; radius < Game->Height ; radius++ )
-	{
-		x = Game->CursorX - radius;
-		y = Game->CursorY - radius;
+	/* This should be really, really big. */
+/*	minscore = (  Game->Width ) * ( Game->Width ) * ( Game->Height ) * ( Game->Height ));*/
+/*	minscore = MAX_INT;*/
+	minscore = 0x7ffffff;
+	minx = Game->CursorX;
+	miny = Game->CursorY;
 
-		for ( tempradius = 0 ; tempradius <= radius ; tempradius++ )
-		{
-			if ( ValidCoordinate((x + tempradius), y) )
+	for ( x = 0 ; x < Game->Width ; x++ ) {
+		for ( y = 0 ; y < Game->Height ; y++ ) {
+			GetMine(x, y, square);
+			if ( square == BAD_MARK )
 			{
-				GetMine(x + tempradius, y, square);
-				if ( square == BAD_MARK )
+				score = (( Game->CursorX - x ) * ( Game->CursorX - x )) + (( Game->CursorY - y ) * ( Game->CursorY - y ));
+				if ( score < minscore )
 				{
-					Game->CursorX = (x + tempradius);
-					Game->CursorY = y;
-					return 0;
-				}
-			}
-
-			if ( ValidCoordinate(x, (y + tempradius)) )
-			{
-				GetMine(x , y + tempradius, square);
-				if ( square == BAD_MARK )
-				{
-					Game->CursorX = x;
-					Game->CursorY = (y + tempradius);
-					return 0;
+					minscore = score;
+					minx = x;
+					miny = y;
 				}
 			}
 		}
-
-		for ( tempradius = radius ; tempradius >= 0 ; tempradius-- )
-		{
-			if ( ValidCoordinate((x + tempradius), (y + radius)) )
-			{
-				GetMine((x + tempradius), y + radius, square);
-				if ( square == BAD_MARK )
-				{
-					Game->CursorX = (x + tempradius);
-					Game->CursorY = (y + radius);
-					return 0;
-				}
-			}
-	
-			if ( ValidCoordinate((x + radius), (y + tempradius)) )
-			{
-				GetMine((x + radius), (y + tempradius), square);
-				if ( square == BAD_MARK )
-				{
-					Game->CursorX = (x+radius);
-					Game->CursorY = (y + tempradius);
-					return 0;
-				}
-			}
-		}
-
 	}
+
+	Game->CursorX = minx;
+	Game->CursorY = miny;
+
+#ifdef DEBUG_LOG
+	fprintf(DebugLog, "Bad mark: minimum score of %d found at %d,%d\n", minscore, minx, miny);
+	fflush(DebugLog);
+#endif /* DEBUG_LOG */
 
 	return 0;
 }
