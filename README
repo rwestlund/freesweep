@@ -30,5 +30,8 @@ what the user wants for the new games.
 
 Fix up the error condition for what happens when you can't write to the
 best times file and shit. Just quitting doesn't seem to good.
+Also, fix the creation permissions of the group file. Like either the client
+can make a new one with 666 perms, or the installer makes one with the
+correct permissions.
 
 See what purify is bitching about in the load/save game code.
