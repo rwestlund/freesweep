@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: play.c,v 1.39 2000-11-07 05:30:16 hartmann Exp $
+*  $Id: play.c,v 1.40 2001-06-11 00:32:17 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -343,6 +343,14 @@ int GetInput(GameStats* Game)
 			SweepMessage("_________0_________0(%u, %u)_________0_________0", Game->CursorX, Game->CursorY);
 			break;
 
+		case 'e':
+			FindNearest(Game);
+			break;
+
+		case 'y':
+			FindNearestBad(Game);
+			break;
+
 		/* The accepted values to suspend the game. */
 		case KEY_SUSPEND:
 		case 'z':
@@ -443,7 +451,7 @@ int GetInput(GameStats* Game)
 #endif /* DEBUG_LOG */
 
 		/* XXX Save a game */
-		case 'p':
+		case 's':
 			SaveGame(Game, "./foo.svg");
 			SweepError("Done Saving");
 			break;
