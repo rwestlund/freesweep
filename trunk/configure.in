@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.32 1999-07-27 04:44:19 hartmann Exp $
+dnl $Id: configure.in,v 1.33 1999-07-29 04:17:21 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -75,7 +75,7 @@ AC_CHECK_LIB(m,main)dnl
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(limits.h string.h unistd.h sys/file.h getopt.h errno.h)dnl
+AC_CHECK_HEADERS(limits.h string.h unistd.h sys/file.h getopt.h errno.h sys/types.h)dnl
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -83,7 +83,23 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(snprintf getopt getopt_long strdup memset memmove flock lockf fileno vsnprintf vsprintf)dnl
+AC_CHECK_FUNCS(snprintf getopt_long strdup memset memmove flock lockf fileno vsnprintf vsprintf)dnl
+
+# Look for lesser but similar functions.
+if test "${ac_cv_func_snprintf}" = 'no' ; then
+	AC_MSG_WARN([Consider getting a system with snprintf.])
+	AC_CHECK_FUNCS(sprintf)dnl
+fi
+
+if test "${ac_cv_func_vsnprintf}" = 'no' ; then
+	AC_MSG_WARN([Consider getting a system with vsnprintf.])
+	AC_CHECK_FUNCS(vsprintf)dnl
+fi
+
+if test "${ac_cv_func_getopt_long}" = 'no' ; then
+	AC_MSG_WARN([Consider getting a system with getopt_long.])
+	AC_CHECK_FUNCS(getopt)dnl
+fi
 
 dnl If neither locking mechanism is there, disable group scores.
 if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then

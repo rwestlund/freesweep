@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: pbests.c,v 1.24 1999-03-06 22:35:06 hartmann Exp $
+* $Id: pbests.c,v 1.25 1999-07-29 04:17:21 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -316,7 +316,11 @@ void Pack(struct BestFileDesc *bfd, FILE *fp)
 
 		/* print the line into the buffer */
 		b = &bfd->ents[i];
+#if defined HAVE_SNPRINTF
+		snprintf(mbuf[i].buf, maxsize, "%s(a%um%ut%u)%s\n", 
+#else
 		sprintf(mbuf[i].buf, "%s(a%um%ut%u)%s\n", 
+#endif
 			b->name, b->area, b->mines, b->time, b->date);
 
 		mbuf[i].len = strlen(mbuf[i].buf);
