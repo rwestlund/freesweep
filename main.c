@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.32 1999-04-15 05:40:31 hartmann Exp $
+* $Id: main.c,v 1.33 1999-04-17 22:11:29 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -125,10 +125,36 @@ int main(int argc, char** argv)
 				noutrefresh();
 				StartTimer();
 				break;
-			case WIN: case LOSE:
+			case LOSE:
 				StopTimer();
 				DrawCursor(Game);
-				SweepMessage("'q' to quit, any other key to continue");
+				SweepMessage("BOOM! Any key to continue, 'q' to quit.");
+				nodelay(Game->Board,FALSE);
+				Input=mvwgetch(Game->Board,0,0);
+				wnoutrefresh(Game->Board);
+				refresh();
+
+				if (Input == 'q')
+				{
+					clear();
+					refresh();
+					endwin();
+#ifdef DEBUG_LOG
+					fprintf(DebugLog,"========================================\n");
+					fclose(DebugLog);
+#endif /* DEBUG_LOG */
+					return 0;
+				}
+				else
+				{
+					SweepMessage(NULL);
+					UndrawCursor(Game);
+				}
+				break;
+			case WIN:
+				StopTimer();
+				DrawCursor(Game);
+				SweepMessage("You Win! Press a key to continue.");
 				nodelay(Game->Board,FALSE);
 				Input=mvwgetch(Game->Board,0,0);
 				wnoutrefresh(Game->Board);
