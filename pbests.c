@@ -2,25 +2,15 @@
 #include <stdlib.h>
 #include "sweep.h"
 
-struct BestEntry
-{
-	unsigned int area;
-	unsigned int mines;
-	unsigned int time;
-};
+static struct BestFileDesc* NewBFD(void);
+static void LoadBestTimesFile(struct BestFileDesc *bfd);
+static void BFDSort(struct BestFileDesc *bfd);
+static void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n);
+static void SaveBestTimesFile(struct BestFileDesc *bfd);
+static struct BestEntry* NewBestEntry(GameStats *Game);
+static char* FPTBTF(void);
 
-struct BestFileDesc
-{
-	/* the array of entries from the file, with one more in it.
-	struct BestEntry *ents;
-
-	/* the number of entries in the descriptor */
-	int numents;
-
-	/* did I replace, or add? */
-	int replflag;
-};
-
+/* the one function that does it all */
 void UpdateBestTimesFile(GameStats *Game)
 {
 	/* Make entry for Game */
@@ -38,7 +28,7 @@ void UpdateBestTimesFile(GameStats *Game)
 
 	LoadBestTimesFile(bfd); 
 
-	BTSort(bfd);
+	BFDSort(bfd);
 
 	InsertEntry(bfd, NewBestEntry(Game));
 
@@ -67,10 +57,26 @@ struct BestFileDesc* NewBFD(void)
 	return bfd;
 }
 
+void LoadBestTimesFile(struct BestFileDesc *bfd)
+{
+}
 
+void BFDSort(struct BestFileDesc *bfd)
+{
+}
 
+void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n)
+{
+}
 
+void SaveBestTimesFile(struct BestFileDesc *bfd)
+{
+}
 
+struct BestEntry* NewBestEntry(GameStats *Game)
+{
+	return NULL;
+}
 
 /* Full Path To Best Times File */
 char* FPTBTF(void)

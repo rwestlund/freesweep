@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.6 1999-02-12 02:51:39 psilord Exp $
+* $Id: sweep.h,v 1.7 1999-02-13 01:07:43 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -147,6 +147,30 @@ typedef struct _BestTimeNode
 	struct _BestTimeNode* Next;
 } BestTimeNode;
 
+/* this is the _NEW_ format for the best times score */
+struct BestEntry
+{
+	unsigned int area;
+	unsigned int mines;
+	unsigned int time;
+
+	char username[MAX_NAME+1];
+	char date[MAX_DATE+1];
+	char *attribs;
+};
+
+struct BestFileDesc
+{
+	/* the array of entries from the file, with one more in it. */
+	struct BestEntry *ents;
+
+	/* the number of entries in the descriptor */
+	int numents;
+
+	/* did I replace, or add? */
+	int replflag;
+};
+
 typedef struct _CoordPair
 {
 	int CoordX, CoordY;
@@ -232,6 +256,9 @@ int AddNodeToFile(char* Filename, BestTimeNode* NewNode);
 BestTimeNode* InitNode(GameStats* Game);
 int WriteNodeList(char* Filename, BestTimeNode* Head);
 BestTimeNode* GenerateFakeNode();
+
+/* this is in pbests.c, which will eventually become bests.c */
+void UpdateBestTimesFile(GameStats *Game);
 
 /* These are the functions defined in hash.c */
 void InsertMark(struct Mark **ht, int x, int y);
