@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.50 2002-12-21 21:32:09 hartmann Exp $
+# $Id: Makefile.in,v 1.51 2002-12-24 02:35:26 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -7,7 +7,7 @@ VERSION = 0.90
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c\
 	play.c sl.c stats.c tick.c utils.c image.c
-HEADS = sweep.h defaults.h accconfig.h
+HEADS = sweep.h defaults.h acconfig.h
 MISC = README Makefile sweeprc install-sh configure.in Makefile.in\
 	config.guess configure config.sub sweep.h.in freesweep.6.in CHANGES\
 	config.h.in
