@@ -271,8 +271,6 @@ void SaveBestTimesFile(struct BestFileDesc *bfd, char *name)
 	/* convert the bfd to a mess and write it out */
 	Pack(bfd, fp);
 
-	free(name);
-
 	tunlockf(fp);
 	fclose(fp);
 }
