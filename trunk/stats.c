@@ -7,7 +7,7 @@ static void ClearStats(void);
 
 int InitStatsWin(void)
 {
-	if ((StatsFrame=newwin(6,21,5,(COLS-INFO_W)))==NULL)
+	if ((StatsFrame=newwin(6,INFO_W,(LINES - 11),(COLS-INFO_W)))==NULL)
 	{ 
 		return 1;
 	}
@@ -24,20 +24,7 @@ int InitStatsWin(void)
 
 void ClearStats()
 {
-	/* do a line by line clear */
-
-	wmove(StatsWin,0,0);
-	wclrtoeol(StatsWin);
-
-	wmove(StatsWin,1,0);
-	wclrtoeol(StatsWin);
-
-	wmove(StatsWin,2,0);
-	wclrtoeol(StatsWin);
-
-	wmove(StatsWin,3,0);
-	wclrtoeol(StatsWin);
-
+	werase(StatsWin);
 	wnoutrefresh(StatsWin);
 	move(0,0);
 	noutrefresh();
@@ -53,18 +40,12 @@ int RedrawStatsWin(void)
 
 void PrintStats(GameStats *Game)
 {
-	char buf[MAX_LINE];
-
 	ClearStats();
 
-	sprintf(buf, "Time: %d", Game->Time);
-	mvwprintw(StatsWin, 0, 0, buf);
-	sprintf(buf, "Loc: %d, %d", Game->CursorX, Game->CursorY);
-	mvwprintw(StatsWin, 1, 0, buf);
-	sprintf(buf, "Mines: %d", Game->NumMines);
-	mvwprintw(StatsWin, 2, 0, buf);
-	sprintf(buf, "Marks: %d", Game->MarkedMines + Game->BadMarkedMines);
-	mvwprintw(StatsWin, 3, 0, buf);
+	mvwprintw(StatsWin, 0, 0, "Time: %d", Game->Time);
+	mvwprintw(StatsWin, 1, 0, "Loc: %d, %d", Game->CursorX, Game->CursorY);
+	mvwprintw(StatsWin, 2, 0, "Mines: %d", Game->NumMines);
+	mvwprintw(StatsWin, 3, 0, "Marks: %d", Game->MarkedMines + Game->BadMarkedMines);
 
 	wnoutrefresh(StatsWin);
 	move(0,0);

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.28 1999-02-24 05:45:18 psilord Exp $
+* $Id: play.c,v 1.29 1999-03-03 07:21:06 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -245,6 +245,7 @@ int GetInput(GameStats* Game)
 			Help();
 			PrintInfo();
 			RedrawErrorWin();
+			RedrawStatsWin();
 			StartTimer();
 			break;
 
@@ -258,6 +259,7 @@ int GetInput(GameStats* Game)
 			PrintGPL();
 			PrintInfo();
 			RedrawErrorWin();
+			RedrawStatsWin();
 			break;
 
 		/* The accepted keys to display the best times screen. */
@@ -270,6 +272,7 @@ int GetInput(GameStats* Game)
 			PrintBestTimes(NULL);
 			PrintInfo();
 			RedrawErrorWin();
+			RedrawStatsWin();
 			noutrefresh();
 			doupdate();
 			break;
@@ -352,6 +355,7 @@ int GetInput(GameStats* Game)
 					SwitchCharSet(Game);
 					PrintInfo();
 					RedrawErrorWin();
+					RedrawStatsWin();
 				}
 				else
 				{
@@ -364,6 +368,7 @@ int GetInput(GameStats* Game)
 				SwitchCharSet(Game);
 				PrintInfo();
 				RedrawErrorWin();
+				RedrawStatsWin();
 			}
 			break;
 
