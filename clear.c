@@ -1,14 +1,16 @@
 /*********************************************************************
-* $Id: clear.c,v 1.1 1999-02-11 00:53:33 hartmann Exp $
+* $Id: clear.c,v 1.2 1999-02-11 00:57:24 psilord Exp $
 *********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "sweep.h"
 
+/* XXX Should move this to sweep.h */
 #define SUPERCLICK 0
 #define DIE 1
 #define DONOTHING 2
+
 
 
 static void InsertChildren(struct Mark **ht, GameStats *Game, int x, int y);
