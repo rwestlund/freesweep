@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.13 1999-02-23 05:25:44 hartmann Exp $
+* $Id: sweep.h.in,v 1.14 1999-02-23 17:33:07 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -46,6 +46,7 @@
 #define DELIMITERS " \t="
 #define DFL_PREFS_FILE ".sweeprc"
 #define DFL_BESTS_FILE ".sweeptimes"
+#define DFL_GROUP_PATH "/tmp/"
 #define MAGIC_NUMBER 128
 
 /* used for the superclick feature in the game */
@@ -257,7 +258,11 @@ void* xmalloc(size_t num);
 FILE* xfopen(char *name, char *type);
 
 /* this is in pbests.c, which will eventually become bests.c */
-void UpdateBestTimesFile(GameStats *Game);
+void UpdateBestTimesFile(GameStats *Game, char *filename);
+char* FPTBTF(void);
+#ifdef USE_GROUP_BEST_FILE
+char* FPTGBTF(void);
+#endif
 
 /* These are the functions defined in clear.c */
 void InsertMark(struct Mark **ht, int x, int y);

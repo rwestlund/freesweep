@@ -1,12 +1,11 @@
 #include "sweep.h"
 
 static struct BestFileDesc* NewBFD(void);
-static void LoadBestTimesFile(struct BestFileDesc *bfd);
+static void LoadBestTimesFile(struct BestFileDesc *bfd, char *filename);
 static void BFDSort(struct BestFileDesc *bfd);
 static void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n);
-static void SaveBestTimesFile(struct BestFileDesc *bfd);
+static void SaveBestTimesFile(struct BestFileDesc *bfd, char *filename);
 static struct BestEntry* NewBestEntry(GameStats *Game);
-static char* FPTBTF(void);
 static void Unpack(struct BestFileDesc *bfd, FILE *abyss);
 static void Pack(struct BestFileDesc *bfd, FILE *fp);
 static int BECmpFunc(const void *l, const void *r);
@@ -24,7 +23,7 @@ struct MBuf
 };
 
 /* the one function that does it all */
-void UpdateBestTimesFile(GameStats *Game)
+void UpdateBestTimesFile(GameStats *Game, char *filename)
 {
 	struct BestFileDesc *bfd = NULL;
 	struct BestEntry *b = NULL;
@@ -34,7 +33,7 @@ void UpdateBestTimesFile(GameStats *Game)
 
 	DumpGame(Game);
 
-	LoadBestTimesFile(bfd); 
+	LoadBestTimesFile(bfd, filename); 
 
 	fprintf(DebugLog, "***LOADED COPY\n");
 	DumpBFD(bfd, FALSE);
@@ -52,7 +51,7 @@ void UpdateBestTimesFile(GameStats *Game)
 	DumpBFD(bfd, TRUE);
 	fflush(NULL);
 
-	SaveBestTimesFile(bfd);
+	SaveBestTimesFile(bfd, filename);
 	fflush(NULL);
 
 	free(b);
@@ -75,13 +74,9 @@ struct BestFileDesc* NewBFD(void)
 }
 
 /* summon from the depths of the abyss the best times file */
-void LoadBestTimesFile(struct BestFileDesc *bfd)
+void LoadBestTimesFile(struct BestFileDesc *bfd, char *truename)
 {
 	FILE *abyss = NULL;
-	char *truename = NULL;
-	
-	truename = FPTBTF();
-
 	again:
 	abyss = fopen(truename, "r+");
 	if (abyss == NULL)
@@ -100,8 +95,6 @@ void LoadBestTimesFile(struct BestFileDesc *bfd)
 	
 	/* take the ascii/binary mess the file is and make it into a nice bfd */
 	Unpack(bfd, abyss);
-
-	free(truename);
 
 	tunlockf(abyss);
 	fclose(abyss);	/* you just try! */
@@ -276,12 +269,9 @@ void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n)
 	}
 }
 
-void SaveBestTimesFile(struct BestFileDesc *bfd)
+void SaveBestTimesFile(struct BestFileDesc *bfd, char *name)
 {
-	char *name = NULL;
 	FILE *fp = NULL;
-
-	name = FPTBTF();
 
 	fp = xfopen(name, "w");
 
@@ -426,7 +416,7 @@ struct BestEntry* NewBestEntry(GameStats *Game)
 	return b;
 }
 
-/* Full Path To Best Times File */
+/* Full Path To Best Times File in HOME */
 char* FPTBTF(void)
 {
 	char *home = NULL;
@@ -450,6 +440,22 @@ char* FPTBTF(void)
 
 	return fp;
 }
+
+#ifdef USE_GROUP_BEST_FILE
+/* full path to group best times file */
+char* FPTGBTF(void)
+{
+	char *fp = NULL;
+
+	/* get me some memory for the string */
+	fp = (char*)xmalloc(strlen(DFL_GROUP_PATH) + strlen(DFL_BESTS_FILE) + 1);
+
+	/* make the full path */
+	strcpy(fp, DFL_GROUP_PATH DFL_BESTS_FILE);
+
+	return fp;
+}
+#endif
 
 
 static void DumpBFD(struct BestFileDesc *bfd, int valid)
