@@ -15,6 +15,12 @@ RETSIGTYPE sighandler(int signo)
 			alarm(1);
 			return;
 			break;
+		case SIGSEGV:
+            clear();
+            refresh();
+            endwin();
+			printf("\n\t***Segmentation Fault detected. Cleaning up....\n\n");
+            exit(EXIT_FAILURE);
 		default:
 			break;
 	}
