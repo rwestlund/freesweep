@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.5 1999-02-11 08:55:37 hartmann Exp $
+* $Id: main.c,v 1.6 1999-02-12 02:35:35 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -58,7 +58,6 @@ int main(int argc, char** argv)
 
 	while (1)
 	{
-
 		/* Make sure the right character set is in use. */
 		InitCharSet(Game,Game->LineDraw);
 
@@ -92,11 +91,9 @@ int main(int argc, char** argv)
 		DrawBoard(Game);
 		doupdate();
 		UndrawCursor(Game);
-		/* FOO */
-		/* Wait for a keystroke, and print an error to that effect. */
+		/* Sleep a couple seconds before the next game. */
 		napms(2000);
-/*		clear();*/
-		refresh();
+		flushinp();
 
 	}
 
