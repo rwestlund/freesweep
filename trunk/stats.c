@@ -24,8 +24,20 @@ int InitStatsWin(void)
 
 void ClearStats()
 {
+	/* do a line by line clear */
+
 	wmove(StatsWin,0,0);
 	wclrtoeol(StatsWin);
+
+	wmove(StatsWin,1,0);
+	wclrtoeol(StatsWin);
+
+	wmove(StatsWin,2,0);
+	wclrtoeol(StatsWin);
+
+	wmove(StatsWin,3,0);
+	wclrtoeol(StatsWin);
+
 	wnoutrefresh(StatsWin);
 	move(0,0);
 	noutrefresh();
