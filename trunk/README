@@ -18,6 +18,9 @@ the help and high scores windows are designed to use a screen 80 columns wide.
 	Sometimes when quitting, a core is dumped by _strtol_internal. Failure
 somewhere in the best times code.
 
+*** doing rewrite of best times stuff. Notes to self
+a%um%ut%u|<other>|<other>|<other>\n
+
 	On most X keymaps, both the left arrow and the down arrow don't
 work, reporting "Unknown keystroke." Unfortunately, somehow this leaves an
 extra 'o' lying around, leading to a saved game getting loaded.

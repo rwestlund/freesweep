@@ -10,6 +10,7 @@ static void SaveBestTimesFile(struct BestFileDesc *bfd);
 static struct BestEntry* NewBestEntry(GameStats *Game);
 static char* FPTBTF(void);
 void Unpack(struct BestFileDesc *bfd, FILE *abyss);
+void Zorch(char *p, char *q, struct BestEntry *b);
 
 /* the one function that does it all */
 void UpdateBestTimesFile(GameStats *Game)
@@ -87,9 +88,20 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	unsigned char *space = NULL;
 	unsigned int numents = 0;
 	unsigned int size = 0;
+	unsigned int i = 0;
+	char *p = NULL, *q = NULL;
 
 	/* how many entries do I have? */
 	fscanf(abyss, "%u\n", &numents);
+
+	/* one more than I need, for later */
+	bfd->ents = (struct BestEntry*)malloc(sizeof(struct BestEntry)*numents + 1);
+	if (bfd->ents == NULL)
+	{
+		SweepError("Out of Memory. Sorry.");
+		/* XXX fix me */
+		exit(EXIT_FAILURE);
+	}
 	
 	/* how many bytes do I need to read? */
 	fscanf(abyss, "%u\n", &size);
@@ -98,7 +110,29 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	fread(space, size, 1, abyss);
 
 	/* convert it to real ascii */
+	for (i = 0; i < size; i++)
+	{
+		space[i] ^= MAGIC_NUMBER;
+	}
 
+	/* walk through memory looking for newlines and building the entries
+	 * as you go */
+	p = q = space;
+	for (i = 0; i < numents; i++)
+	{
+		while(*q++ != '\n');	/* yes, I want that semicolon there */
+
+		/* get all the data out and into the entry */
+		Zorch(p, q-1, &bfd->ents[i]);
+
+		p = q;
+	}
+
+}
+
+/* get the fields of data out from between the p and q pointers */
+void Zorch(char *p, char *q, struct BestEntry *b)
+{
 }
 
 void BFDSort(struct BestFileDesc *bfd)
