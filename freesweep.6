@@ -122,7 +122,6 @@ entered preferences should be saved. This dialog is skipped if the \-f or
 \-\-fast flags are passed, or if the FastStart option is selected in the
 preference file.
 
-
 In normal play, freesweep waits for keystrokes, and then reacts according
 to the recieved value. Some keystrokes may be modified by a preceding
 integer; these are noted in the list below by a preceding \fIn\fP. The
@@ -141,20 +140,22 @@ to the arrow keys.
 a
 Toggle between the standard ASCII character set and PC-style linedraw.
 .TP
+b
+Display the best times list, one screenful at a time. The game clock is
+suspended for the duration of the best itmes viewer.
+.TP
 g
 Display the GNU General Public License, version 2. The game clock is suspended
 for the duration of the viewing of the GNU GPL. The text is displayed one
 screenful at a time; 'q' returns to game play, any other key advances to the
 next screenful.
-
 .TP
 ?
 Display a help screen, containing a listing of valid commands. The game clock
 is suspended for the duration of the viewing of this screen.
-
 .TP
 f
-
+Toggle flagging the current square as a mine. Flagged squares cannot be exposed.
 .TP
 <space>
 
@@ -166,8 +167,11 @@ The user's sweep resource file.
 .I ~/.sweeptimes
 The user's sweep best times file.
 .TP 10
-\fI${prefix}/share/sweeprc\fP
+\fI/var/lib/games/sweeprc\fP
 The global default sweep resource file.
+.TP 10
+\fI/var/lib/games/sweeptimes\fP
+The shared best times file.
 
 The global preference file is read first, then the player's preference file.
 Any command line options are considered next, and lastly any input from the
@@ -190,5 +194,8 @@ at the
 The best times code is currently only partially implemented.
 
 The viewer for the GNU GPL and the best times cannot go backwards.
+
+This manual page always includes the GNU-style long options, even on systems
+which do not support them.
 
 Other bugs should be reported to <sweep@cs.wisc.edu>.
