@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.18 1999-03-03 06:08:02 psilord Exp $
+* $Id: sweep.h.in,v 1.19 1999-04-14 21:59:43 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -28,6 +28,11 @@
 #if defined HAVE_FLOCK && defined HAVE_SYS_FILE_H
 #include <sys/file.h>
 #endif
+
+/* XXX make this work with configure */
+#include <sys/types.h>
+#include <dirent.h>
+
 
 
 #ifdef NCURSES_MOUSE_VERSION
@@ -264,6 +269,8 @@ int RedrawStatsWin(void);
 /* These are the functions described in utils.c */
 void* xmalloc(size_t num);
 FILE* xfopen(char *name, char *type);
+char* xgetcwd(char *buf, size_t size);
+DIR* xopendir(const char *buf);
 void StartTimer(void);
 void StopTimer(void);
 
