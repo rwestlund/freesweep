@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: clear.c,v 1.9 1999-08-09 05:25:35 hartmann Exp $
+*  $Id: clear.c,v 1.10 2001-06-11 00:32:17 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -545,4 +545,110 @@ int SuperCount(GameStats* Game)
 	{
 		return SUPERCLICK;
 	}
+}
+
+#define TEST(a,b) if(a>=0 && a< Game->Height && b>=0 && b<Game->Width ) { GetMine(x, y, square) ; if (( square == MINE ) || ( square == UNKNOWN )) { Game->CursorX=a ; Game->CursorY=b ; return 0 ; } }
+
+int FindNearest(GameStats *Game)
+{
+	int x, y, radius, tempradius;
+	int steps, n, dir;
+	unsigned char square;
+
+	x = Game->CursorX;
+	y = Game->CursorY;
+	radius = 1;
+
+	GetMine(x, y, square);
+	if (( square == MINE ) || ( square == UNKNOWN ))
+	{
+		/* We're *on* an unmarked square already! */
+		return 0;
+	}
+
+
+
+for (dir = 1, steps = 1; ; dir=-dir, steps = -(steps+1)) {
+	for(n = steps; x += dir, n; ) { TEST(x,y) }; /* Search right/left */
+    for(n = steps; y += dir, n; ) { TEST(x,y) }; /* Search down/up */
+}
+
+	return 0;
+}
+
+int FindNearestBad(GameStats *Game)
+{
+	int x, y, radius, tempradius;
+	unsigned char square;
+
+	x = Game->CursorX;
+	y = Game->CursorY;
+	radius = 1;
+
+	GetMine(x, y, square);
+	if ( square == BAD_MARK )
+	{
+		/* We're *on* an unmarked square already! */
+		return 0;
+	}
+
+	/* Figure out a neat algorithm here. */
+	for ( radius = 1 ; radius < Game->Height ; radius++ )
+	{
+		x = Game->CursorX - radius;
+		y = Game->CursorY - radius;
+
+		for ( tempradius = 0 ; tempradius <= radius ; tempradius++ )
+		{
+			if ( ValidCoordinate((x + tempradius), y) )
+			{
+				GetMine(x + tempradius, y, square);
+				if ( square == BAD_MARK )
+				{
+					Game->CursorX = (x + tempradius);
+					Game->CursorY = y;
+					return 0;
+				}
+			}
+
+			if ( ValidCoordinate(x, (y + tempradius)) )
+			{
+				GetMine(x , y + tempradius, square);
+				if ( square == BAD_MARK )
+				{
+					Game->CursorX = x;
+					Game->CursorY = (y + tempradius);
+					return 0;
+				}
+			}
+		}
+
+		for ( tempradius = radius ; tempradius >= 0 ; tempradius-- )
+		{
+			if ( ValidCoordinate((x + tempradius), (y + radius)) )
+			{
+				GetMine((x + tempradius), y + radius, square);
+				if ( square == BAD_MARK )
+				{
+					Game->CursorX = (x + tempradius);
+					Game->CursorY = (y + radius);
+					return 0;
+				}
+			}
+	
+			if ( ValidCoordinate((x + radius), (y + tempradius)) )
+			{
+				GetMine((x + radius), (y + tempradius), square);
+				if ( square == BAD_MARK )
+				{
+					Game->CursorX = (x+radius);
+					Game->CursorY = (y + tempradius);
+					return 0;
+				}
+			}
+		}
+
+	}
+
+	return 0;
 }
