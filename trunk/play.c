@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.12 1999-02-13 00:03:37 hartmann Exp $
+* $Id: play.c,v 1.13 1999-02-13 01:52:13 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -206,6 +206,18 @@ int GetInput(GameStats* Game)
 				Multiplier=1;
 			}
 			Help();
+			PrintInfo();
+			RedrawErrorWin();
+			break;
+
+		/* The accepted keys to display the license screen. */
+		case 'g':
+			if (Multiplier!=1)
+			{
+				SweepError("Can only display GNU GPL once.");
+				Multiplier=1;
+			}
+			PrintGPL();
 			PrintInfo();
 			RedrawErrorWin();
 			break;

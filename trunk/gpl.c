@@ -401,6 +401,8 @@ void PrintGPL()
 				delwin(GPLWin);
 				clear();
 				noutrefresh();
+				return;
+				break;
 		}
 	}
 	return;
