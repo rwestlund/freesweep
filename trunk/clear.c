@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: clear.c,v 1.3 1999-02-11 01:00:56 psilord Exp $
+* $Id: clear.c,v 1.4 1999-02-11 01:53:51 hartmann Exp $
 *********************************************************************/
 
 #include <stdio.h>
@@ -11,6 +11,7 @@
 #define DIE 1
 #define DONOTHING 2
 
+/* Fake comment. Can I write to clear.c? */
 
 static void InsertChildren(struct Mark **ht, GameStats *Game, int x, int y);
 static int CalcSquareNumber(GameStats *Game, int xx, int yy);
