@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: fgui.c,v 1.17 2002-07-12 07:08:03 hartmann Exp $
+*  $Id: fgui.c,v 1.18 2003-10-11 20:50:50 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -62,7 +62,11 @@ struct FileBuf* CreateFileBuf(char *dir)
 		tmp->next = NULL;
 
 		/* create the full name for it */
+#if defined(HAVE_STRNCPY)
+		strncpy(tmp->fpath, path, (strlen(dp->d_name) + strlen(path) + 2));
+#else
 		strcpy(tmp->fpath, path);
+#endif
 		if (strcmp(path,"/")!=0)
 		{
 			strcat(tmp->fpath, "/");

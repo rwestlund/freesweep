@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: utils.c,v 1.7 2000-11-07 05:25:03 hartmann Exp $
+*  $Id: utils.c,v 1.8 2003-10-11 20:50:50 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -32,7 +32,11 @@ char *strdup(char *s)
 
 	c = (char*)xmalloc(strlen(s) + 1);
 	
+#if defined(HAVE_STRNCPY)	
+	strncpy(c, s, strlen(s) + 1);
+#else
 	strcpy(c, s);
+#endif
 
 	return(c);
 
