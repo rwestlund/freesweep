@@ -7,7 +7,7 @@
 #define FSHEIGHT 0.80
 
 static char* Choose(struct FileBuf *fb);
-static void Display(WINDOW *fgui, struct FileBuf *fb, struct FileBuf *find, 
+static void Display(WINDOW *fgui, struct FileBuf *fb, int find, 
 	int cursor, int amount);
 
 /* make a linked list of filenames given a directory */
@@ -16,24 +16,31 @@ struct FileBuf* CreateFileBuf(char *dir)
 	char *path = NULL;
 	struct FileBuf *head = NULL;
 	struct FileBuf *tail = NULL;
+	struct FileBuf *del = NULL;
 	struct FileBuf *tmp = NULL;
-	DIR *dent;
+	DIR *dent = NULL;
 	struct dirent *dp = NULL;
+	struct FileBuf *farray = NULL;
+	int count = 0;
 
+	chdir(dir);
 	path = xgetcwd(NULL, PATH_MAX);
 
 	dent = xopendir(dir);
 
+	/* create a linked list of entries, don't use some of the fields for now */
 	while ((dp = readdir(dent)) != NULL)
 	{
 		tmp = xmalloc(sizeof(struct FileBuf) * 1);
 		tmp->fpath = xmalloc(strlen(dp->d_name) + strlen(path) + 2);
 		tmp->next = NULL;
-		tmp->prev = NULL;
 
 		/* create the full name for it */
 		strcpy(tmp->fpath, path);
-		strcat(tmp->fpath, "/");
+		if (strcmp(path,"/")!=0)
+		{
+			strcat(tmp->fpath, "/");
+		}
 		strcat(tmp->fpath, dp->d_name);
 		
 		/* insert it into the list, the right way */
@@ -44,32 +51,59 @@ struct FileBuf* CreateFileBuf(char *dir)
 		else
 		{
 			tail->next = tmp;
-			tmp->prev = tail;
 		}
 		tail = tmp;
 	}
-
 	closedir(dent);
 
-	return head;
-}
-
-/* destroy a linked list of directory names */
-void DestroyFileBuf(struct FileBuf *head)
-{
-	struct FileBuf *curr = NULL;
-	struct FileBuf *del = NULL;
-
-	curr = head;
-
-	while(curr != NULL)
+	/* ok, take that linked list, and make an array out of it. Then free it */
+	
+	tmp = head;
+	while(tmp != NULL)
 	{
-		del = curr;
-		curr = curr->next;
+		count++;
+		tmp = tmp->next;
+	}
+	
+	farray = (struct FileBuf *)xmalloc(sizeof(struct FileBuf) * count);
+	/* the first element in the array holds how many there are */
+	farray[0].numents = count;
+	farray[0].path = path;
 
-		free(del->fpath);
+	count = 0;
+	tmp = head;
+	while(tmp != NULL)
+	{
+		/* move the memory over to it */
+		farray[count++].fpath = tmp->fpath;
+		tmp = tmp->next;
+	}
+
+	/* free the old list, fpath will be owned by farray now */
+	tmp = head;
+	while(tmp != NULL)
+	{
+		del = tmp;
+		tmp = tmp->next;
 		free(del);
 	}
+
+	return farray;
+}
+
+/* destroy a list of directory names */
+void DestroyFileBuf(struct FileBuf *head)
+{
+	int i = 0;
+
+	free(head[0].path);
+
+	for (i = 0; i < head[0].numents; i++)
+	{
+		free(head[i].fpath);
+	}
+
+	free(head);
 }
 
 /* allow the user to continue selecting stuff until a file is selected */
@@ -107,8 +141,8 @@ char* Choose(struct FileBuf *fb)
 	int nlines, ncols, bx, by;
 	int xdist, ydist;
 	char in;
-	int cursor = 0; /* where the cursor starts in relation to the window */
-	struct FileBuf *find = NULL; /* index to top of window display in list */
+	int cursor = 1; /* where the cursor starts in relation to the window */
+	int find = 0;	/* the index of the top of the fb display */
 
 	/* the area I have to put the window */
 	xdist = (COLS-INFO_W-2);
@@ -136,10 +170,12 @@ char* Choose(struct FileBuf *fb)
 	fgui = derwin(gui, nlines-2, ncols-2, 1, 1);
 
 	/* set it to the head of the list */
-	find = fb;
 	werase(fgui);
-	Display(fgui, fb, find, cursor, nlines-2);
+	Display(fgui, fb, find, cursor, nlines-3);
 	wrefresh(fgui);
+
+	/* most of the nlines -3 stuff is because the first line is reserved for
+	 * the path. */
 
 	in=wgetch(fgui);
 	while(1)
@@ -148,33 +184,33 @@ char* Choose(struct FileBuf *fb)
 		{
 			/* move the cursor down */
 			case 'j':
-				if (cursor < nlines-3)
+
+				if (cursor < (nlines - 3) && cursor < fb[0].numents)
 				{
-					if (find->next != NULL)
-					{
-						cursor++;
-					}
+					cursor++;
 				}
-				else if (find->next != NULL) /* are there more? */
+				else if (find != fb[0].numents - (nlines-3) && 
+					fb[0].numents > nlines-3)
 				{
-					find = find->next;
+					find++;
 				}
 				break;
+			/* move the cursor up */
 			case 'k':
-				if (cursor != 0)
+				if (cursor > 1)
 				{
 					cursor--;
 				}
-				else if (find->prev != NULL) /* are there more? */
+				else if (find > 0)
 				{
-					find = find->prev;
+					find--;
 				}
 				break;
 			default:
 				break;
 		}
 		werase(fgui);
-		Display(fgui, fb, find, cursor, nlines-2);
+		Display(fgui, fb, find, cursor, nlines-3);
 		wrefresh(fgui);
 		in=wgetch(fgui);
 	}
@@ -182,23 +218,25 @@ char* Choose(struct FileBuf *fb)
 	return NULL;
 }
 
-void Display(WINDOW *fgui, struct FileBuf *fb, struct FileBuf *find, 
+void Display(WINDOW *fgui, struct FileBuf *fb, int find, 
 	int cursor, int amount)
 {
+	char *p = NULL;
 	int i;
-	struct FileBuf *curr = NULL;
 
-	curr = find;
+	/* display the path, on the first line */
+	mvwprintw(fgui, 0, 0, "-->");
+	mvwprintw(fgui, 0, 3, fb[0].path);
 
-	for (i = 0; i < amount && curr != NULL; i++)
+	for (i = 0; i < amount && i+find < fb[0].numents; i++)
 	{
-		mvwprintw(fgui, i, 1, curr->fpath);
-		curr = curr->next;
+		p = fb[find+i].fpath + strlen(fb[find+i].fpath) - 1;
+		while(*p != '/') p--; p++; /* there will always be a / in it */
+		mvwprintw(fgui, i+1, 1, p);
 	}
 
 	/* highlight the cursor line */
-	mvwprintw(fgui, cursor, 0, "*");
-
+	mvwprintw(fgui, cursor, 0, ">");
 }
 
 /* This controls all of the logic for saving a file, when it is done, it
