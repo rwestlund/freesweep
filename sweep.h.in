@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.32 2000-10-31 02:50:58 hartmann Exp $
+* $Id: sweep.h.in,v 1.33 2000-11-02 03:47:25 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -354,5 +354,8 @@ void PrintGPL();
 /* functions defined in tick.c */
 extern volatile unsigned int g_tick;
 RETSIGTYPE sighandler(int signo);
+
+/* functions in image.c */
+void SaveGameImage(GameStats* Game, char *fname);
 
 #endif /* __SWEEP_H__ */
