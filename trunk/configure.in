@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.38 1999-08-12 03:37:15 hartmann Exp $
+dnl $Id: configure.in,v 1.39 2000-04-02 00:55:21 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -90,7 +90,7 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(strdup memset memmove fileno lockf flock)dnl
+AC_CHECK_FUNCS(strdup memset memmove fileno lockf flock get_current_dir_name)dnl
 
 # Look for lesser but similar functions.
 AC_CHECK_FUNCS(snprintf)dnl
