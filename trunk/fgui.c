@@ -1,10 +1,5 @@
 #include "sweep.h"
 
-struct FileBuf
-{
-	char *fpath;
-	struct FileBuf *next;
-};
 
 /* make a linked list of filenames given a directory */
 struct FileBuf* CreateFileBuf(char *dir)
@@ -64,6 +59,24 @@ void DestroyFileBuf(struct FileBuf *head)
 		free(del->fpath);
 		free(del);
 	}
+}
+
+/* open the window to select a file and print out the results and stuff */
+char *FSelector(void)
+{
+	struct FileBuf *fb = NULL;
+
+	fb = CreateFileBuf(".");
+
+	return NULL;
+}
+
+
+/* This function opens a gui to select, or allow the user to specify a new file
+ * with which to save the game. */
+char* FSGUI(void)
+{
+	return NULL;
 }
 
 

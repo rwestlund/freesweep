@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.21 1999-05-01 19:38:32 hartmann Exp $
+* $Id: sweep.h.in,v 1.22 1999-05-06 19:03:20 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -27,6 +27,10 @@
 
 #if defined HAVE_FLOCK && defined HAVE_SYS_FILE_H
 #include <sys/file.h>
+#endif
+
+#if defined(HAVE_LIMITS_H)
+#include <limits.h>
 #endif
 
 /* XXX make this work with configure */
@@ -202,6 +206,13 @@ typedef struct _CoordPair
 {
 	int CoordX, CoordY;
 } CoordPair;
+
+/* stuff needed for the file gui */
+struct FileBuf
+{
+	char *fpath;
+	struct FileBuf *next;
+};
 
 
 #ifdef DEBUG_LOG
