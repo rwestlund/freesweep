@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.22 1999-02-18 04:05:03 hartmann Exp $
+* $Id: play.c,v 1.23 1999-02-19 07:20:37 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -136,6 +136,7 @@ int GetInput(GameStats* Game)
 					Game->NumMines, Game->MarkedMines, Game->BadMarkedMines);
 				fflush(DebugLog);
 #endif /* DEBUG_LOG */
+				UpdateBestTimesFile(Game);
 			}
 			break;
 
@@ -273,7 +274,6 @@ int GetInput(GameStats* Game)
 				SweepError("Can only quit once.");
 				Multiplier=1;
 			}
-			UpdateBestTimesFile(Game);
 
 #ifdef DEBUG_LOG
 			fprintf(DebugLog,"Quitting quietly.\n========================================\n");
