@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.15 1999-02-17 06:58:19 hartmann Exp $
+* $Id: play.c,v 1.16 1999-02-17 07:16:46 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -244,6 +244,16 @@ int GetInput(GameStats* Game)
 				Multiplier=1;
 			}
 			SweepMessage("Location: (%u, %u)", Game->CursorX, Game->CursorY);
+			break;
+
+		/* A test key. Sort of feature-of-the-day. */
+		case 't':
+			if (Multiplier!=1)
+			{
+				SweepError("Can only <feature> once.");
+				Multiplier=1;
+			}
+			SweepMessage("_________0_________0(%u, %u)_________0_________0", Game->CursorX, Game->CursorY);
 			break;
 
 		/* The accepted values to suspend the game. */

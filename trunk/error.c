@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: error.c,v 1.3 1999-02-17 06:58:19 hartmann Exp $
+* $Id: error.c,v 1.4 1999-02-17 07:16:45 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -16,7 +16,7 @@ at the bottom of the screen. Passing a null pointer as the message will
 invoke a call to ClearError(). */
 void SweepError(char* format, ...)
 {
-	char NewErrMsg[40];
+	char NewErrMsg[42];
 	va_list args;
 
 	if (format==NULL)
@@ -29,7 +29,7 @@ void SweepError(char* format, ...)
 
 		va_start(args, format);
 		
-		vsnprintf(NewErrMsg,39,format,args);
+		vsnprintf(NewErrMsg,41,format,args);
 
 		va_end(args);
 
@@ -97,21 +97,14 @@ void SweepAlert()
 
 void SweepMessage(char* format, ...)
 {
-	char NewErrMsg[40];
+	char NewErrMsg[42];
 	va_list args;
 
-	if (format==NULL)
-	{
-		ClearError();
-	}
-	else 
-	{
-		ClearError();
-		va_start(args, format);
-		vsnprintf(NewErrMsg,39,format,args);
-		va_end(args);
-		mvwprintw(ErrWin,0,0,NewErrMsg);
-	}
+	ClearError();
+	va_start(args, format);
+	vsnprintf(NewErrMsg,41,format,args);
+	va_end(args);
+	mvwprintw(ErrWin,0,0,NewErrMsg);
 	wnoutrefresh(ErrWin);
 	move(0,0);
 	noutrefresh();
