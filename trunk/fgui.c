@@ -214,7 +214,13 @@ char* Choose(struct FileBuf *fb)
 		wrefresh(fgui);
 		in=wgetch(fgui);
 	}
-
+	
+	werase(fgui);
+	werase(gui);
+	wrefresh(fgui);
+	wrefresh(gui);
+	delwin(fgui);
+	delwin(gui);
 	return strdup(fb[find + cursor - 1].fpath);
 }
 
