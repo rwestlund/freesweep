@@ -5,7 +5,7 @@
 
 volatile unsigned int g_tick = 0;
 
-void sighandler(int signo)
+RETSIGTYPE sighandler(int signo)
 {
 	switch(signo)
 	{
