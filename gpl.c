@@ -382,7 +382,7 @@ void PrintGPL()
 		switch (Input)
 		{
 			case 'q':
-				wclear(GPLWin);
+				werase(GPLWin);
 				delwin(GPLWin);
 				clear();
 				noutrefresh();
@@ -413,7 +413,7 @@ void PrintGPL()
 	wrefresh(GPLWin);
 	Input=wgetch(GPLWin);
 
-	wclear(GPLWin);
+	werase(GPLWin);
 	delwin(GPLWin);
 	clear();
 	noutrefresh();
