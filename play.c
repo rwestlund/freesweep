@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.35 1999-05-06 22:02:25 psilord Exp $
+* $Id: play.c,v 1.36 1999-07-25 03:27:27 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -249,8 +249,6 @@ int GetInput(GameStats* Game)
 
 		/* The accepted keys to display the help screen. */
 		case '?':
-		case 'm':
-		case '/':
 		case KEY_HELP:
 			if (Multiplier!=1)
 			{
