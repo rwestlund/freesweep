@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.18 1999-02-24 05:40:18 psilord Exp $
+* $Id: game.c,v 1.19 1999-02-24 05:46:32 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -396,6 +396,7 @@ void DumpGame(GameStats* Game)
 	fprintf(DebugLog,"CursorY is %d, CursorX is %d\n",Game->CursorY,Game->CursorX);
 	fprintf(DebugLog,"LargeBoardY is %d, LargeBoardX is %d\n",Game->LargeBoardY,Game->LargeBoardX);
 	fprintf(DebugLog,"FocusY is %d, FocusX is %d\n",Game->FocusY,Game->FocusX);
+	fprintf(DebugLog,"Time is %d\n",Game->Time);
 	fprintf(DebugLog,"Alert is %d (",Game->Alert);
 	switch (Game->Alert)
 	{
