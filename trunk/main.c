@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.13 1999-02-19 02:24:45 hartmann Exp $
+* $Id: main.c,v 1.14 1999-02-19 06:10:06 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -55,6 +55,10 @@ int main(int argc, char** argv)
 	ReadyGame(Game);
 	noutrefresh();
 
+	/* set up signal handler and stuff */
+	signal(SIGALRM, sighandler);
+	alarm(1);
+
 	while (1)
 	{
 		/* Make sure the right character set is in use. */
@@ -79,8 +83,11 @@ int main(int argc, char** argv)
 			UndrawCursor(Game);
 			SweepError(NULL);
 			GetInput(Game);
-			napms(20);
+			/* XXX see about this, it fuxks up the timer code */
+/*			napms(20);*/
+			Game->Time = g_tick;
 		}
+		g_tick = 0;
 
 		/* It might be nice to log this before reseting it. */
 		Game->Status=INPROG;
