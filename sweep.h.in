@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.17 1999-02-25 20:52:09 psilord Exp $
+* $Id: sweep.h.in,v 1.18 1999-03-03 06:08:02 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -218,7 +218,6 @@ int Pan(GameStats* Game);
 int Center(GameStats* Game);
 int CenterY(GameStats* Game);
 int CenterX(GameStats* Game);
-void PrintStats(GameStats *Game);
 
 /* These are the functions defined in game.c */
 int CheckColor(int NewVal);
@@ -256,6 +255,11 @@ void ClearError();
 int RedrawErrorWin();
 void SweepAlert();
 void SweepMessage(char* format, ...);
+
+/* These are the functions defined in stats.c */
+void PrintStats(GameStats *Game);
+int InitStatsWin(void);
+int RedrawStatsWin(void);
 
 /* These are the functions described in utils.c */
 void* xmalloc(size_t num);

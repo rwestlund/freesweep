@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: drawing.c,v 1.14 1999-02-25 20:52:09 psilord Exp $
+* $Id: drawing.c,v 1.15 1999-03-03 06:08:02 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -55,33 +55,6 @@ void PrintInfo()
 	wnoutrefresh(InfoWin);
 	delwin(InfoWin);
 	return;
-}
-
-/* Vomit some stats to the screen */
-void PrintStats(GameStats *Game)
-{
-	static WINDOW *sw = NULL;
-	char buf[21];
-
-	/* XXX Should I be making a new window each time? Can't I just clear the
-	 * one I already have? Does it matter? */
-
-	sw=newwin(6,21,5,(COLS-INFO_W));
-	wborder(sw,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,
-		CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,
-		CharSet.LRCorner);
-
-	sprintf(buf, "Time: %d", Game->Time);
-	mvwprintw(sw, 1, 1, buf);
-	sprintf(buf, "Loc: %d, %d", Game->CursorX, Game->CursorY);
-	mvwprintw(sw, 2, 1, buf);
-	sprintf(buf, "Mines: %d", Game->NumMines);
-	mvwprintw(sw, 3, 1, buf);
-	sprintf(buf, "Marks: %d", Game->MarkedMines + Game->BadMarkedMines);
-	mvwprintw(sw, 4, 1, buf);
-	move(0,0);
-	wnoutrefresh(sw);
-	delwin(sw);
 }
 
 void AskPrefs(GameStats* Game)
