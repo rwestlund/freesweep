@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.30 1999-07-22 04:43:23 hartmann Exp $
+dnl $Id: configure.in,v 1.31 1999-07-24 23:39:50 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -75,7 +75,7 @@ AC_CHECK_LIB(m,main)dnl
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(limits.h strings.h unistd.h sys/file.h getopt.h errno.h)dnl
+AC_CHECK_HEADERS(limits.h string.h unistd.h sys/file.h getopt.h errno.h)dnl
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

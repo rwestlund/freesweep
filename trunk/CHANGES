@@ -1,0 +1,9 @@
+24 April 1999
+	Fixed build for Cygwin32 platform - thanks to Alan de Smet
+	<chaos@null.net>
+
+22 July 1999
+	Changed strings.h to string.h , and added maintainer-clean to
+	Makefile.in - thanks to Antti-Juhani Kaijanaho <gaia@iki.fi>
+
+	Fixed the output for usage.

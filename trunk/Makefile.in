@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.38 1999-07-22 04:43:23 hartmann Exp $
+# $Id: Makefile.in,v 1.39 1999-07-24 23:39:49 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -7,7 +7,7 @@ VERSION = 0.86
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c play.c sl.c stats.c tick.c utils.c
 HEADS = sweep.h defaults.h
-MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in freesweep.6.in
+MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in freesweep.6.in CHANGES
 CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status
 
 SYSTEM_TYPE = @host@
@@ -25,7 +25,7 @@ FILES = $(SRCS) $(MISC) $(HEADS)
 PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 
 .SUFFIXES: .c .o
-.PHONY: clean sterile lines distclean
+.PHONY: clean sterile lines distclean maintainer-clean
 #######################################################################
 %.o: %.c $(HEADS) Makefile
 	@echo 'Building $<'
@@ -51,9 +51,12 @@ pure:
 distclean:
 	@make sterile
 
+maintainer-clean:
+	@make sterile
+
 sterile:
 	-make clean
-	@-@RM@ -f */*.o */core */made */$(TARGET) */a.out sweep.h
+	@-@RM@ -f *.o core made $(TARGET) a.out sweep.h configure Makefile freesweep.6
 
 tar: $(SRCS) $(MISC)
 	(cd ../ ; @LN_S@ sweep $(TARGET_DIR))
