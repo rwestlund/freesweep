@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.5 1999-02-11 19:21:11 psilord Exp $
+* $Id: play.c,v 1.6 1999-02-12 00:09:08 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -326,13 +326,13 @@ int GetInput(GameStats* Game)
 		/* XXX load a game */
 		case 'O':
 		case 'o':
-			free(Game->Field);
 			wclear(Game->Board);
 			wnoutrefresh(Game->Board);
 			wclear(Game->Border);
 			wnoutrefresh(Game->Border);
 			delwin(Game->Board);
 			delwin(Game->Border);
+			free(Game->Field);
 			free(Game);
 			Game = LoadGame("./foo.svg");
 			SweepError("Done Loading");
