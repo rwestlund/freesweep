@@ -29,6 +29,7 @@ void UpdateBestTimesFile(GameStats *Game)
 	SaveBestTimesFile(bfd);
 
 	free(b);
+	free(bfd->ents);
 	free(bfd);
 }
 
@@ -101,6 +102,14 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 	/* how many bytes do I need to read? */
 	fscanf(abyss, "%u\n", &size);
 
+	space = (unsigned char*)malloc(sizeof(unsigned char) * size);
+	if (space == NULL)
+	{
+		SweepError("Out of Memory. Sorry.");
+		/* XXX fix me */
+		exit(EXIT_FAILURE);
+	}
+
 	/* read it in */
 	fread(space, size, 1, abyss);
 
@@ -128,6 +137,10 @@ void Unpack(struct BestFileDesc *bfd, FILE *abyss)
 
 void BFDSort(struct BestFileDesc *bfd)
 {
+	/* preform a radix sort, effectively */
+	/* sort according to area */
+	/* sort according to mines for each area subsection */
+	/* sort each mine subsection according to time */
 }
 
 void InsertEntry(struct BestFileDesc *bfd, struct BestEntry *n)
