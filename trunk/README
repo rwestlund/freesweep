@@ -15,12 +15,6 @@ the help and high scores windows are designed to use a screen 80 columns wide.
 
 	The use of the -d option overrides all other options.
 
-	Sometimes when quitting, a core is dumped by _strtol_internal. Failure
-somewhere in the best times code.
-
-*** doing rewrite of best times stuff. Notes to self
-a%um%ut%u|<other>|<other>|<other>\n
-
 	On most X keymaps, both the left arrow and the down arrow don't
 work, reporting "Unknown keystroke." Unfortunately, somehow this leaves an
 extra 'o' lying around, leading to a saved game getting loaded.
@@ -40,7 +34,4 @@ what the user wants for the new games.
 that gets incremented by a signal handler. At the end of the main loop, check
 to see if the int has gotten set, and then increment Game->Time.
 
-	A function to show the GPL. I read the GPL, and interactive programs
-are supposed to have a way to display it. So what if it increases the
-binary size, it's freedom!
-
+See what purify is bitching about in the load/save game code.
