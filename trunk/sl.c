@@ -70,7 +70,7 @@ GameStats* LoadGame(char *fname)
 	fread(Game->Field, 
 		(Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
 		* sizeof(unsigned char), 1, fi);
-
+	
 	/* make the new window setup for it */
 	if (Game->LargeBoardX && Game->LargeBoardY)
 	{
@@ -102,6 +102,9 @@ GameStats* LoadGame(char *fname)
 		perror("ReadyGame::AllocWin");
 		exit(EXIT_FAILURE);
 	}
+
+	/* Set the game clock as the real clock */
+	g_tick = Game->Time;
 
 	return Game;
 }
