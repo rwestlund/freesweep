@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h,v 1.2 1999-02-10 23:49:27 hartmann Exp $
+* $Id: sweep.h,v 1.3 1999-02-11 05:56:53 psilord Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -32,8 +32,10 @@
 #define DFL_BESTS_FILE ".sweeptimes"
 #define MAGIC_NUMBER 128
 
-/* size of the hashtable, prime too */
-#define HASHSIZE 61
+/* used for the superclick feature in the game */
+#define SUPERCLICK 0
+#define DIE 1
+#define DONOTHING 2
 
 /* These are defines for maximum accepted values */
 #define MAX_LINE 1024

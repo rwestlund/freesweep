@@ -1,17 +1,11 @@
 /*********************************************************************
-* $Id: clear.c,v 1.4 1999-02-11 01:53:51 hartmann Exp $
+* $Id: clear.c,v 1.5 1999-02-11 05:56:53 psilord Exp $
 *********************************************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "sweep.h"
 
-/* XXX Should move this to sweep.h */
-#define SUPERCLICK 0
-#define DIE 1
-#define DONOTHING 2
-
-/* Fake comment. Can I write to clear.c? */
 
 static void InsertChildren(struct Mark **ht, GameStats *Game, int x, int y);
 static int CalcSquareNumber(GameStats *Game, int xx, int yy);
