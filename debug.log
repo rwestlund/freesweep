@@ -1,0 +1,37 @@
+Freesweep v0.8 for SunOS_i86pc on Nov 18 1998 at 10:39:26 by hartmann
+Quitting quietly.
+========================================
+Freesweep v0.8 for SunOS_i86pc on Nov 18 1998 at 10:39:26 by hartmann
+Got unknown keystroke: 
+Got unknown keystroke: O
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Height is 512, Width is 512
+Percent is 20, NumMines is 0
+Fast is 0, LineDraw is 0
+CursorY is 256, CursorX is 255
+LargeBoardY is 1, LargeBoardX is 1
+FocusY is 247, FocusX is 246
+Alert is 0 (Beep)
+Field is 8070550
+Border is 8090558
+Board is 8091a08
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Got unknown keystroke: 
+Got unknown keystroke: O
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Height is 512, Width is 512
+Percent is 20, NumMines is 0
+Fast is 0, LineDraw is 0
+CursorY is 256, CursorX is 255
+LargeBoardY is 1, LargeBoardX is 1
+FocusY is 247, FocusX is 246
+Alert is 0 (Beep)
+Field is 8070550
+Border is 8090558
+Board is 8091a08
+-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Got unknown keystroke: 
+Got unknown keystroke: O
+Got unknown keystroke: B
+Mine exposed! Setting Status to LOSE.
+========================================
