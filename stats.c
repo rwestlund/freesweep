@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: stats.c,v 1.9 2000-08-05 07:13:47 hartmann Exp $
+*  $Id: stats.c,v 1.10 2002-12-19 07:04:05 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -86,10 +86,24 @@ void PrintStats(GameStats *Game)
 	
 	if ( percentage > 100.0)
 	{
-		wstandout(StatsWin);
+		if (Game->Color != 0 && (has_colors() == TRUE))
+		{
+			wcolor_set(StatsWin,5,NULL);
+		}
+		else
+		{
+			wstandout(StatsWin);
+		}
 		mvwprintw(StatsWin, 3, 7, "%d", Game->MarkedMines + Game->BadMarkedMines);
 		mvwprintw(StatsWin, 4, 12, "%3.2f%%", percentage);
-		wstandend(StatsWin);
+		if (Game->Color != 0 && (has_colors() == TRUE))
+		{
+			wcolor_set(StatsWin,6,NULL);
+		}
+		else
+		{
+			wstandend(StatsWin);
+		}
 	}
 	else
 	{

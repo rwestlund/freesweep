@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: play.c,v 1.40 2001-06-11 00:32:17 hartmann Exp $
+*  $Id: play.c,v 1.41 2002-12-19 07:04:05 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -468,6 +468,17 @@ int GetInput(GameStats* Game)
 			free(Game);
 			Game = LoadGame("./foo.svg");
 			SweepError("Done Loading");
+			break;
+
+		case 'u':
+			if ( Game->Color == 0 )
+			{
+				Game->Color = 1;
+			}
+			else
+			{
+				Game->Color = 0;
+			}
 			break;
 
 		case 'i':

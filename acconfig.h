@@ -15,7 +15,9 @@
 
 
 /* Set this to be blah blah blah. */
-#undef DEBUG_LOG
+#ifndef DEBUG_LOG
+#define DEBUG_LOG debug.log
+#endif
 
 /* Set this blah blah blah. */
 #undef SCORESDIR

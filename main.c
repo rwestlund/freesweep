@@ -4,7 +4,7 @@
 *  License, version 2 or above; see the file COPYING for more         *
 *  information.                                                       *
 *                                                                     *
-*  $Id: main.c,v 1.34 1999-08-09 05:25:36 hartmann Exp $
+*  $Id: main.c,v 1.35 2002-12-19 07:04:05 hartmann Exp $
 *                                                                     *
 **********************************************************************/
 
@@ -125,6 +125,7 @@ int main(int argc, char** argv)
 				noutrefresh();
 				Wipe(Game);
 				AskPrefs(Game);
+				ChangeSweepAlert(Game->Alert);
 				ReadyGame(Game);
 				Center(Game);
 				clear();
