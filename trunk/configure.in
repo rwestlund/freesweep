@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.27 1999-05-06 19:03:20 psilord Exp $
+dnl $Id: configure.in,v 1.28 1999-05-22 02:42:15 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -75,7 +75,7 @@ AC_CHECK_LIB(m,main)dnl
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(limits.h strings.h unistd.h sys/file.h)dnl
+AC_CHECK_HEADERS(limits.h strings.h unistd.h sys/file.h getopt.h errno.h)dnl
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -83,7 +83,7 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(snprintf getopt strdup memset memmove flock lockf fileno)dnl
+AC_CHECK_FUNCS(snprintf getopt getopt_long strdup memset memmove flock lockf fileno)dnl
 
 dnl If neither locking mechanism is there, disable group scores.
 if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then

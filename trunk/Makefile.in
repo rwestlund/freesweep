@@ -1,9 +1,9 @@
 ######################################################################
-# $Id: Makefile.in,v 1.36 1999-05-06 19:03:19 psilord Exp $
+# $Id: Makefile.in,v 1.37 1999-05-22 02:42:15 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
-VERSION = 0.85
+VERSION = 0.86
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c play.c sl.c stats.c tick.c utils.c
 HEADS = sweep.h defaults.h

@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.25 1999-05-07 01:46:46 psilord Exp $
+* $Id: sweep.h.in,v 1.26 1999-05-22 02:42:15 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -7,9 +7,22 @@
 
 /* The library header files. */
 
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif /* HAVE_UNISTD_H */
+
+#ifdef HAVE_STRINGS_H
 #include <strings.h>
+#endif /* HAVE_STRINGS_H */
+
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif /* HAVE_GETOPT_H */
+
+#ifdef HAVE_ERRNO_H
 #include <errno.h>
+#endif /* HAVE_ERRNO_H */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -24,6 +37,9 @@
 
 #ifdef HAVE_LIBNCURSES
 #include "@NCURSES_HINT@/include/curses.h"
+#else /* HAVE_LIBNCURSES */
+#include <curses.h>
+#endif /* HAVE_LIBNCURSES */
 
 #if defined HAVE_FLOCK && defined HAVE_SYS_FILE_H
 #include <sys/file.h>
@@ -37,16 +53,9 @@
 #include <sys/types.h>
 #include <dirent.h>
 
-
-
 #ifdef NCURSES_MOUSE_VERSION
 #define SWEEP_MOUSE
 #endif /* NCURSES_MOUSE_VERSION */
-
-#else /* HAVE_LIBNCURSES */
-#include <curses.h>
-
-#endif /* HAVE_LIBNCURSES */
 
 #include "defaults.h"
 
