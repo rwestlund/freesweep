@@ -52,9 +52,13 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(strings.h unistd.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
-AC_CHECK_FUNC(snprintf, AC_DEFINE(HAVE_SNPRINTF))
+AC_TYPE_SIGNAL
+dnl AC_CHECK_FUNC(snprintf, AC_DEFINE(HAVE_SNPRINTF))
+AC_CHECK_FUNCS(snprintf)
 AC_CHECK_FUNCS(strdup)
 AC_CHECK_FUNCS(memset)
 AC_CHECK_FUNCS(memmove)
