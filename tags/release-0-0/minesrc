@@ -1,0 +1,57 @@
+# defaults
+# This line should contain the default height value
+h 18
+# This line should contain the default refresh time value
+u 1
+# This line should contain the default width value
+w 18
+# This line should contain the default mines value
+m    58
+# This line should contain the default percentage of mines.
+%0
+# This line should contain the default colorflag value
+c0
+# This line should contain the default linedraw value
+a0
+## end default section
+~
+w10h10m20t838
+w11h11m24t758
+w12h12m28t113
+w13h13m33t515
+w14h14m39t51
+w15h15m45t627
+w16h16m51t10
+w17h17m57t419
+w18h18m64t212
+w19h19m72t86
+w20h20m80t749
+w21h21m88t767
+w22h22m96t84
+w23h23m105t60
+w24h24m115t225
+w25h25m125t543
+w26h26m135t89
+w27h27m145t183
+w28h28m156t137
+w29h29m168t566
+w30h30m180t966
+w31h31m192t978
+w32h32m204t495
+w33h33m217t311
+w34h34m231t367
+w35h35m245t54
+w36h36m259t31
+w37h37m273t145
+w38h38m288t882
+w39h39m304t736
+w40h40m320t524
+w41h41m336t505
+w42h42m352t394
+w43h43m369t102
+w44h44m387t851
+w45h45m405t67
+w46h46m423t754
+w47h47m441t653
+w48h48m460t561
+w49h49m480t96
