@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: sweep.h.in,v 1.29 1999-08-04 06:19:16 hartmann Exp $
+* $Id: sweep.h.in,v 1.30 1999-08-06 07:25:26 hartmann Exp $
 *********************************************************************/
 
 #ifndef __SWEEP_H__
@@ -59,12 +59,16 @@
 #define SWEEP_MOUSE
 #endif /* NCURSES_MOUSE_VERSION */
 
+#ifdef SCORESDIR
+#define USE_GROUP_BEST_FILE
+#endif
+
 #include "defaults.h"
 
 /* These are all the defines used in freesweep */
 /* These are defines for convenience */
 #define DELIMITERS " \t="
-#define DFL_GROUP_PATH "@SCORESDIR@/share"
+#define DFL_GROUP_PATH "@SCORESDIR@"
 #define MAGIC_NUMBER 128
 
 #ifdef __CYGWIN__
@@ -311,7 +315,7 @@ void StopTimer(void);
 /* this is in pbests.c, which will eventually become bests.c */
 void UpdateBestTimesFile(GameStats *Game, char *filename);
 char* FPTBTF(void);
-#ifdef USE_GROUP_BEST_FILE
+#if defined USE_GROUP_BEST_FILE
 char* FPTGBTF(void);
 #endif
 

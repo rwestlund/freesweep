@@ -13,14 +13,8 @@ hartmann@cs.wisc.edu otherwise.
 	If no file locking mechanism is found, group-writable best times
 will be disabled.
 
-	The -s command line option will save any settings passed on the
-command line. This will occur even if the user selects against saving
-settings in the interactive setup. Use of -s without -f is discouraged.
-
 	While the game is playable on any terminal supported by curses/ncurses,
 the help and high scores windows are designed to use a screen 80 columns wide.
-
-	The use of the -d option overrides all other options.
 
 	On most X keymaps, both the left arrow and the down arrow don't
 work, reporting "Unknown keystroke." Unfortunately, somehow this leaves an
