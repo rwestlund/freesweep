@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: pbests.c,v 1.25 1999-07-29 04:17:21 hartmann Exp $
+* $Id: pbests.c,v 1.26 1999-08-06 07:25:26 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -426,21 +426,21 @@ char* FPTBTF(void)
 	return fp;
 }
 
-#ifdef USE_GROUP_BEST_FILE
+#if defined USE_GROUP_BEST_FILE
 /* full path to group best times file */
 char* FPTGBTF(void)
 {
 	char *fp = NULL;
 
 	/* get me some memory for the string */
-	fp = (char*)xmalloc(strlen(DFL_GROUP_PATH) + strlen(DFL_BESTS_FILE) + 1);
+	fp = (char*)xmalloc(strlen(SCORESDIR) + 11);
 
 	/* make the full path */
-	strcpy(fp, DFL_GROUP_PATH DFL_BESTS_FILE);
+	strcpy(fp, SCORESDIR "/sweeptimes");
 
 	return fp;
 }
-#endif
+#endif /* USE_GROUP_BEST_FILE */
 
 
 static void DumpBFD(struct BestFileDesc *bfd, int valid)

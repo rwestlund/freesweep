@@ -1,5 +1,5 @@
 ######################################################################
-# $Id: Makefile.in,v 1.41 1999-08-04 06:19:14 hartmann Exp $
+# $Id: Makefile.in,v 1.42 1999-08-06 07:25:25 hartmann Exp $
 ######################################################################
 
 TARGET = freesweep
@@ -10,7 +10,15 @@ HEADS = sweep.h defaults.h
 MISC = README Makefile sweeprc install-sh configure.in Makefile.in config.guess configure config.sub sweep.h.in freesweep.6.in CHANGES
 CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log config.status
 
-SYSTEM_TYPE = @host@
+#SYSTEM_TYPE = @host@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+#bindir = $(exec_prefix)/bin
+bindir = @bindir@
 
 CC = @CC@
 CFLAGS = -Wall -DVERSION=\"$(VERSION)\" @CFLAGS@ @DEFS@ 
@@ -48,8 +56,18 @@ pure:
 	@make clean
 	@make "PURIFY=$(PURE_ARGS)"
 
-man:
-	@@CPP@ @DEFS@ $(TARGET).6.cpp
+install:
+	@-make install-bin
+	@-make install-man
+
+install-bin: $(TARGET)
+	touch sweeptimes
+	./install-sh -c -m 2555 -o root -g games -s $(TARGET) $(bindir)/$(TARGET)
+	./install-sh -c -m 0664 -o root -g games sweeptimes @SCORESDIR@/sweeptimes
+	./install-sh -c -m 0644 -o root -g games sweeprc @PREFSDIR@/sweeprc
+
+install-man:
+	
 
 distclean:
 	@make sterile

@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.35 1999-08-04 06:19:14 hartmann Exp $
+dnl $Id: configure.in,v 1.36 1999-08-06 07:25:25 hartmann Exp $
 dnl
 
 dnl Process this file with autoconf to produce a configure script.
@@ -17,11 +17,12 @@ AC_PATH_PROG(GZIP, gzip)dnl
 AC_PATH_PROG(RM, rm)dnl
 
 dnl Set the prefsdir to something
-AC_ARG_WITH(prefsdir, [  --with-prefsdir=DIR    put the shared best time file in DIR [/usr/local/share]], PREFSDIR=$with_scoresdir, PREFSDIR='/usr/local/share')dnl
+AC_ARG_WITH(prefsdir, [  --with-prefsdir=DIR    put the shared best time file in DIR [/usr/local/share]], PREFSDIR=$with_prefsdir, PREFSDIR='/usr/local/share')dnl
 AC_SUBST(PREFSDIR)dnl
 
 dnl Set the scoresdir to something
-AC_ARG_WITH(scoresdir, [  --with-scoresdir=DIR    put the shared best time file in DIR [/usr/local/share]], SCORESDIR=$with_scoresdir, SCORESDIR='/usr/local/share')dnl
+dnl AC_ARG_WITH(scoresdir, [  --with-scoresdir=DIR    put the shared best time file in DIR [/usr/local/share]], SCORESDIR=$with_scoresdir, SCORESDIR='/usr/local/share')dnl
+AC_ARG_WITH(scoresdir, [  --with-scoresdir=DIR    put the shared best time file in DIR [/usr/local/share]], SCORESDIR=$with_scoresdir)dnl
 AC_SUBST(SCORESDIR)dnl
 
 dnl Look for ncurses in a variable.
@@ -34,11 +35,6 @@ AC_ARG_ENABLE(debug-log,
 if test "$DEBUG_LOG" != 'no' ; then
 	AC_DEFINE(DEBUG_LOG)dnl
 fi
-
-dnl Group best times files
-AC_ARG_ENABLE(group-best-times,
-[  --enable-group-best-times[=DIR]
-                          Enable group best times file in DIR [PREFIX/share]], DFL_GROUP_PATH=$enable_group_best_times, eval DFL_GROUP_PATH='/usr/local/share')
 
 dnl Checks for libraries.
 dnl look for ncurses in the suggested location, if given.
@@ -91,7 +87,7 @@ AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS(strdup memset memmove flock lockf fileno)dnl
+AC_CHECK_FUNCS(strdup memset memmove fileno lockf flock)dnl
 
 # Look for lesser but similar functions.
 AC_CHECK_FUNCS(snprintf)dnl
@@ -113,16 +109,12 @@ if test "${ac_cv_func_getopt_long}" = 'no' ; then
 fi
 
 dnl If neither locking mechanism is there, disable group scores.
-if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then
-	AC_MSG_WARN([Neither lockf nor flock was found. Best times files will be risky.])dnl
-else
-	AC_DEFINE(USE_GROUP_BEST_FILE)dnl
-fi
-
-dnl Group best times location, if any.
-if test "$DFL_GROUP_PATH" != 'no' ; then
-	AC_SUBST(DFL_GROUP_PATH)dnl
-	AC_DEFINE(USE_GROUP_BEST_FILE)dnl
+if test "${with_scoresdir}" != '' ; then
+	if test "${ac_cv_func_flock}" = 'no' && test "${ac_cv_func_lockf}" = 'no' ; then
+		AC_MSG_WARN([Neither lockf nor flock was found. Best times files will be risky.])dnl
+	else
+		AC_DEFINE(USE_GROUP_BEST_FILE)dnl
+	fi
 fi
 
 AC_OUTPUT(Makefile sweep.h freesweep.6)dnl
