@@ -16,6 +16,11 @@ AC_ARG_WITH(ncurses, [  --with-ncurses=DIR      path to the ncurses drawing pack
 if test "$NCURSES" = "no"  ; then
 	LIBS="-lcurses $LIBS"
 else
+	dnl Linux uses
+	if test "$host_os" = 'linux' ; then
+		NCURSES=/usr
+	fi
+
 	dnl Set CFLAGS right.
 	CFLAGS="-I$NCURSES/include -I/usr/local/include $CFLAGS"
 	AC_SUBST(NCURSES)
