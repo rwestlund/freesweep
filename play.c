@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: play.c,v 1.4 1999-02-11 18:56:14 psilord Exp $
+* $Id: play.c,v 1.5 1999-02-11 19:21:11 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -327,6 +327,10 @@ int GetInput(GameStats* Game)
 		case 'O':
 		case 'o':
 			free(Game->Field);
+			wclear(Game->Board);
+			wnoutrefresh(Game->Board);
+			wclear(Game->Border);
+			wnoutrefresh(Game->Border);
 			delwin(Game->Board);
 			delwin(Game->Border);
 			free(Game);
