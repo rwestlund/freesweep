@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.6 1999-02-12 02:35:35 hartmann Exp $
+* $Id: main.c,v 1.7 1999-02-12 02:51:38 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 		Center(Game);
 
 	/*	This is the main loop.*/
-		while (Game->Status==0)
+		while (Game->Status==INPROG)
 		{
 			Pan(Game);
 			DrawCursor(Game);
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 		}
 
 		/* It might be nice to log this before reseting it. */
-		Game->Status=0;
+/*		Game->Status=0;*/
 
 		Pan(Game);
 		DrawCursor(Game);

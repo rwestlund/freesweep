@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: game.c,v 1.4 1999-02-11 08:50:19 hartmann Exp $
+* $Id: game.c,v 1.5 1999-02-12 02:51:38 psilord Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -63,7 +63,7 @@ int InitGame(GameStats* Game)
 	Game->LargeBoardX=Game->LargeBoardY=0;
 	Game->FocusX=Game->FocusY=0;
 	Game->Time=0;
-	Game->Status=0;
+	Game->Status=INPROG;
 	InitCharSet(Game,DEFAULT_LINEDRAW);
 	return 0;
 }
