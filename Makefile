@@ -1,6 +1,6 @@
 # Generated automatically from Makefile.in by configure.
 ######################################################################
-# $Id: Makefile,v 1.5 1999-02-11 01:46:27 hartmann Exp $
+# $Id: Makefile,v 1.6 1999-02-11 01:53:51 hartmann Exp $
 ######################################################################
 
 SRCS = drawing.c files.c main.c game.c play.c bests.c error.c clear.c
