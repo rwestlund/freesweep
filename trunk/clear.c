@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: clear.c,v 1.7 1999-02-25 17:37:52 psilord Exp $
+* $Id: clear.c,v 1.8 1999-03-16 05:36:43 hartmann Exp $
 *********************************************************************/
 
 #include <stdio.h>
@@ -344,7 +344,7 @@ void SuperClear(GameStats *Game)
 	{
 		/* they marked incorrectly, and must now pay the price */
 		case DIE:
-			Boom();
+/*			Boom();*/
 			Game->Status = LOSE;
 			SetMine(x,y,DETONATED);
 			CharSet.FalseMark='x';

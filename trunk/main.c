@@ -1,5 +1,5 @@
 /*********************************************************************
-* $Id: main.c,v 1.30 1999-03-05 19:07:17 psilord Exp $
+* $Id: main.c,v 1.31 1999-03-16 05:36:43 hartmann Exp $
 *********************************************************************/
 
 #include "sweep.h"
@@ -7,6 +7,7 @@
 int main(int argc, char** argv)
 {
 	GameStats* Game;
+	chtype Input=0;
 
 	/* Set up the curses cleaner in case of disaster */
 	signal(SIGSEGV, sighandler);
@@ -123,11 +124,31 @@ int main(int argc, char** argv)
 				clear();
 				noutrefresh();
 				StartTimer();
-			case WIN:
-				napms(2000);
-				break;
-			case LOSE:
-				napms(2000);
+			case WIN: case LOSE:
+				StopTimer();
+				DrawCursor(Game);
+				SweepMessage("'q' to quit, any other key to continue");
+				nodelay(Game->Board,FALSE);
+				Input=mvwgetch(Game->Board,0,0);
+				wnoutrefresh(Game->Board);
+				refresh();
+
+				if (Input == 'q')
+				{
+					clear();
+					refresh();
+					endwin();
+#ifdef DEBUG_LOG
+					fprintf(DebugLog,"========================================\n");
+					fclose(DebugLog);
+#endif /* DEBUG_LOG */
+					return 0;
+				}
+				else
+				{
+					SweepMessage(NULL);
+					UndrawCursor(Game);
+				}
 				break;
 			default:
 				break;
