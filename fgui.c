@@ -12,6 +12,7 @@ static char *FSelector(void);
 static char* Choose(struct FileBuf *fb);
 static void Display(WINDOW *fgui, struct FileBuf *fb, int find, int cursor, 
 	int amount);
+static int qstrcmp(const void *l, const void *r);
 
 /* make a linked list of filenames given a directory */
 struct FileBuf* CreateFileBuf(char *dir)
@@ -25,6 +26,7 @@ struct FileBuf* CreateFileBuf(char *dir)
 	struct dirent *dp = NULL;
 	struct FileBuf *farray = NULL;
 	int count = 0;
+	char **sort = NULL;
 
 	chdir(dir);
 	path = xgetcwd(NULL, PATH_MAX);
@@ -73,14 +75,32 @@ struct FileBuf* CreateFileBuf(char *dir)
 	farray[0].numents = count;
 	farray[0].path = path;
 
+	/* stick it into the temporary array for sorting */
+	sort = (char**)xmalloc(sizeof(char*) * farray[0].numents);
 	count = 0;
 	tmp = head;
 	while(tmp != NULL)
 	{
 		/* move the memory over to it */
-		farray[count++].fpath = tmp->fpath;
+		sort[count] = tmp->fpath;
+		count++;
 		tmp = tmp->next;
 	}
+
+	/* sort it nicely */
+	qsort(sort, farray[0].numents, sizeof(char*), qstrcmp);
+
+	/* now copy it out of the tmp array into the fb */
+	count = 0;
+	tmp = head;
+	while(tmp != NULL)
+	{
+		/* move the memory over to it */
+		farray[count].fpath = sort[count];
+		count++;
+		tmp = tmp->next;
+	}
+	free(sort);
 
 	/* free the old list, fpath will be owned by farray now */
 	tmp = head;
@@ -92,6 +112,18 @@ struct FileBuf* CreateFileBuf(char *dir)
 	}
 
 	return farray;
+}
+
+/* a glorified strcmp for qsort */
+int qstrcmp(const void *l, const void *r)
+{
+	char *left = NULL;
+	char *right = NULL;
+
+	left = *(char**)l;
+	right = *(char**)r;
+
+	return strcmp(left,right);
 }
 
 /* destroy a list of directory names */
