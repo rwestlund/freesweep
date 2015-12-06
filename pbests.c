@@ -450,13 +450,13 @@ char* FPTGBTF(void)
 	char *fp = NULL;
 
 	/* get me some memory for the string */
-	fp = (char*)xmalloc(strlen(mkstr(SCORESDIR)) + 11);
+	fp = (char*)xmalloc(strlen(mkstr2(SCORESDIR)) + 11);
 
 	/* make the full path */
 #if defined(HAS_SNPRINTF)
-	snprintf(fp, (strlen(mkstr(SCORESDIR)) + 11), "%s/sweeptimes", mkstr(SCORESDIR));
+	snprintf(fp, (strlen(mkstr2(SCORESDIR)) + 11), "%s/sweeptimes", mkstr2(SCORESDIR));
 #else
-	sprintf(fp, "%s/sweeptimes", mkstr(SCORESDIR));
+	sprintf(fp, "%s/sweeptimes", mkstr2(SCORESDIR));
 #endif
 
 	return fp;
