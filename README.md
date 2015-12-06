@@ -1,3 +1,19 @@
+#freesweep
+
+Freesweep is a console minesweeper-style game written in C for Unix-like
+systems. The ncurses library is preferred, but standard System V curses will
+work almost perfectly. Features include boards up to 1024x1024, saving and
+loading of boards, shared and individual "best times" files, and color. 
+
+
+This was unmaintained (last commit in 2003, last activity in 2010).  I've
+adopted it to fix a few bugs.
+
+
+###Old README
+----------------------------------------------
+
+
 	This will eventually be a readme file. For now, just a list of notes.
 
 	Freesweep is licensed under the GNU GPL, version 2 or above. See
