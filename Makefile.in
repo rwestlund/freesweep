@@ -8,7 +8,7 @@ VERSION = 0.92
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c\
 	play.c sl.c stats.c tick.c utils.c image.c
 HEADS = sweep.h defaults.h acconfig.h
-MISC = README Makefile sweeprc install-sh configure.in Makefile.in\
+MISC = README.md Makefile sweeprc install-sh configure.in Makefile.in\
 	config.guess configure config.sub sweep.h.in freesweep.6.in CHANGES\
 	config.h.in
 CLEANUP = a.out $(TARGET) core made $(OBJS) config.cache config.log\
