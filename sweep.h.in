@@ -7,7 +7,7 @@
 
 #include "config.h"
 
-#define mkstr2(s) mkstr(2)
+#define mkstr2(s) mkstr(s)
 #define mkstr(s) # s
 
 /* The library header files. */
