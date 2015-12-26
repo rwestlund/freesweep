@@ -5,51 +5,26 @@ systems. The ncurses library is preferred, but standard System V curses will
 work almost perfectly. Features include boards up to 1024x1024, saving and
 loading of boards, shared and individual "best times" files, and color. 
 
+Freesweep is maintained by Gus Hartmann <gus@gus-the-cat.org>, Peter Keller
+<psilord@cs.wisc.edu>, and Randy Westlund <rwestlun@gmail.com>.
 
-This was unmaintained (last commit in 2003, last activity in 2010).  I've
-adopted it to fix a few bugs.
+##License
 
+Freesweep is licensed under the GNU GPL, version 2 or above. See the file
+COPYING, run freesweep with the -g flag, or hit 'g' while playing the game to
+see it. The code is copyright Gus Hartmann and Peter Keller.
 
-###Old README
-----------------------------------------------
+##Notes
 
+- Bugs should be filed at https://github.com/rwestlund/freesweep/issues
 
-	This will eventually be a readme file. For now, just a list of notes.
+- Color works, but right now the values are not customizable. Sorry.
 
-	Freesweep is licensed under the GNU GPL, version 2 or above. See
-the file COPYING, run freesweep with the -g flag, or hit 'g' while playing
-the game to see it. The code is copyright Gus Hartmann and Peter Keller.
+- If no file locking mechanism is found, group-writable best times will be
+  disabled.
 
-	We need to have some sort of standard header in all the files
-the mentions the copyright and GNU GPL.
-
-	Bugs should be mailed to sweep@cs.wisc.edu, if it works, or
-hartmann@cs.wisc.edu otherwise.
-
-	Color works, but right now the values are not customizable. Sorry.
-
-	If no file locking mechanism is found, group-writable best times
-will be disabled.
-
-	While the game is playable on any terminal supported by curses/ncurses,
-the help and high scores windows are designed to use a screen 80 columns wide.
-
-	On most X keymaps, both the left arrow and the down arrow don't
-work, reporting "Unknown keystroke." Unfortunately, somehow this leaves an
-extra 'o' lying around, leading to a saved game getting loaded. Really
-fucking bizarre- Sun's curses doesn't have the arrows-under-X problem.
-
-Fix up the error condition for what happens when you can't write to the
-best times file and shit. Just quitting doesn't seem to good.
-Also, fix the creation permissions of the group file. Like either the client
-can make a new one with 666 perms, or the installer makes one with the
-correct permissions.
-
-See if purify bitches about what I wrote with the reconfig shit.
-
-See what purify is bitching about in the load/save game code.
-
-Sun's curses doesn't do standout() correctly on a Linux term.
+- While the game is playable on any terminal supported by curses/ncurses, the
+  help and high scores windows are designed to use a screen 80 columns wide.
 
 Special thanks to Pete Keller for lots of help.
 Thanks to the FSF for the license and certain chunks of code.

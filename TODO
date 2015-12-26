@@ -1,0 +1,19 @@
+- On most X keymaps, both the left arrow and the down arrow don't work,
+  reporting "Unknown keystroke." Unfortunately, somehow this leaves an extra
+  'o' lying around, leading to a saved game getting loaded. Really fucking
+  bizarre- Sun's curses doesn't have the arrows-under-X problem.
+
+- We need to have some sort of standard header in all the files the mentions
+  the copyright and GNU GPL.
+
+- Fix up the error condition for what happens when you can't write to the best
+  times file and shit. Just quitting doesn't seem to good.  Also, fix the
+  creation permissions of the group file. Like either the client can make a new
+  one with 666 perms, or the installer makes one with the correct permissions.
+
+- See if purify bitches about what I wrote with the reconfig shit.
+
+- See what purify is bitching about in the load/save game code.
+
+- Sun's curses doesn't do standout() correctly on a Linux term.
+
