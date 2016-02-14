@@ -3,7 +3,7 @@
 ######################################################################
 
 TARGET = freesweep
-VERSION = 0.93
+VERSION = 1.0.1
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c\
 	play.c sl.c stats.c tick.c utils.c image.c
