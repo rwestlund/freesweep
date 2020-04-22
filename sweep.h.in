@@ -246,7 +246,7 @@ struct FileBuf
 FILE* DebugLog;
 #endif /* DEBUG_LOG */
 
-DrawChars CharSet;
+extern DrawChars CharSet;
 
 /* These are the functions defined in files.c */
 int SourceHomeFile(GameStats* Game);
