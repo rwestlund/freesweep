@@ -593,7 +593,7 @@ void Help()
 		CurrentY=4;
 		while (CurrentY< (LINES -2 ))
 		{
-			mvwprintw(HelpWin,CurrentY++,8,Messages[CurrentLine++]);
+			mvwprintw(HelpWin,CurrentY++,8,"%s",Messages[CurrentLine++]);
 			LinesLeft--;
 		}
 		/* Now get a keystroke to continue. */
@@ -633,7 +633,7 @@ void Help()
 	CurrentY=4;
 	while (LinesLeft > 0)
 	{
-			mvwprintw(HelpWin,CurrentY++,8,Messages[CurrentLine++]);
+			mvwprintw(HelpWin,CurrentY++,8,"%s",Messages[CurrentLine++]);
 			LinesLeft--;
 	}
 	wmove(HelpWin,0,0);
