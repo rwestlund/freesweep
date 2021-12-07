@@ -10,6 +10,8 @@
 
 #include "sweep.h"
 
+DrawChars CharSet;
+
 int main(int argc, char** argv)
 {
 	GameStats* Game;
