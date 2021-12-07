@@ -43,7 +43,7 @@ void SweepError(char* format, ...)
 #endif
 		va_end(args);
 
-		mvwprintw(ErrWin,0,0,NewErrMsg);
+		mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
 
 		SweepAlert();
 	}
@@ -126,7 +126,7 @@ void SweepMessage(char* format, ...)
 #error "Need either vsnprintf() (preferred) or vsprintf()"
 #endif
 	va_end(args);
-	mvwprintw(ErrWin,0,0,NewErrMsg);
+	mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
 	wnoutrefresh(ErrWin);
 	move(0,0);
 	noutrefresh();

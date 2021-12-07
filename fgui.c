@@ -305,13 +305,13 @@ void Display(WINDOW *fgui, struct FileBuf *fb, int find,
 
 	/* display the path, on the first line */
 	mvwprintw(fgui, 0, 0, "-->");
-	mvwprintw(fgui, 0, 3, fb[0].path);
+	mvwprintw(fgui, 0, 3, "%s", fb[0].path);
 
 	for (i = 0; i < amount && i+find < fb[0].numents; i++)
 	{
 		p = fb[find+i].fpath + strlen(fb[find+i].fpath) - 1;
 		while(*p != '/') p--; p++; /* there will always be a / in it */
-		mvwprintw(fgui, i+1, 1, p);
+		mvwprintw(fgui, i+1, 1, "%s", p);
 	}
 
 	/* highlight the cursor line */

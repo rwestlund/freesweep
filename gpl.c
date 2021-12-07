@@ -381,7 +381,7 @@ void PrintGPL()
 		CurrentY=4;
 		while (CurrentY< (LINES -2 ))
 		{
-			mvwprintw(GPLWin,CurrentY++,2,Messages[CurrentLine++]);
+			mvwprintw(GPLWin,CurrentY++,2,"%s",Messages[CurrentLine++]);
 			LinesLeft--;
 		}
 		/* Now get a keystroke to continue. */
@@ -413,7 +413,7 @@ void PrintGPL()
 	CurrentY=4;
 	while (LinesLeft > 0)
 	{
-			mvwprintw(GPLWin,CurrentY++,2,Messages[CurrentLine++]);
+			mvwprintw(GPLWin,CurrentY++,2,"%s",Messages[CurrentLine++]);
 			LinesLeft--;
 		
 	}
