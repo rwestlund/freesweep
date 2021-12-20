@@ -1,4 +1,4 @@
-#freesweep
+# freesweep
 
 Freesweep is a console minesweeper-style game written in C for Unix-like
 systems. The ncurses library is preferred, but standard System V curses will
@@ -8,13 +8,13 @@ loading of boards, shared and individual "best times" files, and color.
 Freesweep is maintained by Gus Hartmann <gus@gus-the-cat.org>, Peter Keller
 <psilord@cs.wisc.edu>, and Randy Westlund <rwestlun@gmail.com>.
 
-##License
+## License
 
 Freesweep is licensed under the GNU GPL, version 2 or above. See the file
 COPYING, run freesweep with the -g flag, or hit 'g' while playing the game to
 see it. The code is copyright Gus Hartmann and Peter Keller.
 
-##Notes
+## Notes
 
 - Bugs should be filed at https://github.com/rwestlund/freesweep/issues
 
