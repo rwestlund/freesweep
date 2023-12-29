@@ -1,0 +1,7 @@
+# Built files
+freesweep
+freesweep.6
+sweep.h
+Makefile
+config.h
+*.o
