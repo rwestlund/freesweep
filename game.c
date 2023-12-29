@@ -194,7 +194,7 @@ int ReadyGame(GameStats* Game)
 	{
 		Game->LargeBoardX=1;
 	}
-	
+
 	if ((LINES-4)>=(Game->Height+2))
 	{
 		Game->LargeBoardY=0;
@@ -414,7 +414,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
 	{
 		StartCurses();
 		InitCharSet(Game,Game->LineDraw);
-		PrintGPL(NULL);
+		PrintGPL();
 		clear();
 		noutrefresh();
 		doupdate();
@@ -478,11 +478,8 @@ void DumpGame(GameStats* Game)
 
 int ReReadyGame(GameStats* Game)
 {
-	int MinesToSet=0, RandX=0, RandY=0, VViewable=0, HViewable=0;
+	int MinesToSet=0, RandX=0, RandY=0;
 	unsigned char CellVal;
-
-	VViewable=(LINES-6);
-	HViewable=((COLS-INFO_W-2)/3);
 
 	/* Set all of Game->Field to 0 */
 	memset(Game->Field, 0, ((Game->Height*(( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2));
