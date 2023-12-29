@@ -339,19 +339,19 @@ void AskPrefs(GameStats* Game)
 					mvprintw(CurrentLine,41,"No");
 				}
 				break;
-		
+
 			case 'n': case 'N':
 				Game->Fast=0;
 				mvprintw(CurrentLine,41,"No");
 				Status=1;
 				break;
-			
+
 			case 'y': case 'Y':
 				Game->Fast=1;
 				mvprintw(CurrentLine,41,"Yes");
 				Status=1;
 				break;
-			
+
 			default:
 #ifdef DEBUG_LOG
 				fprintf(DebugLog, "Unknown character: %c\n", ValueBuffer[0]);
@@ -408,25 +408,25 @@ void AskPrefs(GameStats* Game)
 						break;
 				}
 				break;
-		
+
 			case 'b': case 'B':
 				Game->Alert=BEEP;
 				mvprintw(CurrentLine,34,"Beep");
 				Status=1;
 				break;
-			
+
 			case 'f': case 'F':
 				Game->Alert=FLASH;
 				mvprintw(CurrentLine,34,"Flash");
 				Status=1;
 				break;
-			
+
 			case 'n': case 'N':
 				Game->Alert=NO_ALERT;
 				mvprintw(CurrentLine,34,"None");
 				Status=1;
 				break;
-			
+
 			default:
 #ifdef DEBUG_LOG
 				fprintf(DebugLog, "Unknown character: %c\n", ValueBuffer[0]);
@@ -474,19 +474,19 @@ void AskPrefs(GameStats* Game)
 					mvprintw(CurrentLine,31,"No");
 				}
 				break;
-		
+
 			case 'n': case 'N':
 				Game->Color=0;
 				mvprintw(CurrentLine,31,"No");
 				Status=1;
 				break;
-			
+
 			case 'y': case 'Y':
 				Game->Color=1;
 				mvprintw(CurrentLine,31,"Yes");
 				Status=1;
 				break;
-			
+
 			default:
 #ifdef DEBUG_LOG
 				fprintf(DebugLog, "Unknown character: %c\n", ValueBuffer[0]);
@@ -566,7 +566,7 @@ void Help()
 		"\'c\' centers the cursor.",
 		"\'.\' repeats the last command.",
 		"\'a\' toggles the character set.",
-		"\'b\' toggles the color settings.",
+		"\'b\' show the best times.",
 		"\'?\' displays this help screen.",
 		"\'g\' displays the GNU General Public License.",
 		"\'n\' starts a new game.",
@@ -972,7 +972,7 @@ int CenterX(GameStats* Game)
 	if (Game->LargeBoardX)
 	{
 		HOffset=(((COLS-INFO_W-2)/3)-1)/2;
-		
+
 		if (Game->CursorX > (Game->Width - HOffset))
 		{
 			Game->FocusX=(Game->Width-(2*HOffset)-1);
