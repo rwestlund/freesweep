@@ -37,13 +37,14 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 .SUFFIXES: .c .o
 .PHONY: clean sterile lines distclean maintainer-clean mrproper
 #######################################################################
-%.o: %.c $(HEADS) Makefile
-	@@RM@ -f $*.o 
-	$(CC) $(CFLAGS) -c $<
-
+.DEFAULT:
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
 	@@RM@ -f $(TARGET)
 	$(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET)
+
+%.o: %.c $(HEADS) Makefile
+	@@RM@ -f $*.o
+	$(CC) $(CFLAGS) -c $<
 
 configure: configure.in
 	autoconf
