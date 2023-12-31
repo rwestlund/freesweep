@@ -103,6 +103,7 @@ void Wipe(GameStats *Game)
 
 int InitCharSet(GameStats* Game, int Value)
 {
+        // XXX This shouldn't be needed any more.
         SetTheme(Game);
         return 0;
 }
@@ -187,6 +188,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
                 {"percent", required_argument, 0, '%'},
                 {"show-best-times", no_argument, 0, 'b'},
                 {"dump-best-times", no_argument, 0, 'd'},
+                {"theme", required_argument, 0, 't'},
                 {"fast", no_argument, 0, 'f'},
                 {"show-gpl", no_argument, 0, 'g'},
                 {"height", required_argument, 0, 'h'},
@@ -203,13 +205,13 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
         opterr=0;
 
         /* Parse the command line options. */
-        while ((Opt=getopt_long(Argc,Argv,"%:abdfgh:im:svw:",long_options, NULL))!=EOF)
+        while ((Opt=getopt_long(Argc,Argv,"%:abdfgh:im:st:vw:",long_options, NULL))!=EOF)
 #elif HAVE_GETOPT
         /* Clear the error flag. */
         opterr=0;
 
         /* Parse the command line options. */
-        while ((Opt=getopt(Argc,Argv,"%:abdfgh:im:svw:"))!=EOF)
+        while ((Opt=getopt(Argc,Argv,"%:abdfgh:im:st:vw:"))!=EOF)
 #endif /* HAVE_GETOPT */
         {
                 switch (Opt)
@@ -228,6 +230,11 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
                                 break;
                         case 'd':
                                 DumpFlag++;
+                                break;
+                        case 't':
+                                /* Set the theme to optarg */
+                                Value=atoi(optarg);
+                                (CheckTheme(Value)?Game->Theme=Value:fprintf(stderr,"Invalid value for theme.\n"));
                                 break;
                         case 'f':
                                 FastFlag++;
@@ -319,9 +326,9 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
         if (ErrorFlag + HelpFlag > 0)
         {
 #if defined HAVE_GETOPT_LONG
-                fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-a, --alt-charset\t\tUse the alternate character set\n\t-b, --show-best-times\t\tDisplay best times\n\t-d, --dump-best-times\t\tPrint best times to stdout\n\t-f, --fast\t\t\tStart in fast mode\n\t-g, --show-gpl\t\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-H, --help\t\t\tDisplay this help message\n\t-i, --interactive\t\tStart in interactive mode\n\t-m value, --mines=value\t\tSet mines to value\n\t-s, --save-prefs\t\tSave any specified preferences\n\t-v, --version\t\t\tDisplay version information\n\t-w value, --width=value\t\tSet width to value\n");
+                fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-b, --show-best-times\t\tDisplay best times\n\t-d, --dump-best-times\t\tPrint best times to stdout\n\t-t value, --theme=value\t\tSet theme to value\n\t-f, --fast\t\t\tStart in fast mode\n\t-g, --show-gpl\t\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-H, --help\t\t\tDisplay this help message\n\t-i, --interactive\t\tStart in interactive mode\n\t-m value, --mines=value\t\tSet mines to value\n\t-s, --save-prefs\t\tSave any specified preferences\n\t-v, --version\t\t\tDisplay version information\n\t-w value, --width=value\t\tSet width to value\n");
 #else
-                fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value\tSet percent to value\n\t-a\t\tUse the alternate character set\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-H\t\tDisplay this help message\n\t-h value\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m value\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
+                fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value\tSet percent to value\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-t value\t\tSet theme to value\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-H\t\tDisplay this help message\n\t-h value\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m value\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
 #endif
                 if (ErrorFlag != 0)
                 {

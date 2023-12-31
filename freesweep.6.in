@@ -1,4 +1,4 @@
-.TH FREESWEEP 6 "Version 0.86" "Gus Hartmann & Pete Keller"
+.TH FREESWEEP 6 "Version 1.0.1" "Gus Hartmann & Pete Keller"
 
 .SH NAME
 freesweep \- a curses minesweeper-style game
@@ -7,13 +7,13 @@ freesweep \- a curses minesweeper-style game
 .TP 6
 \fBfreesweep\fP
 [\fB\-%\fP\ \fIvalue\fP]
-[\fB\-a\fP]
+[\fB\-t\fP\ \fIvalue\fP]
 [\fB\-f\fP\ |\ \fB\-i\fP]
 [\fB\-h\fP\ \fIvalue\fP]
 [\fB\-m\fP\ \fIvalue\fP]
 [\fB\-s\fP]
 [\fB\-w\fP\ \fIvalue\fP]
-[\fB\-\-alt\-charset\fP]
+[\fB\-\-theme=\fP\fIvalue\fP]
 [\fB\-\-fast\fP]
 [\fB\-\-height=\fP\fIvalue\fP]
 [\fB\-\-interactive\fP\ |\ \fB\-\-save\-prefs\fP]
@@ -22,13 +22,10 @@ freesweep \- a curses minesweeper-style game
 [\fB\-\-width=\fP\fIvalue\fP]
 .TP 6
 \fBfreesweep\fP
-[\fB\-a\fP]
 [\fB\-b\fP\ |\ \fB\-d\fP]
-[\fB\-\-alt\-charset\fP]
 [\fB\-\-dump\-best\-times\fP\ |\ \fB\-\-show\-best\-times\fP]
 .TP 6
 \fBfreesweep\fP
-[\fB\-a\fP]
 [\fB\-g\fP]
 [\fB\-\-show\-gpl\fP]
 .TP 6
@@ -51,16 +48,6 @@ Sets the number of mines to \fIvalue\fP percent of the number of squares on
 the board, rounded to the nearest integer. This option cannot be used with
 the \-m or \-\-mines options.
 .TP
-\fB\-a\fP, \fB\-\-alt\-charset\fP
-Switch character sets between standard ASCII and PC-style linedraw characters.
-Use of this option on the command line indicates that the character set should
-be the set \fInot\fP specified in the preferences file. See the FILES section
-below.
-
-The character set can also be toggled during play using the 'a' key, which
-can be useful when a terminal fails to have the PC-style linedraw character
-set. See the COMMANDS section below.
-.TP
 \fB\-b\fP, \fB\-\-show\-best\-times\fP
 Use the curses best times viewer rather than starting a game, then exit.
 
@@ -71,6 +58,9 @@ key. See the COMMANDS section below.
 Print the list of best times, sorted in descending order to stdout. More
 information will be placed in this manual page regarding the column format
 when it has been clearly established.
+.TP
+\fB\-t\fP\ \fIvalue\fP, \fB\-\-theme=\fP\fIvalue\fP
+Set the game's theme to \fIvalue\fP.
 .TP
 \fB\-f\fP, \fB\-\-fast\fP
 This option bypasses the intercative dialog normally run initially. All values
@@ -131,14 +121,13 @@ following keystroke values are valid:
 \fIn\fP\<arrow key\>, \fIn\fPh, \fIn\fPj, \fIn\fPk, \fIn\fPl
 The arrow keys move the cursor \fIn\fP squares in the corresponding direction,
 as limited by the boundaries of the playing field. A warning is issued should
-this occur. The default integer is one.
+this occur.
 
 The vi-style motion keys h, j, k, and l are also accepted, and are equivalent
 to the arrow keys.
-
 .TP
-a
-Toggle between the standard ASCII character set and PC-style linedraw.
+1-9
+Switch between the various display themes. See the THEMES section below.
 .TP
 b
 Display the best times list, one screenful at a time. The game clock is
@@ -158,6 +147,34 @@ f
 Toggle flagging the current square as a mine. Flagged squares cannot be exposed.
 .TP
 <space>
+Expose the current square for better or worse...
+
+.SH THEMES
+There are several builtin themes in the game. The number keys 1-9 are used to
+switch between the themes. When the game preferences are saved the currently
+selected theme with be saved as well.
+.TP
+1 - ASCII, 2 - Curses
+These themes are the lowest common denominators and should work on all existing
+terminals. Even with or without color and are alway available.
+.TP
+3 - Unicode, 4 - Alien, 5 - Dollie, 6 - Undead, 7 - Battleship, 8 - Slate
+Terminal games don't have to look horrible! These themes make the game a lot more
+attractive but does assume the terminal supports unicode and uses 256 colors if it
+is available.
+
+To get the best of these themes make sure that the environment variable \fBTERM\fP
+is set correctly for the terminal. The locale should also be set to support unicode
+and the terminal font should also support many basic unicode graphic characters,
+for example DejaVu.
+
+If the game detects that color isn't supported then non of the unicode themes will
+be available. Unfortunately, it's almost impossible to test for unicode support
+through the terminal and this is an assumption being made.
+.TP
+9 - Cheater
+One last unicode theme that shows you where all the mines are... can you play the
+game without using this?
 
 .SH FILES
 .TP 10
@@ -181,6 +198,8 @@ interactive dialog.
 Gus Hartmann <hartmann@upl.cs.wisc.edu>
 .br
 Pete Keller <psilord@upl.cs.wisc.edu>
+.br
+Ron Wills <ron@digitalcombine.ca>
 .br
 
 .SH CREDITS
