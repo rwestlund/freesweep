@@ -248,8 +248,8 @@ void SetTheme(GameStats* Game)
               COLOR_WHITE,
               xcolor(31,199,0,COLOR_GREEN));
     init_pair(CLR_MSGBAR,
-              xcolor(0,61,0,COLOR_BLACK),
-              xcolor(31,199,0,COLOR_GREEN));
+              xcolor(31,199,0,COLOR_GREEN),
+              xcolor(0,75,0,COLOR_BLACK));
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Alien";
