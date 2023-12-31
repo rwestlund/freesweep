@@ -110,7 +110,7 @@
 /* These are for winning and losing. */
 #define INPROG 0
 #define WIN 1
-#define LOSE 2 
+#define LOSE 2
 #define ABORT 3
 #define RECONF 4
 
@@ -119,16 +119,38 @@
 #define FLASH 1
 #define NO_ALERT 2
 
+/* These are for color pairs. */
+#define CLR_NORMAL 1
+#define CLR_VAL1 2
+#define CLR_VAL2 3
+#define CLR_VAL3 4
+#define CLR_VAL4 5
+#define CLR_VAL5 6
+#define CLR_VAL6 7
+#define CLR_VAL7 8
+#define CLR_VAL8 9
+#define CLR_UNKNOWN 10
+#define CLR_MINE 11
+#define CLR_SHOWMINE 12
+#define CLR_SPACE 13
+#define CLR_MARK 14
+#define CLR_FALSEMARK 15
+#define CLR_SHOWFALSEMARK 16
+#define CLR_DETONATED 17
+#define CLR_INFOBAR 18
+#define CLR_STATBAR 19
+#define CLR_MSGBAR 20
+
 /* These are the macros that reduce the memory usage by *half*. */
 #define GetMine(x,y,ret) \
-	ret=(unsigned char)(!((ret)=Game->Field[((x)/2+(y)*( ( Game->Width +1 )/2))])\
-	?UNKNOWN:((x)%2)?(ret)&0x0f:((ret)&0xf0)>>4)
+        ret=(unsigned char)(!((ret)=Game->Field[((x)/2+(y)*( ( Game->Width +1 )/2))])\
+        ?UNKNOWN:((x)%2)?(ret)&0x0f:((ret)&0xf0)>>4)
 
 #define SetMine(x,y,val) \
-	Game->Field[((x)/2)+(y)*( ( Game->Width +1 )/2)]=(!((x)%2)?((Game->Field[((x)\
-	/2)+(y)*( ( Game->Width +1 )/2)]&0x0f)|((unsigned char)(val)<<4)):\
-	((Game->Field[((x)/2)+(y)*( ( Game->Width +1 ) /2)]&0xf0)|((unsigned char)(val)\
-	&0x0f)))
+        Game->Field[((x)/2)+(y)*( ( Game->Width +1 )/2)]=(!((x)%2)?((Game->Field[((x)\
+        /2)+(y)*( ( Game->Width +1 )/2)]&0x0f)|((unsigned char)(val)<<4)):\
+        ((Game->Field[((x)/2)+(y)*( ( Game->Width +1 ) /2)]&0xf0)|((unsigned char)(val)\
+        &0x0f)))
 
 /* This extends the naming convention of ncurses functions. */
 #define mvclrtoeol(y,x) (move(y,x)==ERR?ERR:clrtoeol());
@@ -151,99 +173,113 @@
 #endif
 
 /* These are all the structs used in freesweep */
+
+typedef union _ch_type {
+  chtype ch;
+  char* str;
+} ch_type;
+
 /* This is the struct containing all the various drawing characters. */
 typedef struct _DrawChars
 {
-	chtype ULCorner;
-	chtype URCorner;
-	chtype LLCorner;
-	chtype LRCorner;
-	chtype HLine;
-	chtype VLine;
-	chtype UArrow;
-	chtype DArrow;
-	chtype LArrow;
-	chtype RArrow;
-	chtype Mine;
-	chtype Space;
-	chtype Mark;
-	chtype FalseMark;
-	chtype Bombed;
+        enum { CH_TYPE, UNI_TYPE } ch_flag;
+        char* name;
+        chtype ULCorner;
+        chtype URCorner;
+        chtype LLCorner;
+        chtype LRCorner;
+        chtype HLine;
+        chtype VLine;
+        chtype UArrow;
+        chtype DArrow;
+        chtype LArrow;
+        chtype RArrow;
+        ch_type Unknown;
+        ch_type Mine;
+        ch_type ShowMine;
+        ch_type Space;
+        ch_type Mark;
+        ch_type FalseMark;
+        ch_type ShowFalseMark;
+        ch_type Bombed;
+        ch_type CursorLeft;
+        ch_type CursorRight;
 } DrawChars;
 
 /* This is the struct containing all the relevant game information. */
 typedef struct _GameStats
 {
-	int Height;
-	int Width;
-	int Percent;
-	unsigned int NumMines;
-	unsigned int MarkedMines;
-	unsigned int BadMarkedMines;
-	int Color;
-	int Fast;
-	int Alert;
-	int LineDraw;
-	int CursorX, CursorY;
-	int LargeBoardX, LargeBoardY;
-	int Status;
-	unsigned int FocusX, FocusY;
-	unsigned int Time;
-	unsigned char* Field;
-	WINDOW* Border;
-	WINDOW* Board;
+        int Height;
+        int Width;
+        int Percent;
+        unsigned int NumMines;
+        unsigned int MarkedMines;
+        unsigned int BadMarkedMines;
+        int Color;
+        int Fast;
+        int Alert;
+        //int LineDraw;
+        int Theme;
+        int CursorX, CursorY;
+        int LargeBoardX, LargeBoardY;
+        int Status;
+        unsigned int FocusX, FocusY;
+        unsigned int Time;
+        unsigned char* Field;
+        WINDOW* Border;
+        WINDOW* Board;
 } GameStats;
 
 /* This is the struct for the clearing algo. */
 struct Mark
 {
-	int x, y;
-	struct Mark *next;
+        int x, y;
+        struct Mark *next;
 };
 
 /* this is the _NEW_ format for the best times score */
 struct BestEntry
 {
-	unsigned int area;
-	unsigned int mines;
-	unsigned int time;
+        unsigned int area;
+        unsigned int mines;
+        unsigned int time;
 
-	char name[MAX_NAME];
-	char date[MAX_DATE];
-	char *attribs;
+        char name[MAX_NAME];
+        char date[MAX_DATE];
+        char *attribs;
 };
 
 struct BestFileDesc
 {
-	/* the array of entries from the file, with one more in it. */
-	struct BestEntry *ents;
+        /* the array of entries from the file, with one more in it. */
+        struct BestEntry *ents;
 
-	/* the number of entries in the descriptor */
-	int numents;
+        /* the number of entries in the descriptor */
+        int numents;
 
-	/* did I replace, or add? */
-	int replflag;
+        /* did I replace, or add? */
+        int replflag;
 };
 
 typedef struct _CoordPair
 {
-	int CoordX, CoordY;
+        int CoordX, CoordY;
 } CoordPair;
 
 /* stuff needed for the file gui */
 /* this is not very well designed, but oh well */
 struct FileBuf
 {
-	char *fpath;
-	char *path;
-	int numents;
-	struct FileBuf *next;
-	struct FileBuf *prev;
+        char *fpath;
+        char *path;
+        int numents;
+        struct FileBuf *next;
+        struct FileBuf *prev;
 };
 
 
 #ifdef DEBUG_LOG
-FILE* DebugLog;
+extern FILE* DebugLog;
 #endif /* DEBUG_LOG */
 
 extern DrawChars CharSet;
@@ -273,15 +309,13 @@ int CenterX(GameStats* Game);
 int CheckColor(int NewVal);
 int CheckFast(int NewVal);
 int CheckHeight(int NewVal);
-int CheckLineDraw(int NewVal);
+int CheckTheme(int NewVal);
 int CheckNumMines(int NewVal, int Height, int Width);
 int CheckPercent(int NewVal);
 int CheckWidth(int NewVal);
 int InitGame(GameStats* Game);
 int ReadyGame(GameStats* Game);
-void SwitchCharSet(GameStats* Game);
 int InitCharSet(GameStats* Game,int Value);
-void SetCharSet(int Value);
 int ParseArgs(GameStats* Game, int Argc, char** Argv);
 void DumpGame(GameStats* Game);
 int ReReadyGame(GameStats* Game);
@@ -298,6 +332,9 @@ void YouWin(void);
 int ClickSquare(GameStats* Game, int ThisX, int ThisY);
 int DoubleClickSquare(GameStats* Game, int ThisX, int ThisY);
 
+/* These are the functions defined in themes.c */
+void SetTheme(GameStats* Game);
+
 /* These are the functions defined in error.c */
 void SweepError(char* format, ...);
 int InitErrorWin(GameStats* Game);
@@ -313,6 +350,8 @@ int InitStatsWin(void);
 int RedrawStatsWin(void);
 
 /* These are the functions described in utils.c */
+int xcolor(int r, int g, int b, int fallback);
+int xwaddch(WINDOW* win, DrawChars *CharSet, ch_type ch);
 void* xmalloc(size_t num);
 char* xgetcwd(char *buf, size_t size);
 DIR* xopendir(const char *buf);
@@ -339,16 +378,16 @@ char* FSGUI(void);
 
 /* macros to lookup crap in the look up table for the clearing algo */
 #define LOOKUP(t, xx, yy) \
-	(unsigned char)((t)[(xx)/8 + yy * g_table_w]) & \
-		(((unsigned char)0x80)>>((xx)%8))
+        (unsigned char)((t)[(xx)/8 + yy * g_table_w]) & \
+                (((unsigned char)0x80)>>((xx)%8))
 
 #define SET(t, xx, yy) \
-	((t)[(xx)/8 + yy * g_table_w]) |= \
-		(((unsigned char)0x80)>>((xx)%8))
+        ((t)[(xx)/8 + yy * g_table_w]) |= \
+                (((unsigned char)0x80)>>((xx)%8))
 
 #define UNSET(t, xx, yy) \
-	((t)[(xx)/8 + yy * g_table_w]) &= \
-		~(((unsigned char)0x80)>>((xx)%8))
+        ((t)[(xx)/8 + yy * g_table_w]) &= \
+                ~(((unsigned char)0x80)>>((xx)%8))
 
 /* functions defined in sl.c for save/load games */
 void SaveGame(GameStats* Game, char *fname);

@@ -4,4 +4,7 @@ freesweep.6
 sweep.h
 Makefile
 config.h
+config.log
+config.status
+debug.log
 *.o

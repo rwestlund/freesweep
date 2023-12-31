@@ -10,11 +10,11 @@
 
 #include "sweep.h"
 
-static WINDOW* ErrFrame;
+//static WINDOW* ErrFrame;
 static WINDOW* ErrWin;
 /* Although the alert preference is set by the user, SweepAlert() needs to
-	not take an argument. So it gets set into a static variable. Gross, but
-	effective. */
+        not take an argument. So it gets set into a static variable. Gross, but
+        effective. */
 static int ErrAlert;
 
 /* SweepError() is the method for putting erros into the console window
@@ -22,119 +22,112 @@ at the bottom of the screen. Passing a null pointer as the message will
 invoke a call to ClearError(). */
 void SweepError(char* format, ...)
 {
-	char NewErrMsg[42];
-	va_list args;
+        char NewErrMsg[42];
+        va_list args;
 
-	if (format==NULL)
-	{
-		ClearError();
-	}
-	else 
-	{
-		ClearError();
+        if (format==NULL)
+        {
+                ClearError();
+        }
+        else
+        {
+                ClearError();
 
-		va_start(args, format);
+                va_start(args, format);
 #if defined HAVE_VSNPRINTF
-		vsnprintf(NewErrMsg,41,format,args);
+                vsnprintf(NewErrMsg,41,format,args);
 #elif HAVE_VSPRINTF
-		vsprintf(NewErrMsg,format,args);
+                vsprintf(NewErrMsg,format,args);
 #else
 #error "Need either vsnprintf() (preferred) or vsprintf()"
 #endif
-		va_end(args);
+                va_end(args);
 
-		mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
+                mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
 
-		SweepAlert();
-	}
-	wnoutrefresh(ErrWin);
-	move(0,0);
-	noutrefresh();
-	return;
+                SweepAlert();
+        }
+        wnoutrefresh(ErrWin);
+        move(0,0);
+        noutrefresh();
+        return;
 }
 
 int InitErrorWin(GameStats* Game)
 {
-	if ((ErrFrame=newwin(3,42,LINES-4,(COLS/2)-21))==NULL)
-	{
-		return 1;
-	}
-	else if ((ErrWin=derwin(ErrFrame,1,40,1,1))==NULL)
-	{
-		return 1;
-	}
-	wborder(ErrFrame,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,
-		CharSet.ULCorner, CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner); 
-	wnoutrefresh(ErrWin);
-	wnoutrefresh(ErrFrame);
-	ErrAlert=Game->Alert;
-	return 0;
+        if ((ErrWin=newwin(1,COLS,LINES-1,0))==NULL)
+        {
+                return 1;
+        }
+        wbkgdset(ErrWin, ' ' | COLOR_PAIR(CLR_MSGBAR));
+        wclear(ErrWin);
+        wnoutrefresh(ErrWin);
+        ErrAlert=Game->Alert;
+        return 0;
 }
 
 void ClearError()
 {
-	wmove(ErrWin,0,0);
-	wclrtoeol(ErrWin);
-	wnoutrefresh(ErrWin);
-	move(0,0);
-	noutrefresh();
-	return;
+        wmove(ErrWin,0,0);
+        wclrtoeol(ErrWin);
+        wnoutrefresh(ErrWin);
+        move(0,0);
+        noutrefresh();
+        return;
 }
 
 int RedrawErrorWin()
 {
-	return ((wborder(ErrFrame,CharSet.VLine,CharSet.VLine,CharSet.HLine,
-		CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,
-		CharSet.LRCorner)!=OK)?ERR:wnoutrefresh(ErrFrame));
+        return OK;
 }
 
 void SweepAlert()
 {
-	switch (ErrAlert)
-	{
-		case NO_ALERT:
-			break;
-		case FLASH:
-			flash();
-			break;
-		case BEEP: default:
-			/* No preference gets a beep. */
-			beep();
-			break;
-	}
-	return;
+        switch (ErrAlert)
+        {
+                case NO_ALERT:
+                        break;
+                case FLASH:
+                        flash();
+                        break;
+                case BEEP: default:
+                        /* No preference gets a beep. */
+                        beep();
+                        break;
+        }
+        return;
 }
 
 void SweepMessage(char* format, ...)
 {
-	char NewErrMsg[42];
-	va_list args;
+        char NewErrMsg[42];
+        va_list args;
 
-	ClearError();
+        ClearError();
 
-	if ( format == NULL)
-	{
-		return;
-	}
-	
-	va_start(args, format);
+        if ( format == NULL)
+        {
+                return;
+        }
+
+        va_start(args, format);
 #if defined HAVE_VSNPRINTF
-	vsnprintf(NewErrMsg,41,format,args);
+        vsnprintf(NewErrMsg,COLS-1,format,args);
 #elif HAVE_VSPRINTF
-		vsprintf(NewErrMsg,format,args);
+        vsprintf(NewErrMsg,format,args);
 #else
 #error "Need either vsnprintf() (preferred) or vsprintf()"
 #endif
-	va_end(args);
-	mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
-	wnoutrefresh(ErrWin);
-	move(0,0);
-	noutrefresh();
-	return;
+        va_end(args);
+        mvwprintw(ErrWin,0,0,"%s",NewErrMsg);
+        wnoutrefresh(ErrWin);
+        move(0,0);
+        noutrefresh();
+        return;
 }
 
 void ChangeSweepAlert(int NewAlert)
 {
-	ErrAlert = NewAlert;
-	return;
+        ErrAlert = NewAlert;
+        return;
 }

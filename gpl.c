@@ -14,19 +14,19 @@
 
 void PrintGPL()
 {
-	WINDOW* GPLWin;
-	int Input=0, LinesLeft=0, CurrentY=0, CurrentLine=0;
-	char* Messages[]=
-	{
-"			 GNU GENERAL PUBLIC LICENSE",
-"		       Version 2, June 1991",
+        WINDOW* GPLWin;
+        int Input=0, LinesLeft=0, CurrentY=0, CurrentLine=0;
+        char* Messages[]=
+        {
+"                        GNU GENERAL PUBLIC LICENSE",
+"                      Version 2, June 1991",
 "",
 " Copyright (C) 1989, 1991 Free Software Foundation, Inc.",
 "     59 Temple Place, Suite 330, Boston, MA  02111-1307  USA",
 " Everyone is permitted to copy and distribute verbatim copies",
 " of this license document, but changing it is not allowed.",
 "",
-"			    Preamble",
+"                           Preamble",
 "",
 "  The licenses for most software are designed to take away your",
 "freedom to share and change it.  By contrast, the GNU General Public",
@@ -76,7 +76,7 @@ void PrintGPL()
 "  The precise terms and conditions for copying, distribution and",
 "modification follow.",
 "",
-"		    GNU GENERAL PUBLIC LICENSE",
+"                   GNU GENERAL PUBLIC LICENSE",
 "   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION",
 "",
 "  0. This License applies to any program or other work which contains",
@@ -276,7 +276,7 @@ void PrintGPL()
 "of preserving the free status of all derivatives of our free software and",
 "of promoting the sharing and reuse of software generally.",
 "",
-"			    NO WARRANTY",
+"                           NO WARRANTY",
 "",
 "  11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY",
 "FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN",
@@ -298,9 +298,9 @@ void PrintGPL()
 "PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE",
 "POSSIBILITY OF SUCH DAMAGES.",
 "",
-"		     END OF TERMS AND CONDITIONS",
+"                    END OF TERMS AND CONDITIONS",
 "",
-"	    How to Apply These Terms to Your New Programs",
+"           How to Apply These Terms to Your New Programs",
 "",
 "  If you develop a new program, and you want it to be of the greatest",
 "possible use to the public, the best way to achieve this is to make it",
@@ -359,75 +359,78 @@ void PrintGPL()
 "consider it more useful to permit linking proprietary applications with the",
 "library.  If this is what you want to do, use the GNU Library General",
 "Public License instead of this License."
-	};
+        };
 
-	if ((GPLWin=newwin(0,0,0,0))==NULL)
-	{
-		perror("PrintGPL::newwin");
-		exit(EXIT_FAILURE);
-	}
+        if ((GPLWin=newwin(0,0,0,0))==NULL)
+        {
+                perror("PrintGPL::newwin");
+                exit(EXIT_FAILURE);
+        }
 
-	StopTimer();
+        StopTimer();
 
-	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-	mvwprintw(GPLWin,1,2,"Time out - The GNU General Public License");
-	mvwhline(GPLWin,2,1,CharSet.HLine,COLS-2);
-	mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
+        //wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+        wborder(GPLWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
+        mvwprintw(GPLWin,1,2,"Time out - The GNU General Public License");
+        mvwhline(GPLWin,2,1,CharSet.HLine,COLS-2);
+        mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
 
-	/* Be sure to update this to account for all of the error messages. */
-	LinesLeft=GPL_LINES;
-	while (LinesLeft> (LINES - 6))
-	{
-		CurrentY=4;
-		while (CurrentY< (LINES -2 ))
-		{
-			mvwprintw(GPLWin,CurrentY++,2,"%s",Messages[CurrentLine++]);
-			LinesLeft--;
-		}
-		/* Now get a keystroke to continue. */
-		wmove(GPLWin,0,0);
-		wrefresh(GPLWin);
-		Input=wgetch(GPLWin);
+        /* Be sure to update this to account for all of the error messages. */
+        LinesLeft=GPL_LINES;
+        while (LinesLeft> (LINES - 6))
+        {
+                CurrentY=4;
+                while (CurrentY< (LINES -2 ))
+                {
+                        mvwprintw(GPLWin,CurrentY++,2,"%s",Messages[CurrentLine++]);
+                        LinesLeft--;
+                }
+                /* Now get a keystroke to continue. */
+                wmove(GPLWin,0,0);
+                wrefresh(GPLWin);
+                Input=wgetch(GPLWin);
 
-		switch (Input)
-		{
-			case 'q':
-				werase(GPLWin);
-				delwin(GPLWin);
-				clear();
-				noutrefresh();
-				StartTimer();
-				return;
-				break;
+                switch (Input)
+                {
+                        case 'q':
+                                werase(GPLWin);
+                                delwin(GPLWin);
+                                clear();
+                                noutrefresh();
+                                StartTimer();
+                                return;
+                                break;
 
-			default:
-				wmove(GPLWin,3,0);
-				wclrtobot(GPLWin);
-				wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-				mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key for more.--");
-				wrefresh(GPLWin);
-				break;
-		}
-	}
-	/* Now print the last few lines */
-	CurrentY=4;
-	while (LinesLeft > 0)
-	{
-			mvwprintw(GPLWin,CurrentY++,2,"%s",Messages[CurrentLine++]);
-			LinesLeft--;
-		
-	}
-	wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-	mvwprintw(GPLWin,LINES-1,1,"--Press any key to quit. --");
-	wmove(GPLWin,0,0);
-	wrefresh(GPLWin);
-	Input=wgetch(GPLWin);
+                        default:
+                                wmove(GPLWin,3,0);
+                                wclrtobot(GPLWin);
+                                //wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+                                wborder(GPLWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
+                                mvwprintw(GPLWin,LINES-1,1,"--Press \'q\' to quit, any other key for more.--");
+                                wrefresh(GPLWin);
+                                break;
+                }
+        }
+        /* Now print the last few lines */
+        CurrentY=4;
+        while (LinesLeft > 0)
+        {
+                        mvwprintw(GPLWin,CurrentY++,2,"%s",Messages[CurrentLine++]);
+                        LinesLeft--;
 
-	werase(GPLWin);
-	delwin(GPLWin);
-	clear();
-	noutrefresh();
-	StartTimer();
+        }
+        //wborder(GPLWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
+        wborder(GPLWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
+        mvwprintw(GPLWin,LINES-1,1,"--Press any key to quit. --");
+        wmove(GPLWin,0,0);
+        wrefresh(GPLWin);
+        Input=wgetch(GPLWin);
 
-	return;
+        werase(GPLWin);
+        delwin(GPLWin);
+        clear();
+        noutrefresh();
+        StartTimer();
+
+        return;
 }
