@@ -353,16 +353,6 @@ void SuperClear(GameStats *Game)
 /*                      Boom();*/
                         Game->Status = LOSE;
                         SetMine(x,y,DETONATED);
-                        if (CharSet.ch_flag == CH_TYPE)
-                        {
-                                CharSet.FalseMark.ch='x';
-                                CharSet.Mine.ch='o';
-                        }
-                        else
-                        {
-                                CharSet.FalseMark.str="⨂";
-                                CharSet.Mine.str="💣";
-                        }
                         break;
                 /* they marked correctly, and I can expand stuff */
                 case SUPERCLICK:
