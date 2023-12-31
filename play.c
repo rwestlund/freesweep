@@ -479,3 +479,23 @@ void YouWin(void)
 
         return;
 }
+
+RETSIGTYPE ResizeSignal(int signo)
+{
+        endwin(); // Recreate stdscr
+        clear();
+        refresh();
+
+        PrintInfo();
+
+        ClearStats();
+        InitStatsWin();
+        RedrawStatsWin();
+
+        RedrawErrorWin();
+        touchwin(Game->Border);
+        touchwin(Game->Board);
+
+        noutrefresh();
+        doupdate();
+}

@@ -12,13 +12,13 @@
 #include <locale.h>
 
 DrawChars CharSet;
+GameStats* Game = NULL;
 #ifdef DEBUG_LOG
 FILE* DebugLog;
 #endif /* DEBUG_LOG */
 
 int main(int argc, char** argv)
 {
-        GameStats* Game;
         chtype Input=0;
 
         /* Set up the locale so we can support unicode characters if the terminal
@@ -30,6 +30,7 @@ int main(int argc, char** argv)
         signal(SIGSEGV, sighandler);
         signal(SIGBUS, sighandler);
         signal(SIGILL, sighandler);
+        signal(SIGWINCH, ResizeSignal);
 
 #ifdef DEBUG_LOG
         if ((DebugLog=fopen("debug.log","a"))==0)
