@@ -315,7 +315,6 @@ int CheckPercent(int NewVal);
 int CheckWidth(int NewVal);
 int InitGame(GameStats* Game);
 int ReadyGame(GameStats* Game);
-int InitCharSet(GameStats* Game,int Value);
 int ParseArgs(GameStats* Game, int Argc, char** Argv);
 void DumpGame(GameStats* Game);
 int ReReadyGame(GameStats* Game);

@@ -101,13 +101,6 @@ void Wipe(GameStats *Game)
         free(Game->Field);
 }
 
-int InitCharSet(GameStats* Game, int Value)
-{
-        // XXX This shouldn't be needed any more.
-        SetTheme(Game);
-        return 0;
-}
-
 int ReadyGame(GameStats* Game)
 {
         int VViewable=0, HViewable=0;
@@ -343,7 +336,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
         if (BestTimesFlag==1)
         {
                 StartCurses();
-                InitCharSet(Game,Game->Theme);
+                SetTheme(Game);
                 PrintBestTimes(NULL);
                 clear();
                 noutrefresh();
@@ -355,7 +348,7 @@ int ParseArgs(GameStats* Game, int Argc, char** Argv)
         if (GPLFlag==1)
         {
                 StartCurses();
-                InitCharSet(Game,Game->Theme);
+                SetTheme(Game);
                 PrintGPL();
                 clear();
                 noutrefresh();

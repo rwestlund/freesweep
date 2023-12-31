@@ -85,8 +85,8 @@ int main(int argc, char** argv)
 
         while (1)
         {
-                /* Make sure the right character set is in use. */
-                InitCharSet(Game,Game->Theme);
+                /* Make sure the right theme is in use. */
+                SetTheme(Game);
 
                 /* Touch a couple windows */
                 RedrawErrorWin();
