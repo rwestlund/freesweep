@@ -6,7 +6,7 @@ TARGET = freesweep
 VERSION = 1.0.1
 
 SRCS = clear.c drawing.c error.c fgui.c files.c game.c gpl.c main.c pbests.c\
-	play.c sl.c stats.c tick.c utils.c image.c
+	play.c sl.c stats.c themes.c tick.c utils.c image.c
 HEADS = sweep.h defaults.h acconfig.h
 MISC = README.md Makefile sweeprc install-sh configure.in Makefile.in\
 	config.guess configure config.sub sweep.h.in freesweep.6.in \
@@ -37,13 +37,14 @@ PURE_ARGS = /s/purify/bin/purify -collector=/s/purify/bin/collect2
 .SUFFIXES: .c .o
 .PHONY: clean sterile lines distclean maintainer-clean mrproper
 #######################################################################
-%.o: %.c $(HEADS) Makefile
-	@@RM@ -f $*.o 
-	$(CC) $(CFLAGS) -c $<
-
+.DEFAULT:
 $(TARGET): $(OBJS) $(HEADS) $(MISC)
 	@@RM@ -f $(TARGET)
 	$(PURIFY) $(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS) -o $(TARGET)
+
+%.o: %.c $(HEADS) Makefile
+	@@RM@ -f $*.o
+	$(CC) $(CFLAGS) -c $<
 
 configure: configure.in
 	autoconf

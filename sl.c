@@ -12,109 +12,109 @@
 
 void SaveGame(GameStats* Game, char *fname)
 {
-	FILE *fo = NULL;
+        FILE *fo = NULL;
 
-	if ( ( fo = fopen(fname, "w") ) == NULL )
-	{
-		SweepError("Unable to save game");
-		return;
-	}
-	
-	/* dump the stats out */
-	fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-			"%u\n%u\n%u\n",
-			Game->Height, Game->Width, Game->Percent, Game->NumMines, 
-			Game->MarkedMines, Game->BadMarkedMines, Game->Color, 
-			Game->Fast, Game->Alert, 
-			Game->LineDraw, Game->CursorX, Game->CursorY,
-			Game->LargeBoardX, Game->LargeBoardY, Game->Status,
-			Game->FocusX, Game->FocusY, Game->Time);
-	
-	/* dump the field out */
-	fwrite(Game->Field, 
-		(Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
-		* sizeof(unsigned char), 1, fo);
+        if ( ( fo = fopen(fname, "w") ) == NULL )
+        {
+                SweepError("Unable to save game");
+                return;
+        }
 
-	fclose(fo);
+        /* dump the stats out */
+        fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+                        "%u\n%u\n%u\n",
+                        Game->Height, Game->Width, Game->Percent, Game->NumMines,
+                        Game->MarkedMines, Game->BadMarkedMines, Game->Color,
+                        Game->Fast, Game->Alert,
+                        Game->Theme, Game->CursorX, Game->CursorY,
+                        Game->LargeBoardX, Game->LargeBoardY, Game->Status,
+                        Game->FocusX, Game->FocusY, Game->Time);
+
+        /* dump the field out */
+        fwrite(Game->Field,
+                (Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
+                * sizeof(unsigned char), 1, fo);
+
+        fclose(fo);
 }
 
 GameStats* LoadGame(char *fname)
 {
-	FILE *fi = NULL;
-	GameStats *Game = NULL;
-	int VViewable = 0, HViewable = 0;
+        FILE *fi = NULL;
+        GameStats *Game = NULL;
+        int VViewable = 0, HViewable = 0;
 
-	VViewable=(LINES-6);
-	HViewable=((COLS-INFO_W-2)/3);
+        VViewable=(LINES-6);
+        HViewable=((COLS-INFO_W-2)/3);
 
-	Game = (GameStats*)xmalloc(sizeof(GameStats));
+        Game = (GameStats*)xmalloc(sizeof(GameStats));
 
-	if (( fi = fopen(fname, "r") ) == NULL )
-	{
-		return NULL;
-	}
+        if (( fi = fopen(fname, "r") ) == NULL )
+        {
+                return NULL;
+        }
 
-	/* Load the Game Stats */
-	if ( fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-		"%u\n%u\n%u\n",
-		&Game->Height, &Game->Width, &Game->Percent, &Game->NumMines, 
-		&Game->MarkedMines, &Game->BadMarkedMines, &Game->Color, 
-		&Game->Fast, &Game->Alert, 
-		&Game->LineDraw, &Game->CursorX, &Game->CursorY,
-		&Game->LargeBoardX, &Game->LargeBoardY, &Game->Status,
-		&Game->FocusX, &Game->FocusY, &Game->Time) == 0 )
-	{
-		return NULL;
-	}
+        /* Load the Game Stats */
+        if ( fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
+                "%u\n%u\n%u\n",
+                &Game->Height, &Game->Width, &Game->Percent, &Game->NumMines,
+                &Game->MarkedMines, &Game->BadMarkedMines, &Game->Color,
+                &Game->Fast, &Game->Alert,
+                &Game->Theme, &Game->CursorX, &Game->CursorY,
+                &Game->LargeBoardX, &Game->LargeBoardY, &Game->Status,
+                &Game->FocusX, &Game->FocusY, &Game->Time) == 0 )
+        {
+                return NULL;
+        }
 
-	/* make the field I need to write into */
-	if ((Game->Field=calloc((Game->Height*(
-		( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2,
-		sizeof(char)))==NULL)
-	{
-		SweepError("Out of Memory.");
-		/* XXX clean this up */
-		exit(EXIT_FAILURE);
-	}
+        /* make the field I need to write into */
+        if ((Game->Field=calloc((Game->Height*(
+                ( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2,
+                sizeof(char)))==NULL)
+        {
+                SweepError("Out of Memory.");
+                /* XXX clean this up */
+                exit(EXIT_FAILURE);
+        }
 
-	/* load the board */
-	fread(Game->Field, 
-		(Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
-		* sizeof(unsigned char), 1, fi);
-	
-	/* make the new window setup for it */
-	if (Game->LargeBoardX && Game->LargeBoardY)
-	{
-		Game->Border=newwin((LINES-4),(COLS-INFO_W),0,0);
-/*		Game->Board=newwin(VViewable,(3*HViewable),1,1);*/
-		Game->Board=derwin(Game->Border,VViewable,(3*HViewable),1,1);
-	}
-	else if (Game->LargeBoardX)
-	{
-		Game->Border=newwin((Game->Height+2),(COLS-INFO_W),0,0);
-/*		Game->Board=newwin(Game->Height,(3*HViewable),1,1);*/
-		Game->Board=derwin(Game->Border,Game->Height,(3*HViewable),1,1);
-	}
-	else if (Game->LargeBoardY)
-	{
-		Game->Border=newwin((LINES-4),((3*Game->Width)+2),0,0);
-/*		Game->Board=newwin(VViewable,(3*Game->Width),1,1);*/
-		Game->Board=derwin(Game->Border,VViewable,(3*Game->Width),1,1);
-	}
-	else
-	{
-		Game->Border=newwin((Game->Height+2),((3*Game->Width)+2),0,0);
-/*		Game->Board=newwin(Game->Height,(3*Game->Width),1,1);*/
-		Game->Board=derwin(Game->Border,Game->Height,(3*Game->Width),1,1);
-	}
+        /* load the board */
+        fread(Game->Field,
+                (Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
+                * sizeof(unsigned char), 1, fi);
 
-	if ((Game->Border==NULL)||(Game->Board==NULL))
-	{
-		return NULL;
-	}
+        /* make the new window setup for it */
+        if (Game->LargeBoardX && Game->LargeBoardY)
+        {
+                Game->Border=newwin((LINES-4),(COLS-INFO_W),0,0);
+/*              Game->Board=newwin(VViewable,(3*HViewable),1,1);*/
+                Game->Board=derwin(Game->Border,VViewable,(3*HViewable),1,1);
+        }
+        else if (Game->LargeBoardX)
+        {
+                Game->Border=newwin((Game->Height+2),(COLS-INFO_W),0,0);
+/*              Game->Board=newwin(Game->Height,(3*HViewable),1,1);*/
+                Game->Board=derwin(Game->Border,Game->Height,(3*HViewable),1,1);
+        }
+        else if (Game->LargeBoardY)
+        {
+                Game->Border=newwin((LINES-4),((3*Game->Width)+2),0,0);
+/*              Game->Board=newwin(VViewable,(3*Game->Width),1,1);*/
+                Game->Board=derwin(Game->Border,VViewable,(3*Game->Width),1,1);
+        }
+        else
+        {
+                Game->Border=newwin((Game->Height+2),((3*Game->Width)+2),0,0);
+/*              Game->Board=newwin(Game->Height,(3*Game->Width),1,1);*/
+                Game->Board=derwin(Game->Border,Game->Height,(3*Game->Width),1,1);
+        }
 
-	/* Set the game clock as the real clock */
-	g_tick = Game->Time;
+        if ((Game->Border==NULL)||(Game->Board==NULL))
+        {
+                return NULL;
+        }
 
-	return Game;
+        /* Set the game clock as the real clock */
+        g_tick = Game->Time;
+
+        return Game;
 }
