@@ -230,17 +230,21 @@ int GetInput(GameStats* Game)
                 /* The accepted keys to display the help screen. */
                 case '?':
                 case KEY_HELP:
+                        cbreak();
                         StopTimer();
                         Help();
                         PrintInfo();
                         RedrawErrorWin();
                         RedrawStatsWin();
                         StartTimer();
+                        halfdelay(100);
                         break;
 
                 /* The accepted keys to display the license screen. */
                 case 'g':
+                        cbreak();
                         PrintGPL();
+                        halfdelay(100);
                         PrintInfo();
                         RedrawErrorWin();
                         RedrawStatsWin();
@@ -249,6 +253,7 @@ int GetInput(GameStats* Game)
                 /* The accepted keys to display the best times screen. */
                 case 'b':
                         PrintBestTimes(NULL);
+                        halfdelay(100);
                         PrintInfo();
                         RedrawErrorWin();
                         RedrawStatsWin();

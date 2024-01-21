@@ -21,8 +21,8 @@ int main(int argc, char** argv)
 {
         chtype Input=0;
 
-        /* Set up the locale so we can support unicode characters if the terminal
-         * supports it.
+        /* Set up the locale so we can support unicode characters if the
+         * terminal supports it.
          */
         setlocale(LC_ALL, "");
 
@@ -33,14 +33,14 @@ int main(int argc, char** argv)
         signal(SIGWINCH, ResizeSignal);
 
 #ifdef DEBUG_LOG
-        if ((DebugLog=fopen("debug.log","a"))==0)
+        if ((DebugLog = fopen("debug.log","a")) == 0)
         {
                 perror("Main::OpenDebugLog");
                 return 1;
         }
 #endif /* DEBUG_LOG */
 
-        if ((Game=malloc(sizeof(GameStats)))==NULL)
+        if ((Game = malloc(sizeof(GameStats))) == NULL)
         {
                 perror("Main::AllocGame");
                 return 1;
@@ -51,7 +51,7 @@ int main(int argc, char** argv)
         SourceGlobalFile(Game);
         SourceHomeFile(Game);
 
-        if (ParseArgs(Game,argc,argv)>0)
+        if (ParseArgs(Game, argc, argv) > 0)
         {
                 return 1;
         }
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         StartCurses();
 
         /* Prompt the user for new setings, if necessary. */
-        if (Game->Fast==0)
+        if (Game->Fast == 0)
         {
                 AskPrefs(Game);
         }
@@ -101,8 +101,9 @@ int main(int argc, char** argv)
                 Center(Game);
 
                 StartTimer();
-        /*      This is the main loop.*/
-                while (Game->Status==INPROG)
+                halfdelay(100);
+                /* This is the main loop.*/
+                while (Game->Status == INPROG)
                 {
                         PrintStats(Game);
                         Pan(Game);
@@ -116,6 +117,7 @@ int main(int argc, char** argv)
                 }
                 g_tick = 0;
                 Game->Time = g_tick;    /* If we won, the game is already saved */
+                cbreak();
                 StopTimer();
 
                 /* Update the final action of the player */

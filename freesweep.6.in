@@ -69,7 +69,7 @@ must either be specified on the command line or in the preferences files.
 \fB\-g\fP, \fB\-\-show\-gpl\fP
 Display the GNU General Public License, in a nice curses page viewer. Currently
 version 2 of the license is displayed; however, freesweep is licensed under
-version 2 or later of the GNU GPL, so this license may be superceded in the
+version 2 or later of the GNU GPL, so this license may be superseded in the
 future.
 .TP
 \fB\-H\fP, \fB\-\-help\fP
@@ -113,7 +113,7 @@ entered preferences should be saved. This dialog is skipped if the \-f or
 preference file.
 
 In normal play, freesweep waits for keystrokes, and then reacts according
-to the recieved value. Some keystrokes may be modified by a preceding
+to the received value. Some keystrokes may be modified by a preceding
 integer; these are noted in the list below by a preceding \fIn\fP. The
 following keystroke values are valid:
 

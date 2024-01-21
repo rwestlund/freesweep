@@ -74,13 +74,8 @@
 #define DFL_GROUP_PATH "@SCORESDIR@"
 #define MAGIC_NUMBER 128
 
-#ifdef __CYGWIN__
-#define DFL_PREFS_FILE "_sweeprc"
-#define DFL_BESTS_FILE "_sweeptimes"
-#else
-#define DFL_PREFS_FILE ".sweeprc"
-#define DFL_BESTS_FILE ".sweeptimes"
-#endif /* __CYGWIN__ */
+#define DFL_PREFS_FILE "config"
+#define DFL_BESTS_FILE "records"
 
 #define GLOBAL_PREFS_FILE "@PREFSDIR@/sweeprc"
 
@@ -220,6 +215,7 @@ typedef struct _GameStats
         int Fast;
         int Alert;
         int Theme;
+        int Cheated;
         int CursorX, CursorY;
         int LargeBoardX, LargeBoardY;
         int Status;
@@ -244,9 +240,8 @@ struct BestEntry
         unsigned int mines;
         unsigned int time;
 
-        char name[MAX_NAME];
-        char date[MAX_DATE];
-        char *attribs;
+        uid_t user;
+        time_t date;
 };
 
 struct BestFileDesc
@@ -256,9 +251,10 @@ struct BestFileDesc
 
         /* the number of entries in the descriptor */
         int numents;
+        int alloced;
 
         /* did I replace, or add? */
-        int replflag;
+        int sorted;
 };
 
 typedef struct _CoordPair
@@ -357,15 +353,19 @@ int xwaddch(WINDOW* win, DrawChars *CharSet, ch_type ch);
 void* xmalloc(size_t num);
 char* xgetcwd(char *buf, size_t size);
 DIR* xopendir(const char *buf);
+int xexists(const char *path);
 void StartTimer(void);
 void StopTimer(void);
 
 /* this is in pbests.c, which will eventually become bests.c */
 void UpdateBestTimesFile(GameStats *Game, char *filename);
+struct BestFileDesc* NewBFD();
+void LoadBestTimesFile(struct BestFileDesc *bfd, char *filename);
 char* FPTBTF(void);
 #if defined USE_GROUP_BEST_FILE
 char* FPTGBTF(void);
 #endif
+void DumpBFD(struct BestFileDesc *bfd, int valid);
 
 /* These are the functions defined in clear.c */
 void InsertMark(struct Mark **ht, int x, int y);
@@ -404,5 +404,9 @@ RETSIGTYPE sighandler(int signo);
 
 /* functions in image.c */
 void SaveGameImage(GameStats* Game, char *fname);
+
+/* functions in xdg.c */
+char *XDGConfigHome();
+char *XDGDataHome();
 
 #endif /* __SWEEP_H__ */

@@ -636,6 +636,8 @@ void SetTheme(GameStats* Game)
     CharSet.Bombed.str="*";
     CharSet.CursorLeft.str="$";
     CharSet.CursorRight.str="$";
+
+    Game->Cheated = 1;
     break;
   }
 

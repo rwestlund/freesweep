@@ -58,20 +58,21 @@ int CheckNumMines(int NewVal,int Height,int Width)
 
 int InitGame(GameStats* Game)
 {
-        Game->Height=DEFAULT_HEIGHT;
-        Game->Width=DEFAULT_WIDTH;
-        Game->Percent=DEFAULT_PERCENT;
-        Game->Color=DEFAULT_COLOR;
-        Game->NumMines=DEFAULT_NUMMINES;
-        Game->MarkedMines=0;
-        Game->BadMarkedMines=0;
-        Game->Fast=DEFAULT_FASTSTART;
-        Game->Alert=DEFAULT_ALERT;
-        Game->LargeBoardX=Game->LargeBoardY=0;
-        Game->FocusX=Game->FocusY=0;
-        Game->Time=0;
-        Game->Status=INPROG;
-        //InitCharSet(Game,DEFAULT_LINEDRAW);
+        Game->Height = DEFAULT_HEIGHT;
+        Game->Width = DEFAULT_WIDTH;
+        Game->Percent = DEFAULT_PERCENT;
+        Game->Color = DEFAULT_COLOR;
+        Game->NumMines = DEFAULT_NUMMINES;
+        Game->MarkedMines = 0;
+        Game->BadMarkedMines = 0;
+        Game->Fast = DEFAULT_FASTSTART;
+        Game->Alert = DEFAULT_ALERT;
+        Game->LargeBoardX = Game->LargeBoardY=0;
+        Game->FocusX = Game->FocusY=0;
+        Game->Time = 0;
+        Game->Status = INPROG;
+        Game->Theme = 1;
+        Game->Cheated = 0;
         SetTheme(Game);
         return 0;
 }
@@ -452,8 +453,10 @@ int ReReadyGame(GameStats* Game)
         Game->MarkedMines = 0;
         Game->BadMarkedMines = 0;
 
-        Game->CursorX=Game->Width/2;
-        Game->CursorY=Game->Height/2;
+        Game->CursorX = Game->Width/2;
+        Game->CursorY = Game->Height/2;
+
+        if (Game->Theme < 9) Game->Cheated = 0;
 
         return 0;
 }

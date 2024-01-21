@@ -50,7 +50,7 @@ int SourceFile(GameStats* Game,FILE* PrefsFile)
                                 else if (strncasecmp(NameBuffer,"percent",7)==0)
                                 {
                                         Value=atoi(ValueBuffer);
-                                        ((CheckPercent(Value)>0)?Game->Percent=Value,Game->NumMines=0:fprintf(stderr,"Invaid value for percent in preference file.\n"));
+                                        ((CheckPercent(Value)>0)?Game->Percent=Value,Game->NumMines=0:fprintf(stderr,"Invalid value for percent in preference file.\n"));
                                 }
                                 else if (strncasecmp(NameBuffer,"mines",5)==0)
                                 {
@@ -95,37 +95,51 @@ int SourceFile(GameStats* Game,FILE* PrefsFile)
 int SourceHomeFile(GameStats* Game)
 {
         FILE* PrefsFile;
-        char *Buffer, *Pathname;
+        char *ConfigPath, *Pathname;
 
-        Pathname=(char*)xmalloc(MAX_LINE);
-
-        if ((Buffer=getenv("HOME"))==NULL)
+        if ((ConfigPath = XDGConfigHome()) == NULL)
         {
-                perror("SourceHomeFile::getenv");
                 return 1;
         }
-#if defined(HAVE_SNPRINTF)
-        snprintf(Pathname, MAX_LINE, "%s/%s", Buffer, DFL_PREFS_FILE);
-#else
-        snprintf(Pathname, MAX_LINE, "%s/%s", Buffer, DFL_PREFS_FILE);
-#endif
 
-        if ((PrefsFile=fopen(Pathname,"r"))==NULL)
+        Pathname = (char*)xmalloc(MAX_LINE);
+#if defined(HAVE_SNPRINTF)
+        snprintf(Pathname, MAX_LINE, "%s/%s", ConfigPath, DFL_PREFS_FILE);
+#else
+        sprintf(Pathname, "%s/%s", ConfigPath, DFL_PREFS_FILE);
+#endif
+        free(ConfigPath);
+
+#ifdef DEBUG_LOG
+        fprintf(DebugLog, "Loading configuration file.\n  -> %s\n", Pathname);
+#endif /* DEBUG_LOG */
+
+        if ((PrefsFile = fopen(Pathname, "r")) == NULL)
         {
+#ifdef DEBUG_LOG
+                fprintf(DebugLog, "  No configuration found.\n");
+#endif /* DEBUG_LOG */
                 /* The user has no personal preferences. */
                 free(Pathname);
                 return 0;
         }
-        else if (SourceFile(Game,PrefsFile)==1)
+        else if (SourceFile(Game, PrefsFile) == 1)
         {
-/*              An error occurred while reading the file. Try closing it. */
+#ifdef DEBUG_LOG
+                fprintf(DebugLog, "  Error reading configuration file.\n");
+#endif /* DEBUG_LOG */
+                /* An error occurred while reading the file. Try closing it.
+                 */
                 fclose(PrefsFile);
                 free(Pathname);
                 return 1;
         }
         else
         {
-/*              Done, so close the file. */
+#ifdef DEBUG_LOG
+                fprintf(DebugLog, "  Done.\n");
+#endif /* DEBUG_LOG */
+                /* Done, so close the file. */
                 fclose(PrefsFile);
                 free(Pathname);
                 return 0;
@@ -137,10 +151,10 @@ int SourceGlobalFile(GameStats* Game)
 {
         FILE* PrefsFile;
 
-        if ((PrefsFile=fopen(GLOBAL_PREFS_FILE,"r"))==NULL)
+        if ((PrefsFile = fopen(GLOBAL_PREFS_FILE, "r")) == NULL)
         {
 /*              The global file is invalid or non-existant. */
-                fprintf(stderr,"Unable to open the global prefernces file %s\n", GLOBAL_PREFS_FILE);
+                fprintf(stderr, "Unable to open the global preferences file %s\n", GLOBAL_PREFS_FILE);
 /*              perror("SourceGlobalFile::fopen"); */
                 return 1;
         }
@@ -161,23 +175,28 @@ int SourceGlobalFile(GameStats* Game)
 int WritePrefsFile(GameStats* Game)
 {
         FILE* PrefsFile;
-        char *Buffer, Pathname[MAX_LINE+1];
+        char *ConfigPath, *Pathname;
 
-        if ((Buffer=getenv("HOME"))==NULL)
+        Pathname = (char*)xmalloc(MAX_LINE);
+        ConfigPath = XDGConfigHome();
+
+        if ((ConfigPath = XDGConfigHome()) == NULL)
         {
-                perror("WriteHomeFile::getenv");
                 return 1;
         }
 
+        Pathname = (char*)xmalloc(MAX_LINE);
 #if defined(HAVE_SNPRINTF)
-        snprintf(Pathname, MAX_LINE, "%s/%s", Buffer, DFL_PREFS_FILE);
+        snprintf(Pathname, MAX_LINE, "%s/%s", ConfigPath, DFL_PREFS_FILE);
 #else
-        sprintf(Pathname, "%s/%s", Buffer, DFL_PREFS_FILE);
+        sprintf(Pathname, "%s/%s", ConfigPath, DFL_PREFS_FILE);
 #endif
+        free(ConfigPath);
 
-        if ((PrefsFile=fopen(Pathname,"w"))==NULL)
+        if ((PrefsFile = fopen(Pathname, "w")) == NULL)
         {
                 perror("WritePrefsFile::fopen");
+                free(Pathname);
                 return 1;
         }
         else
@@ -212,6 +231,7 @@ int WritePrefsFile(GameStats* Game)
                 }
 
                 fclose(PrefsFile);
+                free(Pathname);
         }
         return 0;
 }

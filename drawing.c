@@ -9,6 +9,7 @@
 **********************************************************************/
 
 #include "sweep.h"
+#include <pwd.h>
 
 void StartCurses()
 {
@@ -30,7 +31,7 @@ void StartCurses()
         intrflush(stdscr, TRUE);
         cbreak();
         nonl();
-        curs_set(0);
+        curs_set(0); // Hide the mouse
 
 #ifdef SWEEP_MOUSE
         Mask=REPORT_MOUSE_POSITION|BUTTON1_CLICKED|BUTTON1_DOUBLE_CLICKED|BUTTON3_CLICKED;
@@ -752,34 +753,84 @@ int DrawBoard(GameStats* Game)
 */
 void PrintBestTimes(char* Filename)
 {
-        int Input=0;
+        int height, width, Input = 0;
         WINDOW* BestTimesWin;
+        struct BestFileDesc *bfd = NULL;
+        unsigned int i;
+        char *pathname;
+        time_t enttime;
 
-        if ((BestTimesWin=newwin(0,0,0,0))==NULL)
+        if ((BestTimesWin = newwin(0,0,0,0)) == NULL)
         {
                 perror("PrintHighs::AllocWin");
                 exit(EXIT_FAILURE);
         }
-        nodelay(BestTimesWin,FALSE);
-        //wborder(BestTimesWin,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark,CharSet.Mark);
-        mvwprintw(BestTimesWin,1,2,"Best times");
-        mvwhline(BestTimesWin,2,1,CharSet.HLine,COLS-2);
-        mvwprintw(BestTimesWin,3,4,"Username");
-        mvwhline(BestTimesWin,4,4,CharSet.HLine,8);
-        mvwprintw(BestTimesWin,3,15,"Height");
-        mvwhline(BestTimesWin,4,15,CharSet.HLine,6);
-        mvwprintw(BestTimesWin,3,25,"Width");
-        mvwhline(BestTimesWin,4,25,CharSet.HLine,5);
-        mvwprintw(BestTimesWin,3,34,"Mines");
-        mvwhline(BestTimesWin,4,33,CharSet.HLine,7);
-        mvwprintw(BestTimesWin,3,44,"Time");
-        mvwhline(BestTimesWin,4,42,CharSet.HLine,9);
-        mvwprintw(BestTimesWin,3,62,"Date");
-        mvwhline(BestTimesWin,4,54,CharSet.HLine,24);
+        getmaxyx(BestTimesWin, height, width);
 
-        mvwprintw(BestTimesWin,LINES-1,1,"--Press \'q\' to quit, any other key to continue.--");
+        nodelay(BestTimesWin, FALSE);
+        mvwprintw(BestTimesWin, 1, 2,  "Best times");
+        mvwhline(BestTimesWin,  2, 1,  CharSet.HLine, COLS-2);
+        mvwprintw(BestTimesWin, 3, 7,  "Player");
+        mvwhline(BestTimesWin,  4, 4,  CharSet.HLine, 12);
+        mvwprintw(BestTimesWin, 3, 22, "Area");
+        mvwhline(BestTimesWin,  4, 19, CharSet.HLine, 8);
+        mvwprintw(BestTimesWin, 3, 31, "Mines");
+        mvwhline(BestTimesWin,  4, 30, CharSet.HLine, 7);
+        mvwprintw(BestTimesWin, 3, 42, "Time");
+        mvwhline(BestTimesWin,  4, 40, CharSet.HLine, 9);
+        mvwprintw(BestTimesWin, 3, 61, "Date");
+        mvwhline(BestTimesWin,  4, 53, CharSet.HLine, 24);
+
+        bfd = NewBFD();
+        pathname = FPTBTF();
+        LoadBestTimesFile(bfd, pathname);
+        free(pathname);
+
+#ifdef USE_GROUP_BEST_FILE
+        pathname = FPTGBTF();
+        LoadBestTimesFile(bfd, pathname);
+        free(pathname);
+#endif
+        DumpBFD(bfd, 1);
+
+        for (i = 0; i < bfd->numents && i < height - 6; i++)
+        {
+                const struct passwd *pw = getpwuid(bfd->ents[i].user);
+                mvwprintw(BestTimesWin, 5 + i, 4, pw->pw_name);
+                mvwprintw(BestTimesWin, 5 + i, 19, "%u", bfd->ents[i].area);
+                mvwprintw(BestTimesWin, 5 + i, 31, "%u", bfd->ents[i].mines);
+                enttime = bfd->ents[i].time;
+                if (enttime >= 86400)
+                {
+                        mvwprintw(BestTimesWin, 5 + i, 40, "%d:%02d:%02d:%02ds",
+                                  enttime / 86400, (enttime % 86400) / 3600,
+                                  (enttime % 3600) / 60 , enttime % 60);
+                }
+                else if (enttime >= 3600)
+                {
+                        mvwprintw(BestTimesWin, 5 + i, 40, "%d:%02d:%02ds",
+                                  enttime / 3600, (enttime % 3600) / 60, enttime % 60);
+                }
+                else if (enttime >= 60)
+                {
+                        mvwprintw(BestTimesWin, 5 + i, 40, "%d:%02ds",
+                                  enttime / 60, enttime % 60);
+                }
+                else
+                {
+                        mvwprintw(BestTimesWin, 5 + i, 40, "%ds", enttime);
+                }
+                mvwprintw(BestTimesWin, 5 + i, 53, "%s", ctime(&bfd->ents[i].date));
+        }
+        free(bfd->ents);
+        free(bfd);
+
+        wborder(BestTimesWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner);
+        mvwprintw(BestTimesWin, LINES-1, 2,
+                  " Press \'q\' to quit, any other key to continue. ");
         wmove(BestTimesWin,0,0);
         wrefresh(BestTimesWin);
+        cbreak();
         Input=wgetch(BestTimesWin);
 #ifdef DEBUG_LOG
         fprintf(DebugLog, "Leaving Bets Times view with %c\n", Input);
