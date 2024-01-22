@@ -8,3 +8,8 @@ config.log
 config.status
 debug.log
 *.o
+
+# Backup files from editors
+\#*\#
+*~
+.\#*

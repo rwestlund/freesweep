@@ -9,6 +9,7 @@
 **********************************************************************/
 
 #include "sweep.h"
+#include <unistd.h>
 
 /******************************************************************************
  * Color conversion code borrowed and modified from the tmux project.
@@ -161,6 +162,11 @@ DIR* xopendir(const char *path)
         }
 
         return dirent;
+}
+
+int xexists(const char *path)
+{
+        return (access(path, F_OK) != -1);
 }
 
 /* start and stop the timer */
