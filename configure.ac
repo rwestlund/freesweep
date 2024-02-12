@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([freesweep], [1.1.0], [ron@digitalcombine.ca])
+AC_INIT([freesweep], [1.1.0], [rwestlun@gmail.com])
 AM_INIT_AUTOMAKE
 AM_SILENT_RULES
 AC_CONFIG_SRCDIR([main.c])

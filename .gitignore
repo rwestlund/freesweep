@@ -15,8 +15,10 @@ depcomp
 missing
 stamp-h1
 compile
+install-sh
 sweeprc
 *.o
+freesweep-*.tar.gz
 
 # Backup files from editors
 \#*\#
