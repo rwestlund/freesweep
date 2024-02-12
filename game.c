@@ -1,462 +1,671 @@
-/**********************************************************************
-*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
-*  It may be distributed under the terms of the GNU General Purpose   *
-*  License, version 2 or above; see the file COPYING for more         *
-*  information.                                                       *
-*                                                                     *
-*  $Id: game.c,v 1.32 1999-08-09 05:25:35 hartmann Exp $
-*                                                                     *
-**********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.*
+ */
 
 #include "sweep.h"
 
-/* The various Check* functions. Each returns 1 if a valid input, else -1 */
+/*************
+ * game_wipe *
+ *************/
 
-int CheckHeight(int NewVal)
-{
-        return (((NewVal>2)&&(NewVal<=MAX_H))?1:-1);
+static void game_wipe(game_stats_t *game) {
+  /* Get the game ready for a reconfigure */
+  if (game->percent != 0) {
+    game->mines = 0;
+  }
+  game->MarkedMines = 0;
+  game->BadMarkedMines = 0;
+  game->LargeBoardX = game->LargeBoardY = 0;
+  game->FocusX = game->FocusY = 0;
+  game->Time = 0;
+
+  werase(game->Board);
+  wnoutrefresh(game->Board);
+  werase(game->Border);
+  wnoutrefresh(game->Border);
+  delwin(game->Board);
+  delwin(game->Border);
+  free(game->Field);
 }
 
-int CheckWidth(int NewVal)
-{
-        return (((NewVal>2)&&(NewVal<=MAX_W))?1:-1);
+/***************
+ * check_width *
+ ***************/
+
+int check_width(int value) {
+  return ((value >= MIN_W) && (value <= MAX_W));
 }
 
-int CheckPercent(int NewVal)
-{
-        return (((NewVal>0)&&(NewVal<100))?1:-1);
+/****************
+ * check_height *
+ ****************/
+
+int check_height(int value) {
+  return ((value >= MIN_H) && (value <= MAX_H));
 }
 
-int CheckRefresh(int NewVal)
-{
-        return (((NewVal>0)&&(NewVal<=10))?1:-1);
+/***************
+ * check_theme *
+ ***************/
+
+int check_theme(int value) {
+  return ((value >= MIN_THEME) && (value <= MAX_THEME));
 }
 
-int CheckFast(int NewVal)
-{
-        return (((NewVal==0)||(NewVal==1))?1:-1);
+/*****************
+ * check_percent *
+ *****************/
+
+int check_percent(int value) {
+  return ((value >= MIN_PERCENT) && (value <= MAX_PERCENT));
 }
 
-int CheckColor(int NewVal)
-{
-        return (((NewVal==0)||(NewVal==1))?1:-1);
+/*************
+ * game_init *
+ *************/
+
+int game_init(game_stats_t* game) {
+  game->height = DEFAULT_HEIGHT;
+  game->width = DEFAULT_WIDTH;
+  game->percent = DEFAULT_PERCENT;
+  game->mines = DEFAULT_NUMMINES;
+  game->MarkedMines = 0;
+  game->BadMarkedMines = 0;
+  game->alert = DEFAULT_ALERT;
+  game->LargeBoardX = game->LargeBoardY = 0;
+  game->FocusX = game->FocusY = 0;
+  game->Time = 0;
+  game->Status = INPROG;
+  game->theme = DEFAULT_THEME;
+
+  theme_set(game);
+
+  return 0;
 }
 
-int CheckTheme(int NewVal)
-{
-        return ((NewVal>=1)&&(NewVal<=9));
+/************
+ * game_new *
+ ************/
+
+int game_new(game_stats_t* game) {
+  WINDOW* win;
+  char line[6] = "\0\0\0\0\0";
+  int input, field = 1, value;
+
+  if (game_load(game)) {
+    return 1;
+  }
+
+  if ((win = newwin(LINES - 1, COLS - INFO_W, 0, 0)) == NULL) {
+    log_error("Unable to create new game window.");
+    return 0;
+  }
+
+  game_wipe(game);
+
+  // Draw the initial form.
+  mvwprintw(win, 0, (COLS - INFO_W - 18) / 2,
+            "New Mission Report");
+  mvwhline(win, 1, 1, CharSet.HLine, COLS - INFO_W - 2);
+
+  mvwprintw(win, 3, 2, "Height [10-%d]:", MAX_H);
+  mvwprintw(win, 4, 2, " Width [10-%d]:", MAX_W);
+  mvwprintw(win, 5, 2, " Mines [10%%-90%%]:");
+  mvwprintw(win, 6, 2, "           Alert:");
+
+  mvwprintw(win, 3, 29, "Theme:");
+
+  mvwprintw(win, 8, 2, "Press \'q\' to quit");
+  mvwprintw(win, 9, 2, "Press enter to play");
+
+  snprintf(line, 5, "%d", game->height);
+
+  while (field < 6) {
+    // Clear the fields
+    mvwprintw(win, 3, 19, "       ");
+    mvwprintw(win, 4, 19, "       ");
+    mvwprintw(win, 5, 19, "       ");
+    mvwprintw(win, 6, 19, "       ");
+    mvwprintw(win, 3, 35, "            ");
+    switch ((field - 1) / 4) {
+    case 0:
+      mvwprintw(win, 2 + field, 19, ">     <");
+      break;
+    case 1:
+      mvwprintw(win, 2 + (field - 4), 35, ">          <");
+      break;
+    }
+
+    // Redraw all the fields
+    if (field == 1) {
+      if (game->height != atoi(line) && has_colors() == TRUE)
+        wcolor_set(win, CLR_WARN, NULL);
+      mvwprintw(win, 3, 20, line);
+      if (has_colors() == TRUE)
+        wcolor_set(win, CLR_NORMAL, NULL);
+    } else {
+      mvwprintw(win, 3, 20, "%d", game->height);
+    }
+    if (field == 2) {
+      if (game->width != atoi(line) && has_colors() == TRUE)
+        wcolor_set(win, CLR_WARN, NULL);
+      mvwprintw(win, 4, 20, line);
+      if (has_colors() == TRUE)
+        wcolor_set(win, CLR_NORMAL, NULL);
+    } else {
+      mvwprintw(win, 4, 20, "%d", game->width);
+    }
+    if (field == 3) {
+      if (game->percent != atoi(line) && has_colors() == TRUE)
+        wcolor_set(win, CLR_WARN, NULL);
+      mvwprintw(win, 5, 20, line);
+      if (has_colors() == TRUE)
+        wcolor_set(win, CLR_NORMAL, NULL);
+    } else {
+      mvwprintw(win, 5, 20, "%d", game->percent);
+    }
+    mvwprintw(win, 3, 36, CharSet.name);
+    switch (game->alert) {
+    case BEEP:
+      mvwprintw(win, 6, 20, "Beep");
+      break;
+    case FLASH:
+      mvwprintw(win, 6, 20, "Flash");
+      break;
+    case NO_ALERT:
+      mvwprintw(win, 6, 20, "None");
+      break;
+    }
+    wnoutrefresh(win);
+
+    // Update the cursor
+    if (field < 4) {
+      curs_set(1);
+      wmove(win, 2 + field, 20 + strlen(line));
+    } else {
+      curs_set(0);
+    }
+    wrefresh(win);
+
+    cbreak();
+    input = getch();
+    switch (input) {
+    case KEY_ENTER:
+    case '\n':
+    case ' ':
+      field = 6;
+      break;
+    case 'q':
+      config_save(game);
+      return 0;
+    case KEY_BACKSPACE:
+    case '\b':
+    case '\x7f':
+      if (field < 4 ) {
+        if (strlen(line) > 0) {
+          line[strlen(line) - 1] = 0;
+        }
+        switch (field)
+          {
+          case 1:
+            value = atoi(line);
+            if (check_height(value)) game->height = value;
+            break;
+          case 2:
+            value = atoi(line);
+            if (check_width(value)) game->width = value;
+            break;
+          case 3:
+            value = atoi(line);
+            if (check_percent(value)) game->percent = value;
+            break;
+          }
+      }
+      break;
+    case '0': case '1': case '2': case '3': case '4':
+    case '5': case '6': case '7': case '8': case '9':
+      if (field < 4) {
+        if (strlen(line) < 4) {
+          line[strlen(line)] = input;
+        }
+        switch (field)
+          {
+          case 1:
+            value = atoi(line);
+            if (check_height(value)) game->height = value;
+            break;
+          case 2:
+            value = atoi(line);
+            if (check_width(value)) game->width = value;
+            break;
+          case 3:
+            value = atoi(line);
+            if (check_percent(value) == 1) game->percent = value;
+            break;
+          }
+      }
+      break;
+    case KEY_RIGHT:
+      switch(field) {
+      case 1:
+        if (game->height < MAX_H) game->height++;
+        snprintf(line, 5, "%d", game->height);
+        break;
+      case 2:
+        if (game->width < MAX_W) game->width++;
+        snprintf(line, 5, "%d", game->width);
+        break;
+      case 3:
+        if (game->percent < MAX_PERCENT) game->percent++;
+        snprintf(line, 5, "%d", game->percent);
+        break;
+      case 4:
+        switch(game->alert)
+          {
+          case BEEP:
+            game->alert = FLASH;
+            break;
+          case FLASH:
+            game->alert = NO_ALERT;
+            break;
+          case NO_ALERT:
+            game->alert = BEEP;
+            break;
+          }
+        break;
+      case 5:
+        if (game->theme < MAX_THEME) game->theme++;
+        else game->theme = MIN_THEME;
+        theme_set(game);
+        break;
+      }
+      break;
+    case KEY_LEFT:
+      switch (field) {
+      case 1:
+        if (game->height > MIN_H) game->height--;
+        snprintf(line, 5, "%d", game->height);
+        break;
+      case 2:
+        if (game->width > MIN_W) game->width--;
+        snprintf(line, 5, "%d", game->width);
+        break;
+      case 3:
+        if (game->percent > MIN_PERCENT) game->percent--;
+        snprintf(line, 5, "%d", game->percent);
+        break;
+      case 4:
+        switch(game->alert)
+          {
+          case BEEP:
+            game->alert = NO_ALERT;
+            break;
+          case FLASH:
+            game->alert = BEEP;
+            break;
+          case NO_ALERT:
+            game->alert = FLASH;
+            break;
+          }
+        break;
+      case 5:
+        if (game->theme > MIN_THEME) game->theme--;
+        else game->theme = MAX_THEME;
+        theme_set(game);
+        break;
+      }
+      break;
+    case KEY_DOWN:
+      if (field < 5) field++;
+      else field = 1;
+      switch (field)
+        {
+        case 1:
+          snprintf(line, 5, "%d", game->height);
+          break;
+        case 2:
+          snprintf(line, 5, "%d", game->width);
+          break;
+        case 3:
+          snprintf(line, 5, "%d", game->percent);
+          break;
+        }
+      break;
+    case KEY_UP:
+      if (field > 1) field--;
+      else field = 5;
+      switch (field)
+        {
+        case 1:
+          snprintf(line, 5, "%d", game->height);
+          break;
+        case 2:
+          snprintf(line, 5, "%d", game->width);
+          break;
+        case 3:
+          snprintf(line, 5, "%d", game->percent);
+          break;
+        case 4:
+          break;
+        }
+      break;
+    }
+  }
+
+  game_create_board(game);
+  game_set_mines(game);
+  config_save(game);
+  curs_set(0);
+  wclear(win);
+  wnoutrefresh(win);
+  delwin(win);
+  refresh();
+  return TRUE;
 }
 
-/* CheckNumMines is the only member of the check* family that requires
-   input besides NewVal. Since the number of mines cannot be greater than
-   the size of the field, height and width must be ascertained beforehand.
-*/
-int CheckNumMines(int NewVal,int Height,int Width)
-{
-        return (((NewVal>0)&&(NewVal<(Height*Width)))?1:-1);
+/*********************
+ * game_create_board *
+ *********************/
+
+int game_create_board(game_stats_t* game) {
+  const int VViewable = (LINES - 3);
+  const int HViewable = ((COLS - INFO_W - 2) / 3);
+
+  // Clean up any previous game.
+  if (game->Field) {
+    free(game->Field);
+    game->Field = NULL;
+  }
+  if (game->Board) {
+    delwin(game->Board);
+    game->Board = NULL;
+  }
+  if (game->Border) {
+    delwin(game->Border);
+    game->Border = NULL;
+  }
+
+  // Create the game field.
+  if ((game->Field = calloc((game->height * ((game->width % 2 ?
+                                              (game->width) + 1 :
+                                              game->width))) / 2,
+                            sizeof(char))) == NULL) {
+    log_error("Unable to allocate game field");
+    return 0;
+  }
+
+  // Determine if the game field is larger the the terminal area.
+  if ((COLS - INFO_W) >= ((3 * game->width) + 2)) {
+    game->LargeBoardX = 0;
+  } else {
+    game->LargeBoardX = 1;
+  }
+
+  if ((LINES - 1) >= (game->height + 2)) {
+    game->LargeBoardY = 0;
+  } else {
+    game->LargeBoardY = 1;
+  }
+
+  /* Determine the correct size of the border window, and allocate it */
+  if (game->LargeBoardX && game->LargeBoardY) {
+    game->Border = newwin(VViewable + 2, (3 * HViewable) + 2, 0, 0);
+    game->Board  = derwin(game->Border, VViewable, 3 * HViewable, 1, 1);
+
+  } else if (game->LargeBoardX) {
+    game->Border = newwin(game->height + 2, (3 * HViewable) + 2, 0, 0);
+    game->Board  = derwin(game->Border, game->height, (3 * HViewable), 1, 1);
+
+  } else if (game->LargeBoardY) {
+    game->Border = newwin(VViewable + 2, (3 * game->width) + 2, 0, 0);
+    game->Board  = derwin(game->Border, VViewable, 3 * game->width, 1, 1);
+
+  } else {
+    game->Border = newwin((game->height + 2), (3 * game->width) + 2, 0, 0);
+    game->Board  = derwin(game->Border, game->height, 3 * game->width, 1, 1);
+  }
+
+  if ((game->Border == NULL) || (game->Board == NULL)) {
+    log_error("Unable to allocate game board");
+    return 0;
+  }
+
+  return 1;
 }
 
-int InitGame(GameStats* Game)
-{
-        Game->Height = DEFAULT_HEIGHT;
-        Game->Width = DEFAULT_WIDTH;
-        Game->Percent = DEFAULT_PERCENT;
-        Game->Color = DEFAULT_COLOR;
-        Game->NumMines = DEFAULT_NUMMINES;
-        Game->MarkedMines = 0;
-        Game->BadMarkedMines = 0;
-        Game->Fast = DEFAULT_FASTSTART;
-        Game->Alert = DEFAULT_ALERT;
-        Game->LargeBoardX = Game->LargeBoardY=0;
-        Game->FocusX = Game->FocusY=0;
-        Game->Time = 0;
-        Game->Status = INPROG;
-        Game->Theme = 1;
-        Game->Cheated = 0;
-        SetTheme(Game);
-        return 0;
-}
+/*************
+ * game_args *
+ *************/
 
-/* Get the game ready for a reconfigure */
-void Wipe(GameStats *Game)
-{
-        if (Game->Percent != 0)
-        {
-                Game->NumMines=0;
-        }
-        Game->MarkedMines=0;
-        Game->BadMarkedMines=0;
-        Game->LargeBoardX=Game->LargeBoardY=0;
-        Game->FocusX=Game->FocusY=0;
-        Game->Time=0;
-        if (Game->Percent != 0)
-        {
-                Game->NumMines=0;
-        }
-        werase(Game->Board);
-        wnoutrefresh(Game->Board);
-        werase(Game->Border);
-        wnoutrefresh(Game->Border);
-        delwin(Game->Board);
-        delwin(Game->Border);
-        free(Game->Field);
-}
-
-int ReadyGame(GameStats* Game)
-{
-        int VViewable=0, HViewable=0;
-
-        VViewable=(LINES-6);
-        HViewable=((COLS-INFO_W-2)/3);
-
-        if ((Game->Field=calloc((Game->Height*(
-                ( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2,
-                sizeof(char)))==NULL)
-        {
-                perror("ReadyGame::AllocField");
-                exit(EXIT_FAILURE);
-        }
-
-        /* Yeah, I know it's a crappy way to get a random number. */
-        srand(time(NULL));
-
-        if ((COLS-INFO_W)>=((3*Game->Width)+2))
-        {
-                Game->LargeBoardX=0;
-        }
-        else
-        {
-                Game->LargeBoardX=1;
-        }
-
-        if ((LINES-4)>=(Game->Height+2))
-        {
-                Game->LargeBoardY=0;
-        }
-        else
-        {
-                Game->LargeBoardY=1;
-        }
-
-        /* Determine the correct size of the border window, and allocate it */
-        if (Game->LargeBoardX && Game->LargeBoardY)
-        {
-                Game->Border=newwin((LINES-4),(COLS-INFO_W),0,0);
-                Game->Board=derwin(Game->Border,VViewable,(3*HViewable),1,1);
-        }
-        else if (Game->LargeBoardX)
-        {
-                Game->Border=newwin((Game->Height+2),(COLS-INFO_W),0,0);
-                Game->Board=derwin(Game->Border,Game->Height,(3*HViewable),1,1);
-        }
-        else if (Game->LargeBoardY)
-        {
-                Game->Border=newwin((LINES-4),((3*Game->Width)+2),0,0);
-                Game->Board=derwin(Game->Border,VViewable,(3*Game->Width),1,1);
-        }
-        else
-        {
-                Game->Border=newwin((Game->Height+2),((3*Game->Width)+2),0,0);
-                Game->Board=derwin(Game->Border,Game->Height,(3*Game->Width),1,1);
-        }
-
-        if ((Game->Border==NULL)||(Game->Board==NULL))
-        {
-                perror("ReadyGame::AllocWin");
-                exit(EXIT_FAILURE);
-        }
-
-        return 0;
-}
-
-int ParseArgs(GameStats* Game, int Argc, char** Argv)
-{
+int game_args(game_stats_t* game, int argc, char** argv) {
 #if HAVE_GETOPT || HAVE_GETOPT_LONG
-        int Value=0, Opt=0, SaveFlag=0, FastFlag=0, QueryFlag=0, ErrorFlag=0, BestTimesFlag=0, DumpFlag=0, GPLFlag=0, PercentOrNum=0, HelpFlag=0;
-        extern int opterr, optind;
-        extern char* optarg;
+  int value = 0, opt = 0;
+  int ErrorFlag = 0, BestTimesFlag = 0;
+  int PercentFlag = 0, HelpFlag = 0;
+  extern int opterr, optind;
+  extern char* optarg;
 
-#if defined HAVE_GETOPT_LONG
-        static struct option long_options[] =
-        {
-                {"percent", required_argument, 0, '%'},
-                {"show-best-times", no_argument, 0, 'b'},
-                {"dump-best-times", no_argument, 0, 'd'},
-                {"theme", required_argument, 0, 't'},
-                {"fast", no_argument, 0, 'f'},
-                {"show-gpl", no_argument, 0, 'g'},
-                {"height", required_argument, 0, 'h'},
-                {"help", no_argument, 0, 'H'},
-                {"interactive", no_argument, 0, 'i'},
-                {"mines", no_argument, 0, 'm'},
-                {"save-prefs", no_argument, 0, 's'},
-                {"version", no_argument, 0, 'v'},
-                {"width", required_argument, 0, 'w'},
-                {0, 0, 0, 0}
-        };
+  /* Clear the error flag. */
+  opterr = 0;
 
-        /* Clear the error flag. */
-        opterr=0;
+#if HAVE_GETOPT_LONG
+  static struct option long_options[] = {
+    {"percent", required_argument, 0, '%'},
+    {"show-best-times", no_argument, 0, 'b'},
+    {"theme", required_argument, 0, 't'},
+    {"height", required_argument, 0, 'h'},
+    {"help", no_argument, 0, 'H'},
+    {"version", no_argument, 0, 'v'},
+    {"width", required_argument, 0, 'w'},
+    {0, 0, 0, 0}
+  };
 
-        /* Parse the command line options. */
-        while ((Opt=getopt_long(Argc,Argv,"%:abdfgh:im:st:vw:",long_options, NULL))!=EOF)
+  /* Parse the command line options. */
+  while ((opt = getopt_long(argc, argv, "%:bh:st:vw:", long_options,
+                            NULL)) != EOF) {
 #elif HAVE_GETOPT
-        /* Clear the error flag. */
-        opterr=0;
-
-        /* Parse the command line options. */
-        while ((Opt=getopt(Argc,Argv,"%:abdfgh:im:st:vw:"))!=EOF)
+  /* Parse the command line options. */
+  while ((opt = getopt(argc, argv, "%:bh:st:vw:")) != EOF) {
 #endif /* HAVE_GETOPT */
-        {
-                switch (Opt)
-                {
-                        case '%':
-                                /* Set percent to optarg */
-                                Value=atoi(optarg);
-                                ((CheckPercent(Value)>=0)?Game->Percent=Value:fprintf(stderr,"Invalid value for percent.\n"));
-                                PercentOrNum++;
-                                break;
-                        case 'H':
-                                /* Show the help listing, but exit without error. */
-                                break;
-                        case 'b':
-                                BestTimesFlag++;
-                                break;
-                        case 'd':
-                                DumpFlag++;
-                                break;
-                        case 't':
-                                /* Set the theme to optarg */
-                                Value=atoi(optarg);
-                                (CheckTheme(Value)?Game->Theme=Value:fprintf(stderr,"Invalid value for theme.\n"));
-                                break;
-                        case 'f':
-                                FastFlag++;
-                                break;
-                        case 'g':
-                                GPLFlag++;
-                                break;
-                        case 'h':
-                                /* Set height to optarg */
-                                Value=atoi(optarg);
-                                ((CheckHeight(Value)>=0)?Game->Height=Value:fprintf(stderr,"Invalid value for height.\n"));
-                                break;
-                        case 'i':
-                                QueryFlag++;
-                                break;
-                        case 'm':
-                                /* Set nummines to optarg if PercentFlag is not set.*/
-                                Value=atoi(optarg);
-                                ((CheckNumMines(Value,Game->Height,Game->Width)>=0)?Game->NumMines=Value:fprintf(stderr,"Invalid value for number of mines.\n"));
-                                PercentOrNum++;
-                                break;
-                        case 's':
-                                /* Set the save flag */
-                                SaveFlag++;
-                                break;
-                        case 'v':
-                                printf("Freesweep %s by\nGus Hartmann (hartmann@cs.wisc.edu) and Pete Keller (psilord@cs.wisc.edu).\n",VERSION);
-                                exit(EXIT_SUCCESS);
-                                break;
-                        case 'w':
-                                /* Set width to optarg */
-                                Value=atoi(optarg);
-                                ((CheckWidth(Value)>=0)?Game->Width=Value:fprintf(stderr,"Invalid value for width.\n"));
-                                break;
-                        case '?':
-                        default:
-                                ErrorFlag++;
-                                break;
-                }
-                Value=0;
-        }
 
-        /* Make sure there aren't any more arguments. */
-        /* Also insure that there was not more than one -s was passed. */
-        if (SaveFlag>1)
-        {
-                fprintf(stderr,"Only one save preferences command can be specified.\n");
-                ErrorFlag++;
-        }
+    switch (opt) {
+    case '%':
+      /* Set percent to optarg */
+      value = atoi(optarg);
+      if (check_percent(value)) {
+        game->percent = value;
+      } else {
+       fprintf(stderr, "Invalid value, %d%%, for percent.\n", value);
+       ErrorFlag++;
+      }
+      PercentFlag++;
+      break;
+    case 'H':
+      /* Show the help listing, but exit without error. */
+      break;
+    case 'b':
+      BestTimesFlag++;
+      break;
+    case 't':
+      /* Set the theme to optarg */
+      value = atoi(optarg);
+      if (check_theme(value)) {
+        game->theme = value;
+      } else {
+       fprintf(stderr,"Invalid value, %d, for theme.\n", value);
+       ErrorFlag++;
+      }
+      break;
+    case 'h':
+      /* Set height to optarg */
+      value = atoi(optarg);
+      if (check_height(value)) {
+        game->height = value;
+      } else {
+        fprintf(stderr, "Invalid value for height.\n");
+        ErrorFlag++;
+      }
+      break;
+    case 'v':
+      printf("Freesweep %s\n", VERSION);
+      exit(EXIT_SUCCESS);
+      break;
+    case 'w':
+      /* Set width to optarg */
+      value = atoi(optarg);
+      if (check_width(value)) {
+        game->width = value;
+      } else {
+        fprintf(stderr, "Invalid value for width.\n");
+        ErrorFlag++;
+      }
+      break;
+    case '?':
+    default:
+      ErrorFlag++;
+      break;
+    }
+    value = 0;
+  }
 
-        if (PercentOrNum > 1)
-        {
-                fprintf(stderr, "Only one value for mines or percentage can be specified.\n");
-                ErrorFlag++;
-        }
+  /* Make sure there aren't any more arguments. */
+  /* Also insure that there was not more than one -s was passed. */
 
-        if (GPLFlag>1)
-        {
-                fprintf(stderr,"The GNU GPL can only be displayed once.\n");
-                ErrorFlag++;
-        }
+  if (PercentFlag > 1) {
+    fprintf(stderr, "Only one value for percentage can be specified.\n");
+    ErrorFlag++;
+  }
 
-        if ((BestTimesFlag + DumpFlag) > 1)
-        {
-                fprintf(stderr,"Only one show best times or dump best times can be specified.\n");
-                ErrorFlag++;
-        }
+  if (BestTimesFlag > 1) {
+    fprintf(stderr, "Only one show best times can be specified.\n");
+    ErrorFlag++;
+  }
 
-        if ((FastFlag+QueryFlag)>1)
-        {
-                fprintf(stderr,"Only one -f or -i can be specified.\n");
-                ErrorFlag=1;
-        }
+  if (optind != argc) {
+    fprintf(stderr, "Non-option arguments are invalid.\n");
+    ErrorFlag++;
+  }
 
-        if (optind!=Argc)
-        {
-                fprintf(stderr,"Non-option arguments are invalid.\n");
-                ErrorFlag++;
-        }
-        else if (FastFlag!=0)
-        {
-                Game->Fast=1;
-        }
-        else if (QueryFlag!=0)
-        {
-                Game->Fast=0;
-        }
-
-        if (ErrorFlag + HelpFlag > 0)
-        {
+  if (ErrorFlag + HelpFlag > 0) {
 #if defined HAVE_GETOPT_LONG
-                fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value, --percent=value\tSet percent to value\n\t-b, --show-best-times\t\tDisplay best times\n\t-d, --dump-best-times\t\tPrint best times to stdout\n\t-t value, --theme=value\t\tSet theme to value\n\t-f, --fast\t\t\tStart in fast mode\n\t-g, --show-gpl\t\t\tDisplay the GNU General Public License\n\t-h value, --height=value\tSet height to value\n\t-H, --help\t\t\tDisplay this help message\n\t-i, --interactive\t\tStart in interactive mode\n\t-m value, --mines=value\t\tSet mines to value\n\t-s, --save-prefs\t\tSave any specified preferences\n\t-v, --version\t\t\tDisplay version information\n\t-w value, --width=value\t\tSet width to value\n");
+    fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n"
+            "\t-%% value, --percent=value\tSet percent to value\n"
+            "\t-b, --show-best-times\t\tDisplay best times\n"
+            "\t-t value, --theme=value\t\tSet theme to value\n"
+            "\t-h value, --height=value\tSet height to value\n"
+            "\t-H, --help\t\t\tDisplay this help message\n"
+            "\t-v, --version\t\t\tDisplay version information\n"
+            "\t-w value, --width=value\t\tSet width to value\n");
 #else
-                fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n\t-%% value\tSet percent to value\n\t-b\t\tDisplay best times\n\t-d\t\tPrint best times to stdout\n\t-t value\t\tSet theme to value\n\t-f\t\tStart in fast mode\n\t-g\t\tDisplay the GNU General Public License\n\t-H\t\tDisplay this help message\n\t-h value\tSet height to value\n\t-i\t\tStart in interactive mode\n\t-m value\tSet mines to value\n\t-s\t\tSave any specified preferences\n\t-v\t\tDisplay version information\n\t-w value\tSet width to value\n");
+    fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n"
+            "\t-%% value\tSet percent to value\n"
+            "\t-b\t\tDisplay best times\n"
+            "\t-t value\t\tSet theme to value\n"
+            "\t-H\t\tDisplay this help message\n"
+            "\t-h value\tSet height to value\n"
+            "\t-v\t\tDisplay version information\n"
+            "\t-w value\tSet width to value\n");
 #endif
-                if (ErrorFlag != 0)
-                {
-                        exit(EXIT_FAILURE);
-                }
-                else
-                {
-                        exit(EXIT_SUCCESS);
-                }
-        }
+    if (ErrorFlag != 0) {
+      exit(EXIT_FAILURE);
+    } else {
+      exit(EXIT_SUCCESS);
+    }
+  }
 
-        if (BestTimesFlag==1)
-        {
-                StartCurses();
-                SetTheme(Game);
-                PrintBestTimes(NULL);
-                clear();
-                noutrefresh();
-                doupdate();
-                endwin();
-                exit(EXIT_SUCCESS);
-        }
-
-        if (GPLFlag==1)
-        {
-                StartCurses();
-                SetTheme(Game);
-                PrintGPL();
-                clear();
-                noutrefresh();
-                doupdate();
-                endwin();
-                exit(EXIT_SUCCESS);
-        }
-
-
-        /* XXX FOO This needs to dump the best times to stdout! */
-        if (DumpFlag==1)
-        {
-                exit(EXIT_SUCCESS);
-        }
-
-        if (SaveFlag==1)
-        {
-                WritePrefsFile(Game);
-        }
+  if (BestTimesFlag == 1) {
+    bests_print();
+    exit(EXIT_SUCCESS);
+  }
 
 #endif /* HAVE_GETOPT || HAVE_GETOPT_LONG */
-        return 0;
-
+  return 0;
 }
 
-/* DumpGame() prints a great deal of good information about the current Game*
-        to the DebugLog. It prints nothing to any other file descriptor. Calling
-        it without having defined DEBUG_LOG is utterly useless. */
-void DumpGame(GameStats* Game)
-{
-#ifdef DEBUG_LOG
-        fprintf(DebugLog,"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-        fprintf(DebugLog,"Height is %d, Width is %d\n",Game->Height,Game->Width);
-        fprintf(DebugLog,"Percent is %d, NumMines is %d\n",Game->Percent,Game->NumMines);
-        fprintf(DebugLog,"MarkedMines is %d\n",Game->MarkedMines);
-        fprintf(DebugLog,"Fast is %d, Theme is %d\n",Game->Fast,Game->Theme);
-        fprintf(DebugLog,"CursorY is %d, CursorX is %d\n",Game->CursorY,Game->CursorX);
-        fprintf(DebugLog,"LargeBoardY is %d, LargeBoardX is %d\n",Game->LargeBoardY,Game->LargeBoardX);
-        fprintf(DebugLog,"FocusY is %d, FocusX is %d\n",Game->FocusY,Game->FocusX);
-        fprintf(DebugLog,"Time is %d\n",Game->Time);
-        fprintf(DebugLog,"Alert is %d (",Game->Alert);
-        switch (Game->Alert)
-        {
-                case NO_ALERT:
-                        fprintf(DebugLog,"None)\n");
-                        break;
-                case FLASH:
-                        fprintf(DebugLog,"Flash)\n");
-                        break;
-                case BEEP: default:
-                        fprintf(DebugLog,"Beep)\n");
-                        break;
-        }
-        fprintf(DebugLog,"Field is %p\n",Game->Field);
-        fprintf(DebugLog,"Border is %p\n",Game->Border);
-        fprintf(DebugLog,"Board is %p\n",Game->Board);
-        fprintf(DebugLog,"-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
-        fflush(DebugLog);
-#endif /* DEBUG_LOG */
-        return;
+/******************
+ * game_set_mines *
+ ******************/
+
+int game_set_mines(game_stats_t* game) {
+  int MinesToSet = 0, RandX = 0, RandY = 0;
+  unsigned char CellVal;
+
+  /* Set all of game->Field to 0 */
+  memset(game->Field, 0,
+         ((game->height * ((game->width % 2 ?
+                            (game->width) + 1 : game->width))) / 2));
+
+  if (game->percent != 0) {
+    MinesToSet = (game->percent * game->width * game->height) / 100;
+  } else {
+    MinesToSet = game->mines;
+  }
+
+  game->mines = MinesToSet;
+
+  while (MinesToSet > 0) {
+    RandX = rand() % game->width;
+    RandY = rand() % game->height;
+    //GetMine(RandX, RandY, CellVal);
+    CellVal = game_get_mine(game, RandX, RandY);
+
+    /* This is gonna be ugly... */
+    if (!((abs((((game->width) / 2) - RandX)) < 2) &&
+          (abs((((game->height) / 2) - RandY)) < 2))) {
+      if (CellVal != MINE) {
+        game_set_mine(game, RandX, RandY, MINE);
+        MinesToSet--;
+      }
+    }
+  }
+
+  game->MarkedMines = 0;
+  game->BadMarkedMines = 0;
+
+  game->CursorX = game->width / 2;
+  game->CursorY = game->height / 2;
+
+  return 0;
 }
 
-int ReReadyGame(GameStats* Game)
-{
-        int MinesToSet=0, RandX=0, RandY=0;
-        unsigned char CellVal;
+/*****************
+ * game_set_mine *
+ *****************/
 
-        /* Set all of Game->Field to 0 */
-        memset(Game->Field, 0, ((Game->Height*(( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2));
+void game_set_mine(game_stats_t* game, int x, int y, unsigned char value) {
+  int index = (x / 2) + y * ((game->width + 1) / 2);
 
-        if (Game->Percent!=0)
-        {
-                MinesToSet=(Game->Percent*Game->Width*Game->Height)/100;
-        }
-        else
-        {
-                MinesToSet=Game->NumMines;
-        }
+  game->Field[index] =
+    (!(x % 2) ?
+     ((game->Field[index] & 0x0f) | ((unsigned char)(value) << 4)) :
+     ((game->Field[index] & 0xf0) | ((unsigned char)(value) & 0x0f)));
+}
 
-        Game->NumMines = MinesToSet;
-        /* Yeah, I know it's a crappy way to get a random number. */
-        srand(time(NULL));
+/*****************
+ * game_get_mine *
+ *****************/
 
-        while (MinesToSet>0)
-        {
-                RandX=rand()%Game->Width;
-                RandY=rand()%Game->Height;
-                GetMine(RandX,RandY,CellVal);
+unsigned char game_get_mine(game_stats_t* game, int x, int y) {
+  int result;
+  int index = (x / 2) + y * ((game->width + 1) / 2);
 
-                /* This is gonna be ugly... */
-                if (!( (abs((((Game->Width)/2)-RandX))<2) && (abs((((Game->Height)/2)-RandY))<2)))
-                {
-                        if (CellVal!=MINE)
-                        {
-                                SetMine(RandX,RandY,MINE);
-                                MinesToSet--;
-                        }
-                }
-        }
-
-        Game->MarkedMines = 0;
-        Game->BadMarkedMines = 0;
-
-        Game->CursorX = Game->Width/2;
-        Game->CursorY = Game->Height/2;
-
-        if (Game->Theme < 9) Game->Cheated = 0;
-
-        return 0;
+  result = (unsigned char)(!(result = game->Field[index]) ?
+                           UNKNOWN :
+                           (x % 2 ? result & 0x0f : (result & 0xf0) >> 4));
+  return result;
 }

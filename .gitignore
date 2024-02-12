@@ -1,12 +1,21 @@
 # Built files
 freesweep
 freesweep.6
-sweep.h
+configure
 Makefile
-config.h
+Makefile.in
 config.log
 config.status
-debug.log
+config.guess
+config.sub
+aclocal.m4
+autom4te.cache/
+.deps/
+depcomp
+missing
+stamp-h1
+compile
+sweeprc
 *.o
 
 # Backup files from editors

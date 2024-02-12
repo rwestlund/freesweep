@@ -8,10 +8,10 @@
 #define DEFAULT_HEIGHT 15
 #define DEFAULT_WIDTH 15
 #define DEFAULT_PERCENT 20
-#define DEFAULT_COLOR 1
 
 #define DEFAULT_NUMMINES 0
-#define DEFAULT_FASTSTART 0
 #define DEFAULT_ALERT 0
+
+#define DEFAULT_THEME 3
 
 #endif /* __DEFAULTS_H__ */

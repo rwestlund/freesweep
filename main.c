@@ -1,219 +1,150 @@
-/**********************************************************************
-*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
-*  It may be distributed under the terms of the GNU General Purpose   *
-*  License, version 2 or above; see the file COPYING for more         *
-*  information.                                                       *
-*                                                                     *
-*  $Id: main.c,v 1.35 2002-12-19 07:04:05 hartmann Exp $
-*                                                                     *
-**********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #include "sweep.h"
 #include <locale.h>
 
 DrawChars CharSet;
-GameStats* Game = NULL;
-#ifdef DEBUG_LOG
-FILE* DebugLog;
-#endif /* DEBUG_LOG */
+static game_stats_t game;
 
-int main(int argc, char** argv)
-{
-        chtype Input=0;
+/*************
+ * game_exit *
+ *************/
 
-        /* Set up the locale so we can support unicode characters if the
-         * terminal supports it.
-         */
-        setlocale(LC_ALL, "");
+void game_exit(int result) {
+  /* If somewhere in the game something fatal occurs then this is a clean
+   * way to exit the program.
+   */
+  clear();
+  refresh();
+  endwin();
+  exit(result);
+}
 
-        /* Set up the curses cleaner in case of disaster */
-        signal(SIGSEGV, sighandler);
-        signal(SIGBUS, sighandler);
-        signal(SIGILL, sighandler);
-        signal(SIGWINCH, ResizeSignal);
+/********
+ * main *
+ ********/
 
-#ifdef DEBUG_LOG
-        if ((DebugLog = fopen("debug.log","a")) == 0)
-        {
-                perror("Main::OpenDebugLog");
-                return 1;
-        }
-#endif /* DEBUG_LOG */
+int main(int argc, char** argv) {
+  /* Set up the locale so we can support unicode characters if the terminal
+   * supports it.
+   */
+  setlocale(LC_ALL, "");
 
-        if ((Game = malloc(sizeof(GameStats))) == NULL)
-        {
-                perror("Main::AllocGame");
-                return 1;
-        }
+  /* Set up the signal handlers in case of a disaster.
+   */
+  signal(SIGSEGV, sighandler);
+  signal(SIGBUS, sighandler);
+  signal(SIGILL, sighandler);
+  signal(SIGWINCH, sighandler);
 
-        InitGame(Game);
+  /* Seed the random generator. For this game we don't really any random
+   * generator more that this.
+   */
+  srand(time(NULL));
 
-        SourceGlobalFile(Game);
-        SourceHomeFile(Game);
+  game_init(&game);
 
-        if (ParseArgs(Game, argc, argv) > 0)
-        {
-                return 1;
-        }
+  if (game_args(&game, argc, argv) > 0) {
+    sleep(2);
+    endwin();
+    return 1;
+  }
 
-        /* Output all the relevant information about the compilation. */
-        printf("Freesweep v%s by\nGus Hartmann (hartmann@cs.wisc.edu) and Pete Keller (psilord@cs.wisc.edu).\n",VERSION);
-        printf("Freesweep comes with ABSOLUTELY NO WARRANTY; see the file COPYING for more info.\n");
-#ifdef DEBUG_LOG
-        fprintf(DebugLog,"Freesweep v%s by Gus Hartmann and Pete Keller.\n",VERSION);
-#endif /* DEBUG_LOG */
+  // Start ncurses
+  curses_init();
+  draw_splash();
 
-        /* Start ncurses */
-        StartCurses();
+  config_load_global(&game); usleep(500000);
+  config_load_user(&game);   usleep(500000);
 
-        /* Prompt the user for new setings, if necessary. */
-        if (Game->Fast == 0)
-        {
-                AskPrefs(Game);
-        }
+  log_status("Starting game");
+  sleep(1);
 
-        clear();
-        noutrefresh();
+  theme_set(&game);
+  if (!stats_init()) {
+    game_exit(EXIT_FAILURE);
+  }
+  log_init(&game);
+  draw_title();
+  noutrefresh();
+  refresh();
 
-        if (InitErrorWin(Game) + InitStatsWin() > 0)
-        {
-                /* Do something bad. */
-        }
-        ReadyGame(Game);
-        noutrefresh();
+  while (game.Status != QUIT && game_new(&game)) {
+    clear();
+    log_set_alert(&game);
+    cursor_center(&game);
+    draw_title();
+    game.Status = INPROG;
+    noutrefresh();
+    doupdate();
 
-        /* set up signal handler and stuff */
+    log_message("Starting new game %dx%d with %d mines",
+                game.width, game.height, game.mines);
+    timer_start();
+    halfdelay(100);
+    /* This is the main loop.*/
+    while (game.Status == INPROG) {
+      stats_display(&game);
+      board_pan(&game);
+      cursor_draw(&game);
+      draw_board(&game);
+      doupdate();
+      cursor_undraw(&game);
+      game_input(&game);
+      game.Time = g_tick;
+    }
+    g_tick = 0;
+    game.Time = g_tick; /* If we won, the game is already saved */
+    cbreak();
+    timer_stop();
 
-        while (1)
-        {
-                /* Make sure the right theme is in use. */
-                SetTheme(Game);
+    /* Update the final action of the player */
+    board_pan(&game);
+    cursor_draw(&game);
+    draw_board(&game);
+    doupdate();
+    cursor_undraw(&game);
 
-                /* Touch a couple windows */
-                RedrawErrorWin();
-                RedrawStatsWin();
+    /* see what happened */
+    switch(game.Status) {
+    case ABORT:
+      dialog_abort();
+      game_set_mines(&game);
+      break;
+    case WIN:
+      dialog_win();
+      break;
+    case LOSE:
+      dialog_lose();
+      break;
+    default:
+      break;
+    }
 
-                ReReadyGame(Game);
-                PrintInfo();
-                noutrefresh();
-                PrintStats(Game);
-                doupdate();
-                Center(Game);
+    flushinp();
+  }
 
-                StartTimer();
-                halfdelay(100);
-                /* This is the main loop.*/
-                while (Game->Status == INPROG)
-                {
-                        PrintStats(Game);
-                        Pan(Game);
-                        DrawCursor(Game);
-                        DrawBoard(Game);
-                        doupdate();
-                        UndrawCursor(Game);
-                        SweepError(NULL);
-                        GetInput(Game);
-                        Game->Time = g_tick;
-                }
-                g_tick = 0;
-                Game->Time = g_tick;    /* If we won, the game is already saved */
-                cbreak();
-                StopTimer();
+  log_message("Shutting down the game");
+  log_close();
+  stats_close();
+  endwin();
 
-                /* Update the final action of the player */
-                Pan(Game);
-                DrawCursor(Game);
-                DrawBoard(Game);
-                doupdate();
-                UndrawCursor(Game);
-
-                /* see what happened */
-                switch(Game->Status)
-                {
-                        case ABORT:
-                                ReReadyGame(Game);
-                                break;
-                        case RECONF:
-                                StopTimer();
-                                clear();
-                                noutrefresh();
-                                Wipe(Game);
-                                AskPrefs(Game);
-                                ChangeSweepAlert(Game->Alert);
-                                ReadyGame(Game);
-                                Center(Game);
-                                clear();
-                                noutrefresh();
-                                StartTimer();
-                                break;
-                        case LOSE:
-                                StopTimer();
-                                DrawCursor(Game);
-                                SweepMessage("BOOM! Any key to continue, 'q' to quit.");
-                                nodelay(Game->Board,FALSE);
-                                Input=mvwgetch(Game->Board,0,0);
-                                wnoutrefresh(Game->Board);
-                                refresh();
-
-                                if (Input == 'q')
-                                {
-                                        clear();
-                                        refresh();
-                                        endwin();
-#ifdef DEBUG_LOG
-                                        fprintf(DebugLog,"========================================\n");
-                                        fclose(DebugLog);
-#endif /* DEBUG_LOG */
-                                        return 0;
-                                }
-                                else
-                                {
-                                        SweepMessage(NULL);
-                                        UndrawCursor(Game);
-                                }
-                                break;
-                        case WIN:
-                                StopTimer();
-                                DrawCursor(Game);
-                                SweepMessage("You Win! Press a key to continue.");
-                                nodelay(Game->Board,FALSE);
-                                Input=mvwgetch(Game->Board,0,0);
-                                wnoutrefresh(Game->Board);
-                                refresh();
-
-                                if (Input == 'q')
-                                {
-                                        clear();
-                                        refresh();
-                                        endwin();
-#ifdef DEBUG_LOG
-                                        fprintf(DebugLog,"========================================\n");
-                                        fclose(DebugLog);
-#endif /* DEBUG_LOG */
-                                        return 0;
-                                }
-                                else
-                                {
-                                        SweepMessage(NULL);
-                                        UndrawCursor(Game);
-                                }
-                                break;
-                        default:
-                                break;
-                }
-
-                /* It might be nice to log this before reseting it. */
-                Game->Status=INPROG;
-
-                flushinp();
-        }
-
-        endwin();
-
-#ifdef DEBUG_LOG
-        fprintf(DebugLog,"========================================\n");
-        fclose(DebugLog);
-#endif /* DEBUG_LOG */
-
-        return 0;
+  return 0;
 }
