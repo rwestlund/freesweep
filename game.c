@@ -478,17 +478,17 @@ int game_args(game_stats_t* game, int argc, char** argv) {
     {"theme", required_argument, 0, 't'},
     {"height", required_argument, 0, 'h'},
     {"help", no_argument, 0, 'H'},
-    {"version", no_argument, 0, 'v'},
+    {"version", no_argument, 0, 'V'},
     {"width", required_argument, 0, 'w'},
     {0, 0, 0, 0}
   };
 
   /* Parse the command line options. */
-  while ((opt = getopt_long(argc, argv, "%:bh:st:vw:", long_options,
+  while ((opt = getopt_long(argc, argv, "%:bHh:st:Vw:", long_options,
                             NULL)) != EOF) {
 #elif HAVE_GETOPT
   /* Parse the command line options. */
-  while ((opt = getopt(argc, argv, "%:bh:st:vw:")) != EOF) {
+  while ((opt = getopt(argc, argv, "%:bHh:st:Vw:")) != EOF) {
 #endif /* HAVE_GETOPT */
 
     switch (opt) {
@@ -505,6 +505,7 @@ int game_args(game_stats_t* game, int argc, char** argv) {
       break;
     case 'H':
       /* Show the help listing, but exit without error. */
+      HelpFlag++;
       break;
     case 'b':
       BestTimesFlag++;
@@ -529,7 +530,7 @@ int game_args(game_stats_t* game, int argc, char** argv) {
         ErrorFlag++;
       }
       break;
-    case 'v':
+    case 'V':
       printf("Freesweep %s\n", VERSION);
       exit(EXIT_SUCCESS);
       break;
@@ -572,22 +573,22 @@ int game_args(game_stats_t* game, int argc, char** argv) {
   if (ErrorFlag + HelpFlag > 0) {
 #if defined HAVE_GETOPT_LONG
     fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n"
-            "\t-%% value, --percent=value\tSet percent to value\n"
-            "\t-b, --show-best-times\t\tDisplay best times\n"
-            "\t-t value, --theme=value\t\tSet theme to value\n"
             "\t-h value, --height=value\tSet height to value\n"
+            "\t-w value, --width=value\t\tSet width to value\n"
+            "\t-%% value, --percent=value\tSet percent to value\n"
+            "\t-t value, --theme=value\t\tSet theme to value\n"
+            "\t-b, --show-best-times\t\tDisplay best times\n"
             "\t-H, --help\t\t\tDisplay this help message\n"
-            "\t-v, --version\t\t\tDisplay version information\n"
-            "\t-w value, --width=value\t\tSet width to value\n");
+            "\t-V, --version\t\t\tDisplay version information\n");
 #else
     fprintf(stderr,"Usage:\n  freesweep [OPTIONS]\n"
-            "\t-%% value\tSet percent to value\n"
-            "\t-b\t\tDisplay best times\n"
-            "\t-t value\t\tSet theme to value\n"
-            "\t-H\t\tDisplay this help message\n"
             "\t-h value\tSet height to value\n"
-            "\t-v\t\tDisplay version information\n"
-            "\t-w value\tSet width to value\n");
+            "\t-w value\tSet width to value\n"
+            "\t-%% value\tSet percent to value\n"
+            "\t-t value\t\tSet theme to value\n"
+            "\t-b\t\tDisplay best times\n"
+            "\t-H\t\tDisplay this help message\n"
+            "\t-V\t\tDisplay version information\n");
 #endif
     if (ErrorFlag != 0) {
       exit(EXIT_FAILURE);
