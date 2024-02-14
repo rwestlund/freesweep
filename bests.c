@@ -20,12 +20,6 @@
 #include "sweep.h"
 #include <pwd.h>
 
-#if defined USE_GROUP_BEST_FILE
-static char* FPTGBTF(void);
-#endif
-
-extern int errno;
-
 /*************
  * table_new *
  *************/
@@ -235,7 +229,7 @@ static void tunlockf(FILE* fp) {
 #else
 #error "Need flock() or lockf()"
 #endif
-    log_message("Can't unlock file: %d\n", errno);
+    log_message("Can't unlock file");
     exit(EXIT_FAILURE);
   }
 }
