@@ -325,7 +325,6 @@ int game_input(game_stats_t* game) {
   case 'a':
   case '\e': // Escape key
     game->Status = ABORT;
-    dialog_abort();
     break;
 
     /* The accepted keys to expose a space. */
