@@ -31,6 +31,9 @@ void game_exit(int result) {
   /* If somewhere in the game something fatal occurs then this is a clean
    * way to exit the program.
    */
+  log_close();
+  stats_close();
+
   clear();
   refresh();
   endwin();
@@ -90,15 +93,15 @@ int main(int argc, char** argv) {
     clear();
     log_set_alert(&game);
     cursor_center(&game);
-    draw_title();
     game.Status = INPROG;
     noutrefresh();
     doupdate();
+    draw_title();
 
     log_message("Starting new game %dx%d with %d mines",
                 game.width, game.height, game.mines);
-    timer_start();
     halfdelay(100);
+    timer_start();
     /* This is the main loop.*/
     while (game.Status == INPROG) {
       stats_display(&game);
@@ -110,10 +113,9 @@ int main(int argc, char** argv) {
       game_input(&game);
       game.Time = g_tick;
     }
-    g_tick = 0;
-    game.Time = g_tick; /* If we won, the game is already saved */
-    cbreak();
+    game.Time = g_tick = 0; /* If we won, the game is already saved */
     timer_stop();
+    cbreak();
 
     /* Update the final action of the player */
     board_pan(&game);
