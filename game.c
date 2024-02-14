@@ -41,6 +41,10 @@ static void game_wipe(game_stats_t *game) {
   delwin(game->Board);
   delwin(game->Border);
   free(game->Field);
+
+  game->Board = NULL;
+  game->Border = NULL;
+  game->Field = NULL;
 }
 
 /***************
@@ -92,6 +96,10 @@ int game_init(game_stats_t* game) {
   game->Time = 0;
   game->Status = INPROG;
   game->theme = DEFAULT_THEME;
+
+  game->Board = NULL;
+  game->Border = NULL;
+  game->Field = NULL;
 
   theme_set(game);
 
@@ -155,7 +163,7 @@ int game_new(game_stats_t* game) {
     if (field == 1) {
       if (game->height != atoi(line) && has_colors() == TRUE)
         wcolor_set(win, CLR_WARN, NULL);
-      mvwprintw(win, 3, 20, line);
+      mvwprintw(win, 3, 20, "%s", line);
       if (has_colors() == TRUE)
         wcolor_set(win, CLR_NORMAL, NULL);
     } else {
@@ -164,7 +172,7 @@ int game_new(game_stats_t* game) {
     if (field == 2) {
       if (game->width != atoi(line) && has_colors() == TRUE)
         wcolor_set(win, CLR_WARN, NULL);
-      mvwprintw(win, 4, 20, line);
+      mvwprintw(win, 4, 20, "%s", line);
       if (has_colors() == TRUE)
         wcolor_set(win, CLR_NORMAL, NULL);
     } else {
@@ -173,13 +181,13 @@ int game_new(game_stats_t* game) {
     if (field == 3) {
       if (game->percent != atoi(line) && has_colors() == TRUE)
         wcolor_set(win, CLR_WARN, NULL);
-      mvwprintw(win, 5, 20, line);
+      mvwprintw(win, 5, 20, "%s", line);
       if (has_colors() == TRUE)
         wcolor_set(win, CLR_NORMAL, NULL);
     } else {
       mvwprintw(win, 5, 20, "%d", game->percent);
     }
-    mvwprintw(win, 3, 36, CharSet.name);
+    mvwprintw(win, 3, 36, "%s", CharSet.name);
     switch (game->alert) {
     case BEEP:
       mvwprintw(win, 6, 20, "Beep");
@@ -668,4 +676,62 @@ unsigned char game_get_mine(game_stats_t* game, int x, int y) {
                            UNKNOWN :
                            (x % 2 ? result & 0x0f : (result & 0xf0) >> 4));
   return result;
+}
+
+/***************
+ * game_resize *
+ ***************/
+
+void game_resize(game_stats_t* game) {
+  const int VViewable = LINES - 3;
+  const int HViewable = (COLS - INFO_W - 2) / 3;
+
+  // Determine if the game field is larger the the terminal area.
+  if ((COLS - INFO_W) >= ((3 * game->width) + 2)) {
+    game->LargeBoardX = 0;
+  } else {
+    game->LargeBoardX = 1;
+  }
+
+  if ((LINES - 1) >= (game->height + 2)) {
+    game->LargeBoardY = 0;
+  } else {
+    game->LargeBoardY = 1;
+  }
+
+  /* Determine the correct size of the border window, and allocate it */
+  if (game->LargeBoardX && game->LargeBoardY) {
+    wresize(game->Border, VViewable + 2, (3 * HViewable) + 2);
+    wresize(game->Board, VViewable, 3 * HViewable);
+    //game->Border = newwin(VViewable + 2, (3 * HViewable) + 2, 0, 0);
+    //game->Board  = derwin(game->Border, VViewable, 3 * HViewable, 1, 1);
+
+  } else if (game->LargeBoardX) {
+    wresize(game->Border, game->height + 2, (3 * HViewable) + 2);
+    wresize(game->Board, game->height, (3 * HViewable));
+    //game->Border = newwin(game->height + 2, (3 * HViewable) + 2, 0, 0);
+    //game->Board  = derwin(game->Border, game->height, (3 * HViewable), 1, 1);
+
+  } else if (game->LargeBoardY) {
+    wresize(game->Border, VViewable + 2, (3 * game->width) + 2);
+    wresize(game->Board, VViewable, 3 * game->width);
+    //game->Border = newwin(VViewable + 2, (3 * game->width) + 2, 0, 0);
+    //game->Board  = derwin(game->Border, VViewable, 3 * game->width, 1, 1);
+
+  } else {
+    wresize(game->Border, game->height + 2, (3 * game->width) + 2);
+    wresize(game->Board, game->height, 3 * game->width);
+    //game->Border = newwin((game->height + 2), (3 * game->width) + 2, 0, 0);
+    //game->Board  = derwin(game->Border, game->height, 3 * game->width, 1, 1);
+  }
+}
+
+/**************
+ * game_close *
+ **************/
+
+void game_close(game_stats_t* game) {
+  delwin(game->Board);
+  delwin(game->Border);
+  free(game->Field);
 }
