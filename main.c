@@ -21,7 +21,7 @@
 #include <locale.h>
 
 DrawChars CharSet;
-static game_stats_t game;
+game_stats_t game;
 
 /*************
  * game_exit *
@@ -98,8 +98,8 @@ int main(int argc, char** argv) {
     doupdate();
     draw_title();
 
-    log_message("Starting new game %dx%d with %d mines",
-                game.width, game.height, game.mines);
+    log_status("Starting new game %dx%d with %d mines",
+               game.width, game.height, game.mines);
     halfdelay(100);
     timer_start();
     /* This is the main loop.*/
