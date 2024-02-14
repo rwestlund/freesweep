@@ -30,17 +30,17 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-static int ColorDist(int R, int G, int B, int r, int g, int b) {
+static int color_dist(int R, int G, int B, int r, int g, int b) {
   return ((R - r) * (R - r) + (G - g) * (G - g) + (B - b) * (B - b));
 }
 
-static int Color6Cube(int value) {
+static int color_6_cube(int value) {
   if (value < 48) return 0;
   if (value < 114) return 1;
   return ((value - 35) / 40);
 }
 
-static int ColorRGB(int R, int G, int B) {
+static int color_rgb(int R, int G, int B) {
   /* Convert an RGB triplet to the xterm(1) 256 colour palette.
    *
    * xterm provides a 6x6x6 colour cube (16 - 231) and 24 greys (232 - 255). We
@@ -57,9 +57,9 @@ static int ColorRGB(int R, int G, int B) {
   int grey_avg, grey_idx, grey;
 
   /* Map RGB to 6x6x6 cube color space. */
-  qr = Color6Cube(R); cr = q2c[qr];
-  qb = Color6Cube(B); cb = q2c[qb];
-  qg = Color6Cube(G); cg = q2c[qg];
+  qr = color_6_cube(R); cr = q2c[qr];
+  qb = color_6_cube(B); cb = q2c[qb];
+  qg = color_6_cube(G); cg = q2c[qg];
 
   /* If we hit the color exactly return early. */
   if (cr == R && cb == B && cg == G)
@@ -74,8 +74,8 @@ static int ColorRGB(int R, int G, int B) {
   grey = 8 + (10 * grey_idx);
 
   /* Is grey or 6x6x6 colour closest? */
-  d = ColorDist(cr, cg, cb, R, G, B);
-  if (ColorDist(grey, grey, grey, R, G, B) < d)
+  d = color_dist(cr, cg, cb, R, G, B);
+  if (color_dist(grey, grey, grey, R, G, B) < d)
     idx = 232 + grey_idx;
   else
     idx = 16 + (36 * qr) + (6 * qg) + qb;
@@ -84,8 +84,12 @@ static int ColorRGB(int R, int G, int B) {
 
 /*****************************************************************************/
 
+/**********
+ * xcolor *
+ **********/
+
 int xcolor(int r, int g, int b, int fallback) {
-  return (COLORS >= 256 ? ColorRGB(r,g,b) : fallback);
+  return (COLORS >= 256 ? color_rgb(r,g,b) : fallback);
 }
 
 /***********
@@ -113,9 +117,7 @@ void* xmalloc(size_t num) {
 
   if (vec == NULL) {
     log_error("Out of Memory.");
-    log_close();
-    endwin();
-    exit(EXIT_FAILURE);
+    game_exit(EXIT_FAILURE);
   }
 
   return vec;
@@ -127,15 +129,9 @@ void* xmalloc(size_t num) {
 
 #ifndef HAVE_STRDUP
 char *strdup(char *s) {
-  char *c = NULL;
+  char *c = (char*)xmalloc(strlen(s) + 1);
 
-  c = (char*)xmalloc(strlen(s) + 1);
-
-#if defined(HAVE_STRNCPY)
   strncpy(c, s, strlen(s) + 1);
-#else
-  strcpy(c, s);
-#endif
 
   return(c);
 }
@@ -146,15 +142,11 @@ char *strdup(char *s) {
  ***********/
 
 char* xgetcwd(char *buf, size_t size) {
-  char *path = NULL;
-
-  path = getcwd(buf, size);
+  char *path = getcwd(buf, size);
 
   if (path == NULL) {
     log_error("Could not get current working directory.");
-    log_close();
-    endwin();
-    exit(EXIT_FAILURE);
+    game_exit(EXIT_FAILURE);
   }
 
   return path;
@@ -165,9 +157,7 @@ char* xgetcwd(char *buf, size_t size) {
  ************/
 
 DIR* xopendir(const char *path) {
-  DIR *dirent = NULL;
-
-  dirent = opendir(path);
+  DIR *dirent = opendir(path);
 
   if (dirent == NULL) {
     return NULL;
@@ -176,15 +166,23 @@ DIR* xopendir(const char *path) {
   return dirent;
 }
 
+/***********
+ * xexists *
+ ***********/
+
 int xexists(const char *path) {
   return (access(path, F_OK) != -1);
 }
+
+/**********
+ * xtrunc *
+ **********/
 
 const char *xtrunc(int length, const char *line) {
   static char result[MAX_LINE];
 
   memset(result, 0, MAX_LINE);
-  memcpy(result, line, xmin(length, MAX_LINE - 1));
+  strncpy(result, line, xmin(length, MAX_LINE - 1));
 
   return result;
 }
