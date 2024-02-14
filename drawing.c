@@ -65,7 +65,7 @@ void curses_init() {
 void draw_title() {
   WINDOW* win;
 
-  if ((win = newwin(2, 21, 0, (COLS - INFO_W))) != NULL) {
+  if ((win = newwin(2, INFO_W, 0, (COLS - INFO_W))) != NULL) {
     wbkgdset(win, ' ' | COLOR_PAIR(CLR_INFOBAR));
     wcolor_set(win, CLR_INFOBAR, NULL);
     wclear(win);
@@ -75,6 +75,8 @@ void draw_title() {
 
     wnoutrefresh(win);
     delwin(win);
+  } else {
+    log_error("Unable to create title window");
   }
 }
 
