@@ -65,9 +65,8 @@ int main(int argc, char** argv) {
   game_init(&game);
 
   if (game_args(&game, argc, argv) > 0) {
-    sleep(2);
     endwin();
-    return 1;
+    return EXIT_FAILURE;
   }
 
   // Start ncurses

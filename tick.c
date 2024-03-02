@@ -18,6 +18,7 @@
 
 #include "sweep.h"
 
+extern game_stats_t game;
 volatile unsigned int g_tick = 0;
 
 /**************
@@ -58,17 +59,15 @@ void sighandler(int signo) {
     break;
 
   case SIGWINCH:
+    // XXX This is still very broken :(
     endwin(); // Recreate stdscr
     clear();
     noutrefresh();
     refresh();
 
     draw_title();
-
     stats_resize();
-
-    //touchwin(game.Border);
-    //touchwin(game.Board);
+    game_resize(&game);
 
     noutrefresh();
     doupdate();

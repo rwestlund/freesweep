@@ -238,6 +238,8 @@ int game_args(game_stats_t* game, int argc, char** argv);
 int game_set_mines(game_stats_t* game);
 void game_set_mine(game_stats_t* game, int x, int y, unsigned char value);
 unsigned char game_get_mine(game_stats_t* game, int x, int y);
+void game_resize(game_stats_t* game);
+void game_close(game_stats_t* game);
 
 /* These are the functions defined in play.c */
 void dialog_lose();

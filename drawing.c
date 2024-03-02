@@ -35,27 +35,33 @@ static void set_color(game_stats_t* game, int color) {
  ***************/
 
 void curses_init() {
+  if (isatty(STDOUT_FILENO) && isatty(STDIN_FILENO)) {
 #ifdef SWEEP_MOUSE
-  mmask_t Mask;
+    mmask_t Mask;
 #endif
-  initscr();
-  if (has_colors()) {
-    start_color();
-    log_message("Terminal color pairs is %d", COLOR_PAIRS);
-    log_message("Terminal colors available is %d", COLORS);
+    initscr();
+    if (has_colors()) {
+      start_color();
+      log_message("Terminal color pairs is %d", COLOR_PAIRS);
+      log_message("Terminal colors available is %d", COLORS);
+    }
+
+    noecho();
+    keypad(stdscr, TRUE);
+    intrflush(stdscr, TRUE);
+    cbreak();
+    curs_set(0); // Hide the mouse
+
+#ifdef SWEEP_MOUSE
+    Mask = REPORT_MOUSE_POSITION | BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED
+      | BUTTON3_CLICKED;
+    Mask = mousemask(Mask, NULL);
+#endif
+  } else {
+    fprintf(stderr, "OPPS: Freesweep cannot be played through redirected "
+            "io ¯\\_(ツ)_/¯\n      Stop being so silly!\n");
+    exit(EXIT_FAILURE);
   }
-
-  noecho();
-  keypad(stdscr, TRUE);
-  intrflush(stdscr, TRUE);
-  cbreak();
-  curs_set(0); // Hide the mouse
-
-#ifdef SWEEP_MOUSE
-  Mask = REPORT_MOUSE_POSITION | BUTTON1_CLICKED | BUTTON1_DOUBLE_CLICKED
-    | BUTTON3_CLICKED;
-  Mask = mousemask(Mask, NULL);
-#endif
 }
 
 /**************
