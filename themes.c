@@ -1,153 +1,168 @@
-/**********************************************************************
- *  This source code is copyright 2023 by Ron R Wills		      *
- *  It may be distributed under the terms of the GNU General Purpose  *
- *  License, version 2 or above; see the file COPYING for more	      *
- *  information.						      *
- *								      *
- **********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #include "sweep.h"
 
-static void SetStockColors()
-{
-  if (!has_colors())
-  {
+/********************
+ * set_stock_colors *
+ ********************/
+
+static void set_stock_colors() {
+  if (!has_colors())   {
     int c;
     short f,b;
 
-    pair_content(0,&f,&b);
-    for (c = 1; c < 20; c++)
-    {
-      init_pair(c,f,b);
+    // Reset all the color pairs
+    pair_content(0, &f, &b);
+    for (c = 1; c < 21; c++) {
+      init_pair(c, f ,b);
     }
-  }
-  else
-  {
-    init_pair(CLR_NORMAL,COLOR_WHITE,COLOR_BLACK);
-    init_pair(CLR_VAL1,COLOR_BLUE,COLOR_BLACK);
-    init_pair(CLR_VAL2,COLOR_CYAN,COLOR_BLACK);
-    init_pair(CLR_VAL3,COLOR_GREEN,COLOR_BLACK);
-    init_pair(CLR_VAL4,COLOR_MAGENTA,COLOR_BLACK);
-    init_pair(CLR_VAL5,COLOR_RED,COLOR_BLACK);
-    init_pair(CLR_VAL6,COLOR_RED,COLOR_BLACK);
-    init_pair(CLR_VAL7,COLOR_RED,COLOR_BLACK);
-    init_pair(CLR_VAL8,COLOR_MAGENTA,COLOR_BLACK);
-    init_pair(CLR_UNKNOWN,COLOR_WHITE,COLOR_BLACK);
-    init_pair(CLR_MINE,COLOR_WHITE,COLOR_BLACK);
+  } else {
+    init_pair(CLR_NORMAL,  COLOR_WHITE,   COLOR_BLACK);
+    init_pair(CLR_VAL1,    COLOR_BLUE,    COLOR_BLACK);
+    init_pair(CLR_VAL2,    COLOR_CYAN,    COLOR_BLACK);
+    init_pair(CLR_VAL3,    COLOR_GREEN,   COLOR_BLACK);
+    init_pair(CLR_VAL4,    COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(CLR_VAL5,    COLOR_RED,     COLOR_BLACK);
+    init_pair(CLR_VAL6,    COLOR_RED,     COLOR_BLACK);
+    init_pair(CLR_VAL7,    COLOR_RED,     COLOR_BLACK);
+    init_pair(CLR_VAL8,    COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(CLR_UNKNOWN, COLOR_WHITE,   COLOR_BLACK);
+    init_pair(CLR_MINE,    COLOR_WHITE,   COLOR_BLACK);
     init_pair(CLR_SHOWMINE,
-              xcolor(105,105,105,COLOR_WHITE),
+              xcolor(105, 105, 105, COLOR_WHITE),
               COLOR_BLACK);
 
-    init_pair(CLR_SPACE,COLOR_WHITE,COLOR_BLACK);
+    init_pair(CLR_SPACE, COLOR_WHITE, COLOR_BLACK);
     init_pair(CLR_MARK,
-              xcolor(255,255,148,COLOR_WHITE),
+              xcolor(255, 255, 148, COLOR_WHITE),
               COLOR_BLACK);
     init_pair(CLR_FALSEMARK,
-              xcolor(255,255,148,COLOR_WHITE),
+              xcolor(255, 255, 148, COLOR_WHITE),
               COLOR_BLACK);
     init_pair(CLR_SHOWFALSEMARK,
-              xcolor(255,0,0,COLOR_RED),
+              xcolor(255, 0, 0, COLOR_RED),
               COLOR_BLACK);
-    init_pair(CLR_DETONATED,COLOR_YELLOW,COLOR_BLACK);
+    init_pair(CLR_DETONATED, COLOR_YELLOW, COLOR_BLACK);
 
     init_pair(CLR_INFOBAR,
-              xcolor(34,34,34,COLOR_BLACK),
-              xcolor(173,173,173,COLOR_WHITE));
+              xcolor(34, 34, 34, COLOR_BLACK),
+              xcolor(173, 173, 173, COLOR_WHITE));
     init_pair(CLR_STATBAR,
-              xcolor(0,0,88,COLOR_BLACK),
-              xcolor(173,173,173,COLOR_WHITE));
+              xcolor(0, 0, 88, COLOR_BLACK),
+              xcolor(173, 173, 173, COLOR_WHITE));
     init_pair(CLR_MSGBAR,
-              xcolor(88,0,0,COLOR_BLACK),
-              xcolor(173,173,173,COLOR_WHITE));
+              xcolor(88, 0, 0, COLOR_BLACK),
+              xcolor(173, 173, 173, COLOR_WHITE));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
   }
 }
 
-void SetTheme(GameStats* Game)
-{
+/*************
+ * theme_set *
+ *************/
+
+void theme_set(game_stats_t* Game) {
   /* If there are no colors then assume no unicode either! */
-  if (!has_colors())
-  {
-    if (Game->Theme > 2) Game->Theme=2;
+  if (!has_colors()) {
+    if (Game->theme > 2) Game->theme = 2;
   }
 
-  switch (Game->Theme)
-  {
+  init_pair(CLR_NORMAL, COLOR_WHITE, COLOR_BLACK);
+  init_pair(CLR_WARN,   COLOR_RED,   COLOR_BLACK);
+
+  switch (Game->theme) {
   case 1: // ASCII theme that should work on the worst of hardware :P
-    SetStockColors();
+    set_stock_colors();
 
     CharSet.ch_flag = CH_TYPE;
     CharSet.name = "ASCII";
-    CharSet.ULCorner='+';
-    CharSet.URCorner='+';
-    CharSet.LLCorner='+';
-    CharSet.LRCorner='+';
-    CharSet.HLine='-';
-    CharSet.VLine='|';
-    CharSet.UArrow='^';
-    CharSet.DArrow='v';
-    CharSet.RArrow='>';
-    CharSet.LArrow='<';
-    CharSet.Mark.ch='#';
-    CharSet.FalseMark.ch='#';
-    CharSet.ShowFalseMark.ch='x';
-    CharSet.Unknown.ch='-';
-    CharSet.Mine.ch='-';
-    CharSet.ShowMine.ch='o';
-    CharSet.Space.ch=' ';
-    CharSet.Bombed.ch='*';
-    CharSet.CursorLeft.ch='<';
-    CharSet.CursorRight.ch='>';
+    CharSet.ULCorner = '+';
+    CharSet.URCorner = '+';
+    CharSet.LLCorner = '+';
+    CharSet.LRCorner = '+';
+    CharSet.HLine = '-';
+    CharSet.VLine = '|';
+    CharSet.UArrow = '^';
+    CharSet.DArrow = 'v';
+    CharSet.RArrow = '>';
+    CharSet.LArrow = '<';
+    CharSet.Mark.ch = '#';
+    CharSet.FalseMark.ch = '#';
+    CharSet.ShowFalseMark.ch = 'x';
+    CharSet.Unknown.ch = '-';
+    CharSet.Mine.ch = '-';
+    CharSet.ShowMine.ch = 'o';
+    CharSet.Space.ch = ' ';
+    CharSet.Bombed.ch = '*';
+    CharSet.CursorLeft.ch = '<';
+    CharSet.CursorRight.ch = '>';
 
     break;
 
   case 2: // Curses theme that should work on most hardware :P
-    SetStockColors();
+    set_stock_colors();
 
     CharSet.ch_flag = CH_TYPE;
     CharSet.name = "Curses";
-    CharSet.ULCorner=ACS_ULCORNER;
-    CharSet.URCorner=ACS_URCORNER;
-    CharSet.LLCorner=ACS_LLCORNER;
-    CharSet.LRCorner=ACS_LRCORNER;
-    CharSet.HLine=ACS_HLINE;
-    CharSet.VLine=ACS_VLINE;
-    CharSet.UArrow=ACS_UARROW;
-    CharSet.DArrow=ACS_DARROW;
-    CharSet.RArrow=ACS_RARROW;
-    CharSet.LArrow=ACS_LARROW;
-    CharSet.Mark.ch=ACS_DIAMOND;
-    CharSet.FalseMark.ch=ACS_DIAMOND;
-    CharSet.ShowFalseMark.ch='x';
-    CharSet.Unknown.ch='-';
-    CharSet.Mine.ch='-';
-    CharSet.ShowMine.ch='o';
-    CharSet.Space.ch=' ';
-    CharSet.Bombed.ch='*';
-    CharSet.CursorLeft.ch='[';
-    CharSet.CursorRight.ch=']';
+    CharSet.ULCorner = ACS_ULCORNER;
+    CharSet.URCorner = ACS_URCORNER;
+    CharSet.LLCorner = ACS_LLCORNER;
+    CharSet.LRCorner = ACS_LRCORNER;
+    CharSet.HLine = ACS_HLINE;
+    CharSet.VLine = ACS_VLINE;
+    CharSet.UArrow = ACS_UARROW;
+    CharSet.DArrow = ACS_DARROW;
+    CharSet.RArrow = ACS_RARROW;
+    CharSet.LArrow = ACS_LARROW;
+    CharSet.Mark.ch = ACS_DIAMOND;
+    CharSet.FalseMark.ch = ACS_DIAMOND;
+    CharSet.ShowFalseMark.ch = 'x';
+    CharSet.Unknown.ch = '-';
+    CharSet.Mine.ch = '-';
+    CharSet.ShowMine.ch = 'o';
+    CharSet.Space.ch = ' ';
+    CharSet.Bombed.ch = '*';
+    CharSet.CursorLeft.ch = '[';
+    CharSet.CursorRight.ch = ']';
     break;
 
   case 3: // The first unicode based theme
-    init_pair(CLR_NORMAL,COLOR_WHITE,COLOR_BLACK);
-    init_pair(CLR_VAL1,COLOR_BLUE,COLOR_BLACK);
-    init_pair(CLR_VAL2,COLOR_CYAN,COLOR_BLACK);
-    init_pair(CLR_VAL3,COLOR_GREEN,COLOR_BLACK);
-    init_pair(CLR_VAL4,COLOR_MAGENTA,COLOR_BLACK);
-    init_pair(CLR_VAL5,COLOR_RED,COLOR_BLACK);
-    init_pair(CLR_VAL6,COLOR_RED,COLOR_BLACK);
-    init_pair(CLR_VAL7,COLOR_RED,COLOR_BLACK);
-    init_pair(CLR_VAL8,COLOR_MAGENTA,COLOR_BLACK);
+    init_pair(CLR_VAL1, COLOR_BLUE,    COLOR_BLACK);
+    init_pair(CLR_VAL2, COLOR_CYAN,    COLOR_BLACK);
+    init_pair(CLR_VAL3, COLOR_GREEN,   COLOR_BLACK);
+    init_pair(CLR_VAL4, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(CLR_VAL5, COLOR_RED,     COLOR_BLACK);
+    init_pair(CLR_VAL6, COLOR_RED,     COLOR_BLACK);
+    init_pair(CLR_VAL7, COLOR_RED,     COLOR_BLACK);
+    init_pair(CLR_VAL8, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(CLR_UNKNOWN,
-              xcolor(165,42,42,COLOR_GREEN),
+              xcolor(165, 42, 42, COLOR_GREEN),
               COLOR_BLACK);
     init_pair(CLR_MINE,
-              xcolor(165,42,42,COLOR_GREEN),
+              xcolor(165, 42, 42, COLOR_GREEN),
               COLOR_BLACK);
     init_pair(CLR_SHOWMINE,
-              xcolor(105,105,105,COLOR_WHITE),
+              xcolor(105, 105, 105, COLOR_WHITE),
               COLOR_BLACK);
 
-    init_pair(CLR_SPACE,COLOR_WHITE,COLOR_BLACK);
+    init_pair(CLR_SPACE, COLOR_WHITE, COLOR_BLACK);
     init_pair(CLR_MARK,
               xcolor(255,255,148,COLOR_WHITE),
               COLOR_BLACK);
@@ -157,13 +172,15 @@ void SetTheme(GameStats* Game)
     init_pair(CLR_SHOWFALSEMARK,
               xcolor(255,0,0,COLOR_RED),
               COLOR_BLACK);
-    init_pair(CLR_DETONATED,COLOR_YELLOW,COLOR_BLACK);
+    init_pair(CLR_DETONATED, COLOR_YELLOW, COLOR_BLACK);
 
     init_pair(CLR_INFOBAR,
               xcolor(34,34,34,COLOR_BLACK),
               xcolor(173,173,173,COLOR_WHITE));
     init_pair(CLR_STATBAR,
               xcolor(0,0,88,COLOR_BLACK),
+              xcolor(173,173,173,COLOR_WHITE));
+    init_pair(CLR_STATWARN, COLOR_RED,
               xcolor(173,173,173,COLOR_WHITE));
     init_pair(CLR_MSGBAR,
               xcolor(88,0,0,COLOR_BLACK),
@@ -247,9 +264,12 @@ void SetTheme(GameStats* Game)
     init_pair(CLR_STATBAR,
               COLOR_WHITE,
               xcolor(31,199,0,COLOR_GREEN));
+    init_pair(CLR_STATWARN, COLOR_RED,
+              xcolor(31,199,0,COLOR_GREEN));
     init_pair(CLR_MSGBAR,
               xcolor(31,199,0,COLOR_GREEN),
               xcolor(0,75,0,COLOR_BLACK));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Alien";
@@ -329,9 +349,12 @@ void SetTheme(GameStats* Game)
     init_pair(CLR_STATBAR,
               xcolor(88,0,0,COLOR_BLACK),
               xcolor(255,20,88,COLOR_RED));
+    init_pair(CLR_STATWARN, COLOR_YELLOW,
+              xcolor(255,20,88,COLOR_RED));
     init_pair(CLR_MSGBAR,
               xcolor(255,192,203,COLOR_WHITE),
               xcolor(88,0,0,COLOR_BLACK));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Dollie";
@@ -409,11 +432,14 @@ void SetTheme(GameStats* Game)
               xcolor(9,107,131,COLOR_WHITE),
               xcolor(22,22,22,COLOR_BLACK));
     init_pair(CLR_STATBAR,
-              xcolor(9,107,131,COLOR_BLACK),
+              xcolor(9,107,131,COLOR_WHITE),
+              xcolor(22,22,22,COLOR_BLACK));
+    init_pair(CLR_STATWARN, COLOR_RED,
               xcolor(22,22,22,COLOR_BLACK));
     init_pair(CLR_MSGBAR,
               COLOR_BLACK,
               xcolor(5,62,76,COLOR_WHITE));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Undead";
@@ -472,9 +498,12 @@ void SetTheme(GameStats* Game)
     init_pair(CLR_STATBAR,
               xcolor(78,51,0,COLOR_BLACK),
               xcolor(0,191,255,COLOR_BLUE));
+    init_pair(CLR_STATWARN, COLOR_RED,
+              xcolor(0,191,255,COLOR_BLUE));
     init_pair(CLR_MSGBAR,
               COLOR_WHITE,
               xcolor(0,0,128,COLOR_WHITE));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Battleship";
@@ -551,9 +580,12 @@ void SetTheme(GameStats* Game)
     init_pair(CLR_STATBAR,
               xcolor(41,41,101,COLOR_BLACK),
               xcolor(112,128,144,COLOR_WHITE));
+    init_pair(CLR_STATWARN, COLOR_RED,
+              xcolor(112,128,144,COLOR_WHITE));
     init_pair(CLR_MSGBAR,
               COLOR_BLACK,
               xcolor(112,128,144,COLOR_WHITE));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Slate";
@@ -609,9 +641,12 @@ void SetTheme(GameStats* Game)
     init_pair(CLR_STATBAR,
               xcolor(0,0,88,COLOR_BLUE),
               xcolor(255,0,0,COLOR_RED));
+    init_pair(CLR_STATWARN, COLOR_YELLOW,
+              xcolor(255,0,0,COLOR_RED));
     init_pair(CLR_MSGBAR,
               xcolor(88,0,0,COLOR_BLACK),
               xcolor(255,0,0,COLOR_RED));
+    init_pair(CLR_WARN, COLOR_RED, COLOR_BLACK);
 
     CharSet.ch_flag = UNI_TYPE;
     CharSet.name = "Cheater";
@@ -637,9 +672,6 @@ void SetTheme(GameStats* Game)
     CharSet.CursorLeft.str="$";
     CharSet.CursorRight.str="$";
 
-    Game->Cheated = 1;
     break;
   }
-
-  //WritePrefsFile(Game);
 }
