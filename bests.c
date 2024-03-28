@@ -163,7 +163,7 @@ static char* bests_user_file(void) {
  * bests_global_file *
  *********************/
 
-static char* bests_global_file(void) {
+static inline char* bests_global_file(void) {
   return mkstr2(LOCALSTATEDIR) "/sweeptimes";
 }
 
