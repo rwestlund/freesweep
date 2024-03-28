@@ -1,7 +1,9 @@
 #                                                           -*- Makefile.am -*-
 
 bin_PROGRAMS = freesweep
-sysconf_DATA = sweeprc
+dist_sysconf_DATA = sweeprc
+dist_localstate_DATA = sweeptimes
+man6_MANS = freesweep.6
 
 freesweep_SOURCES = clear.c drawing.c files.c game.c main.c bests.c pause.c \
 	play.c logs.c sl.c stats.c themes.c tick.c utils.c image.c xdg.c sweep.h \

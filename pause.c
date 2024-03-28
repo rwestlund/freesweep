@@ -28,6 +28,16 @@ static char* help_mesgs[] = {
   "",
   "  The purpose of the game is to flag all the mines on the",
   " game board with out exposing a mine.",
+  "  To start the game you can set the size of the game board",
+  " and the amount of mines found in the board. The amount of",
+  " mines is set as a percentage of the total number of cells",
+  " of the board.",
+  "  When a cell is exposed, that doesn't have a bomb, it can",
+  " be blank or have a number 1 thru 8. This is the clues to",
+  " where the hidden bombs are. A blank cell has no bombs",
+  " adjacent to it. The number 1 thru 8 is the number of bombs",
+  " found beside the cell.",
+  "  It\'s treacherous work! Good luck!",
   "",
   "Basic Controls",
   "",
@@ -39,23 +49,30 @@ static char* help_mesgs[] = {
   "  The Home and End keys will move the cursor the the left",
   " most side and the right most side of the board",
   "  The \'f\' key will flag or unflag the cell at the cursor.",
-  "  The space bar or enter key will  expose the cell at the",
-  " cursor.",
-  "  The \'a\' key will abort the current game.",
+  " When all the mines are flagged correctly the game is won.",
+  "  The space bar or enter key will expose the cell at the",
+  " cursor. If the cell contains a mine the game is over.",
+  "  The \'a\' or ecaspe key will end and abort the current game.",
+  "  The \'q\' key will save the current game and exit",
+  " freesweep. When the game is started again the saved game",
+  " will be loaded and continued.",
   "",
   "Vi Like Key Bindings",
+  "",
+  " \'h\'  moves the curser to the left.",
+  " \'j\'  moves the curser to the down.",
+  " \'k\'  moves the curser to the up.",
+  " \'l\'  moves the curser to the right.",
+  " \'0\'  moves the cursor to the left side of the board.",
+  " \'$\'  moves the cursor to the right side of the board.",
+  " \'gg\' moves the cursor to the top of the board.",
+  " \'G\'  moves the cursor to the bottom of the board.",
   "",
   "Emacs Like Key Bindings",
   ""
   " ctrl-\'l\' redraws the screen.",
-  " \'0\' moves the cursor to the upper left corner.",
-  " \'$\' moves the cursor to the lower right corner.",
-  " \'.\' repeats the last command.",
-  " \'b\' show the best times.",
-  " \'c\' show the game credits.",
-  " \'g\' displays the GNU General Public License.",
-  " \'q\' quits the game.",
-  " \'?\' displays this help screen.",
+  " ctrl-\'a\' moves the cursor to the left side of the board.",
+  " ctrl-\'e\' moves the cursor to the right side of the board.",
   NULL
 };
 
@@ -70,9 +87,16 @@ static char* credit_mesgs[] = {
   "  Randy Westlund <rwestlun@gmail.com>",
   "  Ron Wills <ron@digitalcombine.ca>",
   "",
-  "Others that have contributed to this game",
+  "Color conversion code borrowed from the tmux project",
   "",
-  "  ...",
+  "  Nicholas Marriott <nicholas.marriott@gmail.com>",
+  "  Avi Halachmi <avihpit@yahoo.com>",
+  "",
+  " Special thanks to Pete Keller for lots of help.",
+  " Thanks to the FSF for the license and certain chunks of",
+  "code.",
+  " Thanks to the Undergraduate Project Lab at the University",
+  "of Wisconsin",
   NULL
 };
 
@@ -146,11 +170,11 @@ static char* gpl_mesg[] = {
   "  0. This License applies to any program or other work which",
   "contains a notice placed by the copyright holder saying it may",
   "be distributed under the terms of this General Public License.",
-  "The \"Program\", below, refers to any such program or work, and a",
-  "\"work based on the Program\" means either the Program or any",
+  "The \"Program\", below, refers to any such program or work, and",
+  "a \"work based on the Program\" means either the Program or any",
   "derivative work under copyright law:",
-  "that is to say, a work containing the Program or a portion of it,",
-  "either verbatim or with modifications and/or translated into",
+  "that is to say, a work containing the Program or a portion of",
+  "it, either verbatim or with modifications and/or translated into",
   "another language.  (Hereinafter, translation is included without",
   "limitation in the term \"modification\".)  Each licensee is",
   "addressed as \"you\".",
@@ -164,38 +188,42 @@ static char* gpl_mesg[] = {
   "",
   "  1. You may copy and distribute verbatim copies of the Program's",
   "source code as you receive it, in any medium, provided that you",
-  "conspicuously and appropriately publish on each copy an appropriate",
-  "copyright notice and disclaimer of warranty; keep intact all the",
-  "notices that refer to this License and to the absence of any warranty;",
-  "and give any other recipients of the Program a copy of this License",
-  "along with the Program.",
+  "conspicuously and appropriately publish on each copy an",
+  "appropriate copyright notice and disclaimer of warranty; keep",
+  "intact all the notices that refer to this License and to the",
+  "absence of any warranty; and give any other recipients of the",
+  "Program a copy of this License along with the Program.",
   "",
-  "You may charge a fee for the physical act of transferring a copy, and",
-  "you may at your option offer warranty protection in exchange for a fee.",
+  "You may charge a fee for the physical act of transferring a copy,",
+  "and you may at your option offer warranty protection in exchange",
+  "for a fee.",
   "",
-  "  2. You may modify your copy or copies of the Program or any portion",
-  "of it, thus forming a work based on the Program, and copy and",
-  "distribute such modifications or work under the terms of Section 1",
-  "above, provided that you also meet all of these conditions:",
+  "  2. You may modify your copy or copies of the Program or any",
+  "portion of it, thus forming a work based on the Program, and",
+  "copy and distribute such modifications or work under the terms",
+  "of Section 1 above, provided that you also meet all of these",
+  "conditions:",
   "",
-  "    a) You must cause the modified files to carry prominent notices",
-  "    stating that you changed the files and the date of any change.",
+  "    a) You must cause the modified files to carry prominent",
+  "    notices stating that you changed the files and the date of",
+  "    any change.",
   "",
-  "    b) You must cause any work that you distribute or publish, that in",
-  "    whole or in part contains or is derived from the Program or any",
-  "    part thereof, to be licensed as a whole at no charge to all third",
-  "    parties under the terms of this License.",
+  "    b) You must cause any work that you distribute or publish,",
+  "    that in whole or in part contains or is derived from the",
+  "    Program or any part thereof, to be licensed as a whole at no",
+  "    charge to all third parties under the terms of this License.",
   "",
-  "    c) If the modified program normally reads commands interactively",
-  "    when run, you must cause it, when started running for such",
-  "    interactive use in the most ordinary way, to print or display an",
-  "    announcement including an appropriate copyright notice and a",
-  "    notice that there is no warranty (or else, saying that you provide",
-  "    a warranty) and that users may redistribute the program under",
-  "    these conditions, and telling the user how to view a copy of this",
-  "    License.  (Exception: if the Program itself is interactive but",
-  "    does not normally print such an announcement, your work based on",
-  "    the Program is not required to print an announcement.)",
+  "    c) If the modified program normally reads commands",
+  "    interactively when run, you must cause it, when started",
+  "    running for such interactive use in the most ordinary way,",
+  "    to print or display an announcement including an appropriate",
+  "    copyright notice and a notice that there is no warranty (or",
+  "    else, saying that you provide a warranty) and that users may",
+  "    redistribute the program under these conditions, and telling",
+  "    the user how to view a copy of this License. (Exception: if",
+  "    the Program itself is interactive but does not normally print",
+  "    such an announcement, your work based on the Program is not",
+  "    required to print an announcement.)",
   "",
   "These requirements apply to the modified work as a whole.  If",
   "identifiable sections of that work are not derived from the Program,",
@@ -472,6 +500,15 @@ static int scroll_mesgs(const char *mesgs[]) {
         mvwaddch(scroll_win, 0, width - 1, CharSet.UArrow);
     }
 
+    // Horizontal scroll indicator
+    if (start_x > 0 || length > width) {
+      mvwhline(scroll_win, height, 2, CharSet.HLine, width - 3);
+      if (length - start_x > width - 2)
+        mvwaddch(scroll_win, height, width - 1, CharSet.RArrow);
+      if (start_x > 0)
+        mvwaddch(scroll_win, height, 1, CharSet.LArrow);
+    }
+
     // Refresh the terminal.
     wrefresh(scroll_win);
 
@@ -564,7 +601,7 @@ static int scroll_scores() {
       mvwprintw(scroll_win, 2 + i, 31, "%lds", enttime);
     }
     mvwprintw(scroll_win, 2 + i, 40, "%s",
-              ctime(&bfd->entries[i].date));
+              xtrunc(width - 40, ctime(&bfd->entries[i].date)));
   }
   bests_free(bfd);
   wrefresh(scroll_win);
@@ -576,7 +613,8 @@ static int scroll_scores() {
       wclear(scroll_win);
       wrefresh(scroll_win);
       return 1;
-    case 'q': // XXX Include ESC Key.
+    case 'q':
+    case '\e': // Escape key
       wclear(scroll_win);
       wrefresh(scroll_win);
       return 0;

@@ -383,8 +383,6 @@ int game_input(game_stats_t* game) {
   case 'z':
     break;
 
-  case 'g':
-    if (last_key != 'g') break;
   case KEY_HOME:
   case CTRL('a'):
   case '0':
@@ -397,6 +395,8 @@ int game_input(game_stats_t* game) {
     game->CursorX = game->width - 1;
     break;
 
+  case 'g':
+    if (last_key != 'g') break;
   case KEY_PPAGE:
   case CTRL(KEY_HOME):
     game->CursorY = 0;

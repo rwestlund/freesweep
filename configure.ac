@@ -36,6 +36,11 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([alarm getcwd memset mkdir setlocale strdup strncasecmp
                 fileno flock lockf getopt getopt_long])
 
+# XXX This isn't prefect. You'll probably want to specify --localstatedir=...
+# directly to have it substituted correctly in the man page.
+AC_SUBST([LOCALSTATEDIR], "${localstatedir}")
+
 AC_CONFIG_FILES([Makefile
-                 sweeprc])
+                 sweeprc
+                 freesweep.6])
 AC_OUTPUT

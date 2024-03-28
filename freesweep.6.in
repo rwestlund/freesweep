@@ -1,220 +1,124 @@
-.TH FREESWEEP 6 "Version 1.0.1" "Gus Hartmann & Pete Keller"
-
-.SH NAME
-freesweep \- a curses minesweeper-style game
-
-.SH SYNOPSIS
-.TP 6
-\fBfreesweep\fP
-[\fB\-%\fP\ \fIvalue\fP]
-[\fB\-t\fP\ \fIvalue\fP]
-[\fB\-f\fP\ |\ \fB\-i\fP]
-[\fB\-h\fP\ \fIvalue\fP]
-[\fB\-m\fP\ \fIvalue\fP]
-[\fB\-s\fP]
-[\fB\-w\fP\ \fIvalue\fP]
-[\fB\-\-theme=\fP\fIvalue\fP]
-[\fB\-\-fast\fP]
-[\fB\-\-height=\fP\fIvalue\fP]
-[\fB\-\-interactive\fP\ |\ \fB\-\-save\-prefs\fP]
-[\fB\-\-mines=\fP\fIvalue\fP]
-[\fB\-\-percent=\fP\fIvalue\fP]
-[\fB\-\-width=\fP\fIvalue\fP]
-.TP 6
-\fBfreesweep\fP
-[\fB\-b\fP\ |\ \fB\-d\fP]
-[\fB\-\-dump\-best\-times\fP\ |\ \fB\-\-show\-best\-times\fP]
-.TP 6
-\fBfreesweep\fP
-[\fB\-g\fP]
-[\fB\-\-show\-gpl\fP]
-.TP 6
-\fBfreesweep\fP
-[\fB\-v\fP]
-[\fB\-\-version\fP]
-.TP 6
-\fBfreesweep\fP
-[\fB\-H\fP]
-[\fB\-\-help\fP]
-
-.SH DESCRIPTION
-\fBfreesweep\fP is a curses-based minesweeper game for *nix.
-
-.SH OPTIONS
-
-.TP
-\fB\-%\fP\ \fIvalue\fP, \fB\-\-percent=\fP\fIvalue\fP
-Sets the number of mines to \fIvalue\fP percent of the number of squares on
-the board, rounded to the nearest integer. This option cannot be used with
-the \-m or \-\-mines options.
-.TP
-\fB\-b\fP, \fB\-\-show\-best\-times\fP
-Use the curses best times viewer rather than starting a game, then exit.
-
-The best times viewer can also be accessed during play by selecting the 'b'
-key. See the COMMANDS section below.
-.TP
-\fB\-d\fP, \fB\-\-dump\-best\-times\fP
-Print the list of best times, sorted in descending order to stdout. More
-information will be placed in this manual page regarding the column format
-when it has been clearly established.
-.TP
-\fB\-t\fP\ \fIvalue\fP, \fB\-\-theme=\fP\fIvalue\fP
-Set the game's theme to \fIvalue\fP.
-.TP
-\fB\-f\fP, \fB\-\-fast\fP
-This option bypasses the intercative dialog normally run initially. All values
-must either be specified on the command line or in the preferences files.
-.TP
-\fB\-g\fP, \fB\-\-show\-gpl\fP
-Display the GNU General Public License, in a nice curses page viewer. Currently
-version 2 of the license is displayed; however, freesweep is licensed under
-version 2 or later of the GNU GPL, so this license may be superseded in the
-future.
-.TP
-\fB\-H\fP, \fB\-\-help\fP
-Print the lost of valid command line options, then exit.
-.TP
-\fB\-h\fP\ \fIvalue\fP, \fB\-\-height=\fP\fIvalue\fP
-Set height to \fIvalue\fP. If the interactive dialog is run initially, any
-value passed for height will be listed as the default.
-.TP
-\fB\-i\fP, \fB\-\-interactive\fP
-Force the interactive menu to be run initially. This is primarily used to
-override the FastStart option specified in the preferences file. It cannot
-be used with the \fB\-f\-fP or \fB\-\-fast\fP options.
-.TP
-\fB\-m\fP\ \fIvalue\fP, \fB\-\-mines=\fP\fIvalue\fP
-Set the number of mines to \fIvalue\fP. This option cannot be used with
-the \-% or \-\-percent options.
-.TP
-\fB\-s\fP, \fB\-\-save\-prefs\fP
-Save any preferences passed on the command line. This option is normally used
-with the FastStart option (specified with \fB\-f\fP or \fB\-\-fast\fP)
-.TP
-\fB\-v\fP, \fB\-\-version\fP
-Display version information and exit. Use of this option overrides all other
-options.
-.TP
-\fB\-w\fP\ \fIvalue\fP, \fB\-\-width=\fP\fIvalue\fP
-Set width to \fIvalue\fP. If the interactive dialog is run initially, any
-value passed for width will be listed as the default.
-
-
-
-.SH COMMANDS
-When started normally, freesweep will conduct a dialog to query the following
-information from the player: height and width of the board, number of mines
-(as either an integer or in terms of size of the board), if PC-style line
-drawing characters are to be used, if future games should use FastStart mode,
-how to announce alerts (beep, visual bell, or none), and if the newly
-entered preferences should be saved. This dialog is skipped if the \-f or
-\-\-fast flags are passed, or if the FastStart option is selected in the
-preference file.
-
-In normal play, freesweep waits for keystrokes, and then reacts according
-to the received value. Some keystrokes may be modified by a preceding
-integer; these are noted in the list below by a preceding \fIn\fP. The
-following keystroke values are valid:
-
-.TP
-\fIn\fP\<arrow key\>, \fIn\fPh, \fIn\fPj, \fIn\fPk, \fIn\fPl
-The arrow keys move the cursor \fIn\fP squares in the corresponding direction,
-as limited by the boundaries of the playing field. A warning is issued should
-this occur.
-
-The vi-style motion keys h, j, k, and l are also accepted, and are equivalent
-to the arrow keys.
-.TP
-1-9
-Switch between the various display themes. See the THEMES section below.
-.TP
-b
-Display the best times list, one screenful at a time. The game clock is
-suspended for the duration of the best times viewer.
-.TP
-g
-Display the GNU General Public License, version 2. The game clock is suspended
-for the duration of the viewing of the GNU GPL. The text is displayed one
-screenful at a time; 'q' returns to game play, any other key advances to the
-next screenful.
-.TP
-?
-Display a help screen, containing a listing of valid commands. The game clock
-is suspended for the duration of the viewing of this screen.
-.TP
-f
-Toggle flagging the current square as a mine. Flagged squares cannot be exposed.
-.TP
-<space>
-Expose the current square for better or worse...
-
-.SH THEMES
-There are several builtin themes in the game. The number keys 1-9 are used to
-switch between the themes. When the game preferences are saved the currently
-selected theme with be saved as well.
-.TP
-1 - ASCII, 2 - Curses
-These themes are the lowest common denominators and should work on all existing
-terminals. Even with or without color and are alway available.
-.TP
-3 - Unicode, 4 - Alien, 5 - Dollie, 6 - Undead, 7 - Battleship, 8 - Slate
-Terminal games don't have to look horrible! These themes make the game a lot more
-attractive but does assume the terminal supports unicode and uses 256 colors if it
-is available.
-
-To get the best of these themes make sure that the environment variable \fBTERM\fP
-is set correctly for the terminal. The locale should also be set to support unicode
-and the terminal font should also support many basic unicode graphic characters,
-for example DejaVu.
-
-If the game detects that color isn't supported then non of the unicode themes will
-be available. Unfortunately, it's almost impossible to test for unicode support
-through the terminal and this is an assumption being made.
-.TP
-9 - Cheater
-One last unicode theme that shows you where all the mines are... can you play the
-game without using this?
-
-.SH FILES
-.TP 10
-.I ~/.sweeprc
-The user's sweep resource file.
-.TP 10
-.I ~/.sweeptimes
-The user's sweep best times file.
-.TP 10
-\fI@PREFSDIR@/sweeprc\fP
-The global default sweep resource file.
-.TP 10
-\fI@SCORESDIR@/sweeptimes\fP
-The shared best times file.
-
-The global preference file is read first, then the player's preference file.
-Any command line options are considered next, and lastly any input from the
-interactive dialog.
-
-.SH AUTHORS
-Gus Hartmann <hartmann@upl.cs.wisc.edu>
-.br
-Pete Keller <psilord@upl.cs.wisc.edu>
-.br
-Ron Wills <ron@digitalcombine.ca>
-.br
-
-.SH CREDITS
-This program would not have been written had there been more machines capable
-of running X Windows in the lab where I learned to program, the
-.I Undergraduate Project Lab
-at the
-\fIUniversity of Wisconsin Department of Computer Sciences\fP
-
-.SH BUGS
-The best times code is currently only partially implemented.
-
-The viewer for the GNU GPL and the best times cannot go backwards.
-
-This manual page always includes the GNU-style long options, even on systems
-which do not support them.
-
-Other bugs should be reported to <sweep@cs.wisc.edu>.
+.Dd $Mdocdate$
+.Dt FREESWEEP 6
+.Os
+.Sh NAME
+.Nm freesweep
+.Nd a curses minesweeper-style game
+.Sh SYNOPSIS
+.Nm
+.Op Fl h Ar value
+.Op Fl \-height Ar value
+.Op Fl w Ar value
+.Op Fl \-width Ar value
+.Op Fl % Ar value
+.Op Fl \-percent Ar value
+.Op Fl t Ar value
+.Op Fl \-theme Ar value
+.Nm
+.Op Fl b
+.Op Fl \-show\-best\-times
+.Nm
+.Op Fl V
+.Op Fl \-version
+.Nm
+.Op Fl H
+.Op Fl \-help
+.Sh DESCRIPTION
+.Nm
+is a curses-based minesweeper game for *nix.
+.Bl -tag -width Ds
+.It Fl h Ar value Fl \-height Ar value
+Set height of the board to
+.Ar value .
+This will override any height set in the configuration files.
+.It Fl w Ar value Fl \-width Ar value
+Set width of the board to
+.Ar value .
+This will override any width set in the configuration files.
+.It Fl % Ar value Fl \-percent Ar value
+Sets the number of mines to
+.Ar value
+percent of the number of squares on the board, rounded to the nearest integer.
+.It Fl t Ar value -theme Ar value
+Uses the given theme 1-9.
+.It Fl V Fl -version
+Display version information and exit.
+Use of this option overrides all other options.
+.It Fl H Fl -help
+Print the list of valid command line options, then exit.
+.El
+.Pp
+When started normally, freesweep will display a new mission form to query the
+following information from the player: height and width of the board, number of
+mines as percentage of the size of the board, how to announce alerts (beep,
+visual bell, or none), and these preferences will automatically be saved.
+.Pp
+In normal play, freesweep waits for keystrokes, and then reacts according to
+the received value.
+The arrow keys move the cursor in the corresponding direction, as limited by
+the boundaries of the playing field.
+A warning is issued should this occur.
+The home, end, page up and page down keys move the cursor to the edges of the
+board.
+These keys are the standard way to navigate in any part of the game.
+.Pp
+The
+.Em f
+key is used to flag or unflag a mine and the
+.Em enter or
+.Em space
+keys will expose the current square for better or worse.
+The are also many more key bindings, similar to vi and emacs, available.
+Details about these can be found in the help screen with the
+.Em p
+key during game play.
+.Pp
+The
+.Em p
+key during game play displays a tabbed pause screen.
+These tabs contain help, best scores, credits, game log and the GPL license.
+Pressing the
+.Em tab
+key switches between each of them.
+The
+.Em q
+key will return back to the game.
+.Pp
+The game play ends when either all the mines have been flagged correctly or
+a mine was exposed.
+For large games, a game can be aborted with the
+.Em a
+key or can be saved for later with the
+.Em q
+key.
+A saved game will be automatically returned to when freesweep is started again.
+.Sh FILES
+.Bl -tag -width Ds
+.It ~/.config/freesweep/config (or $XDG_CONFIG_HOME/freesweep/config if set)
+User configuration file where the new mission form saves its settings.
+.It ~/.local/share/freesweep/records (or $XDG_DATA_HOME/freesweep/records if set)
+The user's high scores for completed games.
+.It ~/.local/share/freesweep/logs (or $XDG_DATA_HOME/freesweep/logs if set)
+A log of the user's last game's messages.
+This gets reset every time the game is started.
+.It ~/.local/share/freesweep/saved (or $XDG_DATA_HOME/freesweep/saved if set)
+If a game is quit, with the 'q' key, before it is completed it gets saved to
+this file.
+When the game is started and this file exists it is loaded then the file is
+deleted and the saved game is continued.
+.It @LOCALSTATEDIR@/sweeptimes
+.El
+.Sh AUTHORS
+.An Gus Hartmann
+.Mt <hartmann@upl.cs.wisc.edu>
+.An Pete Keller
+.Mt <psilord@upl.cs.wisc.edu>
+.An Ron Wills
+.Mt <ron@digitalcombine.ca>
+.Pp
+And I am sure there are many more that could be mentioned here.
+.Sh BUGS
+Resizing the terminal currently can cause unpredictable behaviour.
+.Pp
+Mouse support still seems a bit flaky.
+It needs some polishing.
