@@ -1,15 +1,28 @@
-/**********************************************************************
-*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
-*  It may be distributed under the terms of the GNU General Purpose   *
-*  License, version 2 or above; see the file COPYING for more         *
-*  information.                                                       *
-*                                                                     *
-*  $Id: image.c,v 1.3 2000-11-07 05:31:26 hartmann Exp $
-*                                                                     *
-**********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.*
+ */
 
 #include "sweep.h"
 #include <time.h>
+
+/*******************
+ * game_save_image *
+ *******************/
 
 void game_save_image(game_stats_t* game) {
   int width, height;
