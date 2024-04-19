@@ -1,648 +1,641 @@
-/**********************************************************************
-*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
-*  It may be distributed under the terms of the GNU General Purpose   *
-*  License, version 2 or above; see the file COPYING for more         *
-*  information.                                                       *
-*                                                                     *
-*  $Id: clear.c,v 1.11 2002-07-12 07:06:44 hartmann Exp $
-*                                                                     *
-**********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "sweep.h"
 
+/* This is the struct for the clearing algo. */
+typedef struct mark_s {
+  int x, y;
+  struct mark_s *next;
+} mark_t;
 
-static void InsertChildren(struct Mark **ht, GameStats *Game, int x, int y);
-static int CalcSquareNumber(GameStats *Game, int xx, int yy);
-static int ExposeSquare(GameStats *Game, int xx, int yy, int total);
-static unsigned char* InitLookupTable(void);
-static struct Mark* NewMark(int x, int y);
-static int SuperCount(GameStats* Game);
+static int g_num = 0;
+static unsigned char *g_table = NULL;
+static int g_table_w;
+static int g_table_h = 0;
+static mark_t *g_mlist = NULL;
 
-/* I should clean these up */
-int g_num = 0;
-unsigned char *g_table = NULL;
-int g_table_w;
-int g_table_h = 0;
-struct Mark *g_mlist = NULL;
-
-void Clear(GameStats *Game)
-{
-        struct Mark **ht = NULL;
-        int total;
-        int x, y;
-
-        g_num = 0;
-        g_table = InitLookupTable();
-
-        /* give it the first candidate */
-        InsertMark(ht, Game->CursorX, Game->CursorY);
-
-        /* This is data recursion */
-        while(DeleteRandomMark(ht, &x, &y) == TRUE)
-        {
-                total = CalcSquareNumber(Game, x, y);
-                if (ExposeSquare(Game, x, y, total) == EMPTY)
-                {
-                        InsertChildren(ht, Game, x, y);
-                }
-        }
-
-        free (g_table);
+static inline unsigned char LOOKUP(unsigned char *t, int xx, int yy) {
+  return (unsigned char)((t)[(xx) / 8 + yy * g_table_w]) &
+    (((unsigned char)0x80) >> ((xx) % 8));
 }
 
-/* grab the eight or so children around the mark and insert them into the
- * hash table */
-void InsertChildren(struct Mark **ht, GameStats *Game, int x, int y)
-{
-        unsigned char retval;
-
-        /* Check the above squares */
-        if (y-1 >= 0)
-        {
-                /* Check upper-left */
-                if (x-1 >= 0)
-                {
-                        GetMine(x-1, y-1, retval);
-                        if (retval == UNKNOWN)
-                        {
-                                InsertMark(ht, x-1, y-1);
-                        }
-                }
-
-                /* Check directly above */
-                GetMine(x, y-1, retval);
-                if (retval == UNKNOWN)
-                {
-                        InsertMark(ht, x, y-1);
-                }
-
-                /* Check upper-right */
-                if (x+1 < Game->Width)
-                {
-                        GetMine(x+1, y-1, retval);
-                        if (retval == UNKNOWN)
-                        {
-                                InsertMark(ht, x+1, y-1);
-                        }
-                }
-        }
-
-        if (x-1 >= 0)
-        {
-                GetMine(x-1, y, retval);
-                if (retval == UNKNOWN)
-                {
-                        InsertMark(ht, x-1, y);
-                }
-        }
-
-        if (x+1 < Game->Width)
-        {
-                GetMine(x+1, y, retval);
-                if (retval == UNKNOWN)
-                {
-                        InsertMark(ht, x+1, y);
-                }
-        }
-
-        /* Check the below squares */
-        if (y+1 < Game->Height)
-        {
-                /* Check lower-left */
-                if (x-1 >= 0)
-                {
-                        GetMine(x-1, y+1, retval);
-                        if (retval == UNKNOWN)
-                        {
-                                InsertMark(ht, x-1, y+1);
-                        }
-                }
-
-                /* Check directly below */
-                GetMine(x, y+1, retval);
-                if (retval == UNKNOWN)
-                {
-                        InsertMark(ht, x, y+1);
-                }
-
-                /* Check lower-right */
-                if (x+1 < Game->Width)
-                {
-                        GetMine(x+1, y+1, retval);
-                        if (retval == UNKNOWN)
-                        {
-                                InsertMark(ht, x+1, y+1);
-                        }
-                }
-        }
+static inline void SET(unsigned char *t, int xx, int yy) {
+  ((t)[(xx) / 8 + yy * g_table_w]) |=
+    (((unsigned char)0x80) >> ((xx) % 8));
 }
 
-/* determine the number of a particular square */
-int CalcSquareNumber(GameStats *Game, int x, int y)
-{
-        unsigned char SquareVal;
-        int Total=0;
-
-        GetMine(x,y,SquareVal);
-        if (SquareVal != UNKNOWN)
-        {
-                return SquareVal;
-        }
-
-        /* Check the above squares */
-        if (y-1 >= 0)
-        {
-                /* Check upper-left */
-                if (x-1 >= 0)
-                {
-                        GetMine(x-1,y-1,SquareVal);
-                        if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                        {
-                                Total++;
-                        }
-                }
-
-                /* Check directly above */
-                GetMine(x,y-1,SquareVal);
-                if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                {
-                        Total++;
-                }
-
-                /* Check upper-right */
-                if (x+1 < Game->Width)
-                {
-                        GetMine(x+1,y-1,SquareVal);
-                        if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                        {
-                                Total++;
-                        }
-                }
-        }
-
-        if (x-1 >= 0)
-        {
-                GetMine(x-1,y,SquareVal);
-                if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                {
-                        Total++;
-                }
-        }
-
-        if (x+1 < Game->Width)
-        {
-                GetMine(x+1,y,SquareVal);
-                if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                {
-                        Total++;
-                }
-        }
-
-        /* Check the below squares */
-        if (y+1 < Game->Height)
-        {
-                /* Check lower-left */
-                if (x-1 >= 0)
-                {
-                        GetMine(x-1,y+1,SquareVal);
-                        if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                        {
-                                Total++;
-                        }
-                }
-
-                /* Check directly below */
-                GetMine(x,y+1,SquareVal);
-                if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                {
-                        Total++;
-                }
-
-                /* Check lower-right */
-                if (x+1 < Game->Width)
-                {
-                        GetMine(x+1,y+1,SquareVal);
-                        if ((SquareVal == MINE)||(SquareVal == MARKED)||(SquareVal == DETONATED))
-                        {
-                                Total++;
-                        }
-                }
-        }
-
-        return Total;
+static inline void UNSET(unsigned char *t, int xx, int yy)  {
+  ((t)[(xx)/8 + yy * g_table_w]) &=
+    ~(((unsigned char)0x80) >> ((xx) % 8));
 }
 
-/* fill in what a square is number wise */
-int ExposeSquare(GameStats *Game, int x, int y, int total)
-{
-        SetMine(x, y, total==0?EMPTY:total);
+/************
+ * mark_new *
+ ************/
 
-        return (total==0?EMPTY:total);
+static mark_t* mark_new(int x, int y) {
+  /* make a new mark initialized nicely */
+  mark_t *m = NULL;
+
+  m = (mark_t*)malloc(sizeof(mark_t) * 1);
+
+  if (m == NULL) {
+    log_error("Out of memory! Sorry.");
+    endwin();
+    exit(EXIT_FAILURE);
+  }
+
+  m->x = x;
+  m->y = y;
+  m->next = NULL;
+
+  return (m);
 }
 
-unsigned char* InitLookupTable(void)
-{
-        int width, height;
-        unsigned char *m = NULL;
+/******************
+ * ht_mark_insert *
+ ******************/
 
-        width = MAX_W / 8;
-        if (MAX_W%8)
-        {
-                width++;
-        }
+static void ht_mark_insert(int x, int y) {
+  /* if x,y exists, do nothing, otherwise, make a mark and insert it */
+  mark_t *m = NULL;
 
-        height = MAX_H;
-        if (MAX_W%8)
-        {
-                height++;
-        }
+  if (LOOKUP(g_table, x, y)) {
+    return;
+  }
+  SET(g_table, x, y);
+  g_num++;
 
-        m = (unsigned char*)malloc(sizeof(unsigned char) * width * height);
+  m = mark_new(x, y);
 
-        if (m == NULL)
-        {
-                SweepError("Out of memory. Aborting...");
-                exit(EXIT_FAILURE);
-        }
-
-        g_table_w = width;
-        g_table_h = height;
-
-        memset(m, 0, width*height);
-
-        return (m);
+  m->next = g_mlist;
+  g_mlist = m;
 }
 
-/* if x,y exists, do nothing, otherwise, make a mark and insert it */
-void InsertMark(struct Mark **ht, int x, int y)
-{
-        struct Mark *m = NULL;
+/********************
+ * ht_delete_random *
+ ********************/
 
-        if (LOOKUP(g_table, x, y))
-        {
-                return;
-        }
-        SET(g_table, x, y);
-        g_num++;
+static char ht_delete_random(int *x, int *y) {
+  /* find one in the table and deal with it */
+  mark_t *m = NULL;
 
-        m = NewMark(x, y);
+  m = g_mlist;
+  if (m == NULL) {
+    return FALSE;
+  }
 
-        m->next = g_mlist;
-        g_mlist = m;
+  g_mlist = g_mlist->next;
+
+  *x = m->x;
+  *y = m->y;
+  UNSET(g_table, *x, *y);
+
+  free(m);
+
+  return TRUE;
 }
 
-/* find one in the table and deal with it */
-char DeleteRandomMark(struct Mark **ht, int *xx, int *yy)
-{
-        struct Mark *m = NULL;
+/***********
+ * ht_init *
+ ***********/
 
-        m = g_mlist;
-        if (m == NULL)
-        {
-                return FALSE;
-        }
+static unsigned char* ht_init(void) {
+  int width, height;
+  unsigned char *m = NULL;
 
-        g_mlist = g_mlist->next;
+  width = MAX_W / 8;
+  if (MAX_W % 8) {
+    width++;
+  }
 
-        *xx = m->x;
-        *yy = m->y;
-        UNSET(g_table, *xx, *yy);
+  height = MAX_H;
+  if (MAX_W % 8) {
+    height++;
+  }
 
-        free(m);
+  m = (unsigned char*)malloc(sizeof(unsigned char) * width * height);
 
-        return TRUE;
+  if (m == NULL) {
+    log_error("Out of memory. Aborting...");
+    endwin();
+    exit(EXIT_FAILURE);
+  }
+
+  g_table_w = width;
+  g_table_h = height;
+
+  memset(m, 0, width * height);
+
+  return (m);
 }
 
-/* make a new mark initialized nicely */
-struct Mark* NewMark(int x, int y)
-{
-        struct Mark *m = NULL;
+/**********************
+ * ht_insert_children *
+ **********************/
 
-        m = (struct Mark*)malloc(sizeof(struct Mark) * 1);
+static void ht_insert_children(game_stats_t *game, int x, int y) {
+  /* Grab the eight or so children around the mark and insert them into the
+   * hash table.
+   */
+  unsigned char retval;
 
-        if (m == NULL)
-        {
-                SweepError("Out of memory! Sorry.");
-                exit(EXIT_FAILURE);
-        }
+  /* Check the above squares */
+  if (y - 1 >= 0) {
+    /* Check upper-left */
+    if (x - 1 >= 0) {
+      retval = game_get_mine(game, x - 1, y - 1);
+      if (retval == UNKNOWN) {
+        ht_mark_insert(x-1, y-1);
+      }
+    }
 
-        m->x = x;
-        m->y = y;
-        m->next = NULL;
+    /* Check directly above */
+    retval = game_get_mine(game, x, y - 1);
+    if (retval == UNKNOWN) {
+      ht_mark_insert(x, y-1);
+    }
 
-        return (m);
+    /* Check upper-right */
+    if (x + 1 < game->width) {
+      retval = game_get_mine(game, x + 1, y - 1);
+      if (retval == UNKNOWN) {
+        ht_mark_insert(x + 1, y - 1);
+      }
+    }
+  }
+
+  if (x - 1 >= 0) {
+    retval = game_get_mine(game, x - 1, y);
+    if (retval == UNKNOWN) {
+      ht_mark_insert(x - 1, y);
+    }
+  }
+
+  if (x + 1 < game->width) {
+    retval = game_get_mine(game, x + 1, y);
+    if (retval == UNKNOWN) {
+      ht_mark_insert(x + 1, y);
+    }
+  }
+
+  /* Check the below squares */
+  if (y + 1 < game->height) {
+    /* Check lower-left */
+    if (x - 1 >= 0) {
+      retval = game_get_mine(game, x - 1, y + 1);
+      if (retval == UNKNOWN) {
+        ht_mark_insert(x - 1, y + 1);
+      }
+    }
+
+    /* Check directly below */
+    retval = game_get_mine(game, x, y + 1);
+    if (retval == UNKNOWN) {
+      ht_mark_insert(x, y + 1);
+    }
+
+    /* Check lower-right */
+    if (x + 1 < game->width) {
+      retval = game_get_mine(game, x + 1, y + 1);
+      if (retval == UNKNOWN) {
+        ht_mark_insert(x + 1, y + 1);
+      }
+    }
+  }
 }
 
-void SuperClear(GameStats *Game)
-{
-        int val;
-        struct Mark **ht = NULL;
-        int total;
-        int x, y;
+/*****************
+ * square_expose *
+ *****************/
 
-        x = Game->CursorX;
-        y = Game->CursorY;
-        val = SuperCount(Game);
-
-        switch(val)
-        {
-                /* they marked incorrectly, and must now pay the price */
-                case DIE:
-/*                      Boom();*/
-                        Game->Status = LOSE;
-                        SetMine(x,y,DETONATED);
-                        break;
-                /* they marked correctly, and I can expand stuff */
-                case SUPERCLICK:
-                        g_num = 0;
-                        g_table = InitLookupTable();
-
-                        /* insert all the ones around me */
-                        InsertChildren(ht, Game, x, y);
-
-                        /* This is data recursion */
-                        while(DeleteRandomMark(ht, &x, &y) == TRUE)
-                        {
-                                total = CalcSquareNumber(Game, x, y);
-                                if (ExposeSquare(Game, x, y, total) == EMPTY)
-                                {
-                                        InsertChildren(ht, Game, x, y);
-                                }
-                        }
-
-                        free (g_table);
-                        break;
-                case DONOTHING:
-                        /* yup, just that */
-                        break;
-                default:
-                        break;
-        }
+static int square_expose(game_stats_t *game, int x, int y, int total) {
+  /* fill in what a square is number wise */
+  game_set_mine(game, x, y, total == 0 ? EMPTY : total);
+  return (total == 0 ? EMPTY : total);
 }
 
-/* calculate if I should superclick, die, or do nothing. */
-int SuperCount(GameStats* Game)
-{
-        unsigned char retval;
-        int MinesFound=0,BadFound=0;
-        int x, y;
+/*********************
+ * square_mine_count *
+ *********************/
 
-        x = Game->CursorX;
-        y = Game->CursorY;
+static int square_mine_count(game_stats_t *game, int x, int y) {
+  /* determine the number of a particular square */
+  unsigned char SquareVal;
+  int Total = 0;
 
-        /* Check the above squares */
-        if (y-1 >= 0)
-        {
-                /* Check upper-left */
-                if (x-1 >= 0)
-                {
-                        GetMine(x-1, y-1, retval);
-                        switch (retval)
-                        {
-                                case MINE:
-                                        MinesFound++;
-                                        break;
-                                case BAD_MARK:
-                                        BadFound++;
-                                        break;
-                                default:
-                                        break;
-                        }
-                }
+  SquareVal = game_get_mine(game, x, y);
+  if (SquareVal != UNKNOWN) {
+    return SquareVal;
+  }
 
-                /* Check directly above */
-                GetMine(x, y-1, retval);
-                switch (retval)
-                {
-                        case MINE:
-                                MinesFound++;
-                                break;
-                        case BAD_MARK:
-                                BadFound++;
-                                break;
-                        default:
-                                break;
-                }
+  /* Check the above squares */
+  if (y - 1 >= 0) {
+    /* Check upper-left */
+    if (x - 1 >= 0) {
+      SquareVal = game_get_mine(game, x - 1, y - 1);
+      if ((SquareVal == MINE) ||
+          (SquareVal == MARKED) ||
+          (SquareVal == DETONATED)) {
+        Total++;
+      }
+    }
 
-                /* Check upper-right */
-                if (x+1 < Game->Width)
-                {
-                        GetMine(x+1, y-1, retval);
-                        switch (retval)
-                        {
-                                case MINE:
-                                        MinesFound++;
-                                        break;
-                                case BAD_MARK:
-                                        BadFound++;
-                                        break;
-                                default:
-                                        break;
-                        }
-                }
-        }
+    /* Check directly above */
+    SquareVal = game_get_mine(game, x, y - 1);
+    if ((SquareVal == MINE) ||
+        (SquareVal == MARKED) ||
+        (SquareVal == DETONATED)) {
+      Total++;
+    }
 
-        if (x-1 >= 0)
-        {
-                GetMine(x-1, y, retval);
-                switch (retval)
-                {
-                        case MINE:
-                                MinesFound++;
-                                break;
-                        case BAD_MARK:
-                                BadFound++;
-                                break;
-                        default:
-                                break;
-                }
-        }
+      /* Check upper-right */
+    if (x + 1 < game->width) {
+      SquareVal = game_get_mine(game, x + 1, y - 1);
+      if ((SquareVal == MINE) ||
+          (SquareVal == MARKED) ||
+          (SquareVal == DETONATED)) {
+        Total++;
+      }
+    }
+  }
 
-        if (x+1 < Game->Width)
-        {
-                GetMine(x+1, y, retval);
-                switch (retval)
-                {
-                        case MINE:
-                                MinesFound++;
-                                break;
-                        case BAD_MARK:
-                                BadFound++;
-                                break;
-                        default:
-                                break;
-                }
-        }
+  if (x - 1 >= 0) {
+    SquareVal = game_get_mine(game, x - 1, y);
+    if ((SquareVal == MINE) ||
+        (SquareVal == MARKED) ||
+        (SquareVal == DETONATED)) {
+      Total++;
+    }
+  }
 
-        /* Check the below squares */
-        if (y+1 < Game->Height)
-        {
-                /* Check lower-left */
-                if (x-1 >= 0)
-                {
-                        GetMine(x-1, y+1, retval);
-                        switch (retval)
-                        {
-                                case MINE:
-                                        MinesFound++;
-                                        break;
-                                case BAD_MARK:
-                                        BadFound++;
-                                        break;
-                                default:
-                                        break;
-                        }
-                }
+  if (x + 1 < game->width) {
+    SquareVal = game_get_mine(game, x + 1, y);
+    if ((SquareVal == MINE) ||
+        (SquareVal == MARKED) ||
+        (SquareVal == DETONATED)) {
+      Total++;
+    }
+  }
 
-                /* Check directly below */
-                GetMine(x, y+1, retval);
-                switch (retval)
-                {
-                        case MINE:
-                                MinesFound++;
-                                break;
-                        case BAD_MARK:
-                                BadFound++;
-                                break;
-                        default:
-                                break;
-                }
+  /* Check the below squares */
+  if (y + 1 < game->height) {
+    /* Check lower-left */
+    if (x - 1 >= 0) {
+      SquareVal = game_get_mine(game, x - 1, y + 1);
+      if ((SquareVal == MINE) ||
+          (SquareVal == MARKED) ||
+          (SquareVal == DETONATED)) {
+        Total++;
+      }
+    }
 
-                /* Check lower-right */
-                if (x+1 < Game->Width)
-                {
-                        GetMine(x+1, y+1, retval);
-                        switch (retval)
-                        {
-                                case MINE:
-                                        MinesFound++;
-                                        break;
-                                case BAD_MARK:
-                                        BadFound++;
-                                        break;
-                                default:
-                                        break;
-                        }
-                }
-        }
+    /* Check directly below */
+    SquareVal = game_get_mine(game, x, y + 1);
+    if ((SquareVal == MINE) ||
+        (SquareVal == MARKED) ||
+        (SquareVal == DETONATED)) {
+      Total++;
+    }
 
-        /* some incorrectly marked mines */
-        if (BadFound != 0)
-        {
-                return DIE;
-        }
-        /* some correctly marked, some not marked mines */
-        else if (MinesFound != 0 && BadFound == 0)
-        {
-                return DONOTHING;
-        }
-        /* all mines correctly marked */
-        else
-        {
-                return SUPERCLICK;
-        }
+    /* Check lower-right */
+    if (x + 1 < game->width) {
+      SquareVal = game_get_mine(game, x + 1, y + 1);
+      if ((SquareVal == MINE) ||
+          (SquareVal == MARKED) ||
+          (SquareVal == DETONATED)) {
+        Total++;
+      }
+    }
+  }
+
+  return Total;
 }
 
-#define TEST(a,b) if(a>=0 && a< Game->Height && b>=0 && b<Game->Width ) { GetMine(x, y, square) ; if (( square == MINE ) || ( square == UNKNOWN )) { Game->CursorX=a ; Game->CursorY=b ; return 0 ; } }
+/**********************
+ * square_super_count *
+ **********************/
 
-int FindNearest(GameStats *Game)
-{
-        int x, y;
-        int minx, miny, minscore, score;
-        unsigned char square;
+static int square_super_count(game_stats_t* game) {
+  /* calculate if I should superclick, die, or do nothing. */
+  unsigned char retval;
+  int MinesFound = 0, BadFound = 0;
+  int x, y;
 
-        x = Game->CursorX;
-        y = Game->CursorY;
+  x = game->CursorX;
+  y = game->CursorY;
 
-        GetMine(x, y, square);
-        if (( square == MINE ) || ( square == UNKNOWN ))
-        {
-                /* We're *on* an unmarked square already! */
-                return 0;
-        }
+  /* Check the above squares */
+  if (y - 1 >= 0) {
+    /* Check upper-left */
+    if (x - 1 >= 0) {
+      retval = game_get_mine(game, x - 1, y - 1);
+      switch (retval) {
+      case MINE:
+        MinesFound++;
+        break;
+      case BAD_MARK:
+        BadFound++;
+        break;
+      default:
+        break;
+      }
+    }
 
-        /* This should be really, really big. */
-/*      minscore = (  Game->Width ) * ( Game->Width ) * ( Game->Height ) * ( Game->Height ));*/
-/*      minscore = MAX_INT;*/
-        minscore = 0x7ffffff;
-        minx = Game->CursorX;
-        miny = Game->CursorY;
+    /* Check directly above */
+    retval = game_get_mine(game, x, y - 1);
+    switch (retval) {
+    case MINE:
+      MinesFound++;
+      break;
+    case BAD_MARK:
+      BadFound++;
+      break;
+    default:
+      break;
+    }
 
-        for ( x = 0 ; x < Game->Width ; x++ ) {
-                for ( y = 0 ; y < Game->Height ; y++ ) {
-                        GetMine(x, y, square);
-                        if (( square == MINE ) || ( square == UNKNOWN ))
-                        {
-                                score = (( Game->CursorX - x ) * ( Game->CursorX - x )) + (( Game->CursorY - y ) * ( Game->CursorY - y ));
-                                if ( score < minscore )
-                                {
-                                        minscore = score;
-                                        minx = x;
-                                        miny = y;
-                                }
-                        }
-                }
-        }
+    /* Check upper-right */
+    if (x + 1 < game->width) {
+      retval = game_get_mine(game, x + 1, y - 1);
+      switch (retval) {
+      case MINE:
+        MinesFound++;
+        break;
+      case BAD_MARK:
+        BadFound++;
+        break;
+      default:
+        break;
+      }
+    }
+  }
 
-        Game->CursorX = minx;
-        Game->CursorY = miny;
+  if (x - 1 >= 0) {
+    retval = game_get_mine(game, x - 1, y);
+    switch (retval) {
+    case MINE:
+      MinesFound++;
+      break;
+    case BAD_MARK:
+      BadFound++;
+      break;
+    default:
+      break;
+    }
+  }
 
-#ifdef DEBUG_LOG
-        fprintf(DebugLog, "Minimum score of %d found at %d,%d\n", minscore, minx, miny);
-        fflush(DebugLog);
-#endif /* DEBUG_LOG */
+  if (x + 1 < game->width) {
+    retval = game_get_mine(game, x + 1, y);
+    switch (retval) {
+    case MINE:
+      MinesFound++;
+      break;
+    case BAD_MARK:
+      BadFound++;
+      break;
+    default:
+      break;
+    }
+  }
 
-        return 0;
+  /* Check the below squares */
+  if (y + 1 < game->height) {
+    /* Check lower-left */
+    if (x - 1 >= 0) {
+      retval = game_get_mine(game, x - 1, y + 1);
+      switch (retval) {
+      case MINE:
+        MinesFound++;
+        break;
+      case BAD_MARK:
+        BadFound++;
+        break;
+      default:
+        break;
+      }
+    }
+
+    /* Check directly below */
+    retval = game_get_mine(game, x, y + 1);
+    switch (retval) {
+    case MINE:
+      MinesFound++;
+      break;
+    case BAD_MARK:
+      BadFound++;
+      break;
+    default:
+      break;
+    }
+
+    /* Check lower-right */
+    if (x + 1 < game->width) {
+      retval = game_get_mine(game, x + 1, y + 1);
+      switch (retval) {
+      case MINE:
+        MinesFound++;
+        break;
+      case BAD_MARK:
+        BadFound++;
+        break;
+      default:
+        break;
+      }
+    }
+  }
+
+  if (BadFound != 0) {
+    /* some incorrectly marked mines */
+    return DIE;
+  } else if (MinesFound != 0 && BadFound == 0) {
+    /* some correctly marked, some not marked mines */
+    return DONOTHING;
+  } else {
+    /* all mines correctly marked */
+    return SUPERCLICK;
+  }
 }
 
-int FindNearestBad(GameStats *Game)
-{
-        int x, y;
-        int minx, miny, minscore, score;
-        unsigned char square;
+/**************
+ * game_clear *
+ **************/
 
-        x = Game->CursorX;
-        y = Game->CursorY;
+void game_clear(game_stats_t *game) {
+  int total;
+  int x, y;
 
-        GetMine(x, y, square);
-        if (( square == BAD_MARK ) || ( Game->BadMarkedMines == 0 ))
-        {
-                /* We're done here. */
-                return 0;
+  g_num = 0;
+  g_table = ht_init();
+
+  /* give it the first candidate */
+  ht_mark_insert(game->CursorX, game->CursorY);
+
+  /* This is data recursion */
+  while(ht_delete_random(&x, &y) == TRUE) {
+    total = square_mine_count(game, x, y);
+    if (square_expose(game, x, y, total) == EMPTY) {
+      ht_insert_children(game, x, y);
+    }
+  }
+
+  free (g_table);
+}
+
+/********************
+ * game_super_clear *
+ ********************/
+
+void game_super_clear(game_stats_t *game) {
+  int val;
+  int total;
+  int x, y;
+
+  x = game->CursorX;
+  y = game->CursorY;
+  val = square_super_count(game);
+
+  switch(val) {
+    /* they marked incorrectly, and must now pay the price */
+  case DIE:
+    //dialog_boom();
+    game->Status = LOSE;
+    game_set_mine(game, x, y, DETONATED);
+    break;
+    /* they marked correctly, and I can expand stuff */
+  case SUPERCLICK:
+    g_num = 0;
+    g_table = ht_init();
+
+    /* insert all the ones around me */
+    ht_insert_children(game, x, y);
+
+    /* This is data recursion */
+    while(ht_delete_random(&x, &y) == TRUE) {
+      total = square_mine_count(game, x, y);
+      if (square_expose(game, x, y, total) == EMPTY) {
+        ht_insert_children(game, x, y);
+      }
+    }
+
+    free (g_table);
+    break;
+  case DONOTHING:
+    /* yup, just that */
+    break;
+  default:
+    break;
+  }
+}
+
+/*********************
+ * game_find_nearest *
+ *********************/
+
+int game_find_nearest(game_stats_t *game) {
+  int x, y;
+  int minx, miny, minscore, score;
+  unsigned char square;
+
+  x = game->CursorX;
+  y = game->CursorY;
+
+  square = game_get_mine(game, x, y);
+  if (( square == MINE ) || ( square == UNKNOWN )) {
+    /* We're *on* an unmarked square already! */
+    return 0;
+  }
+
+  /* This should be really, really big. */
+  minscore = 0x7ffffff;
+  minx = game->CursorX;
+  miny = game->CursorY;
+
+  for (x = 0; x < game->width; x++) {
+    for (y = 0; y < game->height; y++) {
+      square = game_get_mine(game, x, y);
+
+      if ((square == MINE) || (square == UNKNOWN)) {
+        score = ((game->CursorX - x) * (game->CursorX - x)) +
+          ((game->CursorY - y) * (game->CursorY - y));
+
+        if (score < minscore) {
+          minscore = score;
+          minx = x;
+          miny = y;
         }
+      }
+    }
+  }
 
-        /* This should be really, really big. */
-/*      minscore = (  Game->Width ) * ( Game->Width ) * ( Game->Height ) * ( Game->Height ));*/
-/*      minscore = MAX_INT;*/
-        minscore = 0x7ffffff;
-        minx = Game->CursorX;
-        miny = Game->CursorY;
+  game->CursorX = minx;
+  game->CursorY = miny;
 
-        for ( x = 0 ; x < Game->Width ; x++ ) {
-                for ( y = 0 ; y < Game->Height ; y++ ) {
-                        GetMine(x, y, square);
-                        if ( square == BAD_MARK )
-                        {
-                                score = (( Game->CursorX - x ) * ( Game->CursorX - x )) + (( Game->CursorY - y ) * ( Game->CursorY - y ));
-                                if ( score < minscore )
-                                {
-                                        minscore = score;
-                                        minx = x;
-                                        miny = y;
-                                }
-                        }
-                }
+  log_message("Minimum score of %d found at %d,%d\n", minscore, minx, miny);
+  return 0;
+}
+
+/*************************
+ * game_find_nearest_bad *
+ *************************/
+
+int game_find_nearest_bad(game_stats_t *game) {
+  int x, y;
+  int minx, miny, minscore, score;
+  unsigned char square;
+
+  x = game->CursorX;
+  y = game->CursorY;
+
+  square = game_get_mine(game, x, y);
+  if ((square == BAD_MARK) || (game->BadMarkedMines == 0)) {
+    /* We're done here. */
+    return 0;
+  }
+
+  /* This should be really, really big. */
+  minscore = 0x7ffffff;
+  minx = game->CursorX;
+  miny = game->CursorY;
+
+  for (x = 0; x < game->width; x++) {
+    for (y = 0; y < game->height; y++) {
+      square = game_get_mine(game, x, y);
+
+      if (square == BAD_MARK) {
+        score = ((game->CursorX - x) * (game->CursorX - x)) +
+          ((game->CursorY - y) * (game->CursorY - y));
+
+        if (score < minscore) {
+          minscore = score;
+          minx = x;
+          miny = y;
         }
+      }
+    }
+  }
 
-        Game->CursorX = minx;
-        Game->CursorY = miny;
+  game->CursorX = minx;
+  game->CursorY = miny;
 
-#ifdef DEBUG_LOG
-        fprintf(DebugLog, "Bad mark: minimum score of %d found at %d,%d\n", minscore, minx, miny);
-        fflush(DebugLog);
-#endif /* DEBUG_LOG */
-
-        return 0;
+  log_message("Bad mark: minimum score of %d found at %d,%d\n", minscore,
+              minx, miny);
+  return 0;
 }

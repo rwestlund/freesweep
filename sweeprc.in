@@ -1,0 +1,6 @@
+# Freesweep @VERSION@
+# Global Configuration
+Height=10
+Width=10
+Percent=20
+Theme=3

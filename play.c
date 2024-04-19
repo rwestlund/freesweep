@@ -1,506 +1,470 @@
-/**********************************************************************
-*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
-*  It may be distributed under the terms of the GNU General Purpose   *
-*  License, version 2 or above; see the file COPYING for more         *
-*  information.                                                       *
-*                                                                     *
-*  $Id: play.c,v 1.41 2002-12-19 07:04:05 hartmann Exp $
-*                                                                     *
-**********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #include "sweep.h"
 
-static int LastKey;
+static int last_key = 0;
 
-int GetInput(GameStats* Game)
-{
-        unsigned char RetVal;
-        int UserInput=0;
-        char *pathname = NULL;
-        GameStats* LoadedGame;
+#define CTRL(c) ((c) & 0x1f)
+
+/*************
+ * move_left *
+ *************/
+
+static void move_left(game_stats_t* game, int count) {
+  if (game->CursorX >= count) {
+      game->CursorX -= count;
+  } else {
+    log_error("Cannot move past left side of board.");
+    game->CursorX = 0;
+  }
+}
+
+/**************
+ * move_right *
+ **************/
+
+static void move_right(game_stats_t* game, int count) {
+  if ((game->CursorX + count) < game->width) {
+    game->CursorX += count;
+  } else {
+    log_error("Cannot move past right side of board.");
+    game->CursorX = (game->width - 1);
+  }
+}
+
+/***********
+ * move_up *
+ ***********/
+
+static void move_up(game_stats_t* game, int count) {
+  if (game->CursorY >= count) {
+    game->CursorY -= count;
+  } else {
+    log_error("Cannot move past top of board.");
+    game->CursorY = 0;
+  }
+}
+
+/*************
+ * move_down *
+ *************/
+
+static void move_down(game_stats_t* game, int count) {
+  if ((game->CursorY + count) < game->height) {
+    game->CursorY += count;
+  } else {
+    log_error("Cannot move past bottom of board.");
+    game->CursorY = game->height - 1;
+  }
+}
+
+/*************
+ * cell_flag *
+ *************/
+
+static void cell_flag(game_stats_t* game) {
+  unsigned char RetVal;
+
+  RetVal = game_get_mine(game, game->CursorX, game->CursorY);
+
+  switch (RetVal) {
+  case MINE:
+    game_set_mine(game, game->CursorX, game->CursorY, MARKED);
+    game->MarkedMines++;
+    break;
+  case MARKED:
+    game_set_mine(game, game->CursorX, game->CursorY, MINE);
+    game->MarkedMines--;
+    break;
+  case BAD_MARK:
+    game_set_mine(game, game->CursorX, game->CursorY, UNKNOWN);
+    game->BadMarkedMines--;
+    break;
+  case UNKNOWN:
+    game_set_mine(game, game->CursorX, game->CursorY, BAD_MARK);
+    game->BadMarkedMines++;
+    break;
+  default:
+    log_error("Cannot mark as a mine.");
+    break;
+  }
+
+  if (game->MarkedMines == game->mines &&
+      game->BadMarkedMines == 0) {
+    timer_stop();
+    game->Status = WIN;
+    draw_board(game);
+    cursor_undraw(game);
+    nodelay(game->Board, FALSE);
+    wnoutrefresh(game->Board);
+    refresh();
+    log_message("Num %d, Marked %d, Bad %d",
+                game->mines, game->MarkedMines,
+                game->BadMarkedMines);
+    bests_update(game);
+  }
+}
+
+/***************
+ * cell_expose *
+ ***************/
+
+static void cell_expose(game_stats_t* game) {
+  unsigned char mine_value;
+
+  mine_value = game_get_mine(game, game->CursorX, game->CursorY);
+
+  switch (mine_value) {
+  case BAD_MARK:
+  case MARKED:
+    log_error("Cannot expose a flagged mine.");
+    break;
+  case MINE:
+    timer_stop();
+    game_set_mine(game, game->CursorX, game->CursorY, DETONATED);
+    game->Status = LOSE;
+    break;
+  case UNKNOWN:
+    game_clear(game);
+    break;
+  case EMPTY:
+    log_error("Square already exposed.");
+    break;
+  case 1: case 2: case 3: case 4:
+  case 5: case 6: case 7: case 8:
+    /* Double-click */
+    game_super_clear(game);
+    break;
+
+  default:
+    break;
+  }
+}
+
+/***************
+ * dialog_lose *
+ ***************/
+
+void dialog_lose() {
+  WINDOW* win;
+
+  if ((win = newwin(10, 29, (LINES - 10) / 2, (COLS - 29) / 2))
+      == NULL) {
+    log_error("Uable to create lose dialog window");
+    return;
+  }
+
+  wborder(win, CharSet.VLine, CharSet.VLine, CharSet.HLine,
+          CharSet.HLine, CharSet.ULCorner, CharSet.URCorner,
+          CharSet.LLCorner, CharSet.LRCorner);
+
+  mvwprintw(win, 3, 12, "Boom!");
+  mvwprintw(win, 5, 6, "There goes a few");
+  mvwprintw(win, 6, 11, "limbs!!");
+
+  wrefresh(win);
+  delwin(win);
+
+  log_status("BOOM! Better luck next time.");
+
+  flushinp();
+  cbreak();
+  getch();
+}
+
+/**************
+ * dialog_win *
+ **************/
+
+void dialog_win() {
+  WINDOW* win;
+
+  if ((win = newwin(10, 29, (LINES - 10) / 2, (COLS - 29) / 2))
+      == NULL) {
+    log_error("Uable to create win dialog window");
+    return;
+  }
+
+  wborder(win, CharSet.VLine, CharSet.VLine, CharSet.HLine,
+          CharSet.HLine, CharSet.ULCorner, CharSet.URCorner,
+          CharSet.LLCorner, CharSet.LRCorner);
+
+  mvwprintw(win, 3, 11, "You Win!");
+  mvwprintw(win, 5, 6, "Good job Sargent!");
+
+  wrefresh(win);
+  delwin(win);
+
+  log_status("You Won! Now back to work.");
+
+  flushinp();
+  cbreak();
+  getch();
+}
+
+/****************
+ * dialog_abort *
+ ****************/
+
+void dialog_abort() {
+  WINDOW* win;
+
+  if ((win = newwin(10, 29, (LINES - 10) / 2, (COLS - 29) / 2))
+      == NULL) {
+    log_error("Uable to create abort dialog window");
+    return;
+  }
+
+  wborder(win, CharSet.VLine, CharSet.VLine, CharSet.HLine,
+          CharSet.HLine, CharSet.ULCorner, CharSet.URCorner,
+          CharSet.LLCorner, CharSet.LRCorner);
+
+  mvwprintw(win, 3, 6, "Mission Aborted!?");
+  mvwprintw(win, 5, 5, "It's scary, I know!");
+
+  wrefresh(win);
+  delwin(win);
+
+  log_status("Mission aborted! I know, it's a tough job!");
+
+  flushinp();
+  cbreak();
+  getch();
+}
+
+/**************
+ * game_input *
+ **************/
+
+int game_input(game_stats_t* game) {
+  int input = 0;
 
 #ifdef SWEEP_MOUSE
-        MEVENT MouseInput;
+  MEVENT MouseInput;
 #endif /* SWEEP_MOUSE */
 
-        UserInput=getch();
+  input = getch();
 
-        if (UserInput=='.')
-        {
-                UserInput=LastKey;
-        }
-        else
-        {
-                LastKey=UserInput;
-        }
+  if (input == '.') {
+    input = last_key;
+  } else {
+    last_key = input;
+  }
 
-        switch (UserInput)
-        {
-                /* Going Left? */
-                case 'h':
-                case KEY_LEFT:
-                        MoveLeft(Game,1);
-                        break;
+  switch (input) {
+    /* Going Left? */
+  case 'h':
+  case KEY_LEFT:
+    move_left(game, 1);
+    break;
 
-                /* Going Down? */
-                case 'j':
-                case KEY_DOWN:
-                        MoveDown(Game,1);
-                        break;
+    /* Going Down? */
+  case 'j':
+  case KEY_DOWN:
+    move_down(game, 1);
+    break;
 
-                /* Going Up? */
-                case 'k':
-                case KEY_UP:
-                        MoveUp(Game,1);
-                        break;
+    /* Going Up? */
+  case 'k':
+  case KEY_UP:
+    move_up(game, 1);
+    break;
 
-                /* Going Right? */
-                case 'l':
-                case KEY_RIGHT:
-                        MoveRight(Game,1);
-                        break;
+    /* Going Right? */
+  case 'l':
+  case KEY_RIGHT:
+    move_right(game, 1);
+    break;
 
+    /* Diagonals. */
+  case KEY_A1:
+    move_up(game, 1);
+    move_left(game, 1);
+    break;
 
-                /* Diagonals. */
-                case KEY_A1:
-                        MoveUp(Game,1);
-                        MoveLeft(Game,1);
-                        break;
+  case KEY_A3:
+    move_up(game, 1);
+    move_right(game, 1);
+    break;
 
-                case KEY_A3:
-                        MoveUp(Game,1);
-                        MoveRight(Game,1);
+  case KEY_C1:
+    move_down(game, 1);
+    move_left(game, 1);
+    break;
 
-                        break;
+  case KEY_C3:
+    move_down(game, 1);
+    move_right(game, 1);
+    break;
 
-                case KEY_C1:
-                        MoveDown(Game,1);
-                        MoveLeft(Game,1);
-                        break;
+    /* The non-motion keys. */
+    /* The accepted values for flagging a space as a mine. */
+  case 'f':
+  case KEY_B2:
+    cell_flag(game);
+    break;
 
-                case KEY_C3:
-                        MoveDown(Game,1);
-                        MoveRight(Game,1);
-                        break;
+    /* the accepted key to make a 'new' game */
+  case 'a':
+  case '\e': // Escape key
+    game->Status = ABORT;
+    break;
 
-                /* The non-motion keys. */
-                /* The accepted values for flagging a space as a mine. */
-                case 'f':
-                case KEY_B2:
-                        GetMine(Game->CursorX,Game->CursorY,RetVal);
-                        switch (RetVal)
-                        {
-                                case MINE:
-                                        SetMine(Game->CursorX,Game->CursorY,MARKED);
-                                        Game->MarkedMines++;
-                                        break;
-                                case MARKED:
-                                        SetMine(Game->CursorX,Game->CursorY,MINE);
-                                        Game->MarkedMines--;
-                                        break;
-                                case BAD_MARK:
-                                        SetMine(Game->CursorX,Game->CursorY,UNKNOWN);
-                                        Game->BadMarkedMines--;
-                                        break;
-                                case UNKNOWN:
-                                        SetMine(Game->CursorX,Game->CursorY,BAD_MARK);
-                                        Game->BadMarkedMines++;
-                                        break;
-                                default:
-                                        SweepError("Cannot mark as a mine.");
-                                        break;
-                        }
+    /* The accepted keys to expose a space. */
+  case ' ':
+  case '\n':
+  case KEY_ENTER:
+  case KEY_IC:
+    cell_expose(game);
+    break;
 
-                        if (Game->MarkedMines == Game->NumMines &&
-                                Game->BadMarkedMines == 0)
-                        {
-                                StopTimer();
-/*                              YouWin();*/
-                                Game->Status = WIN;
-#ifdef DEBUG_LOG
-                                fprintf(DebugLog, "Num %d, Marked %d, Bad %d\n",
-                                        Game->NumMines, Game->MarkedMines, Game->BadMarkedMines);
-                                fflush(DebugLog);
-#endif /* DEBUG_LOG */
-                                pathname = FPTBTF();
-                                UpdateBestTimesFile(Game, pathname);
-                                free(pathname);
+    /* The accepted keys to redraw the screen. */
+  case 'r':
+  case CTRL('l'):
+  case KEY_REFRESH:
+    draw_title();
+    stats_refresh();
+    log_refresh();
+    touchwin(game->Border);
+    touchwin(game->Board);
 
-                                #ifdef USE_GROUP_BEST_FILE
-                                        pathname = FPTGBTF();
-                                        UpdateBestTimesFile(Game, pathname);
-                                        free(pathname);
-                                #endif
+    noutrefresh();
+    break;
 
-                        }
-                        StartTimer();
-                        break;
+    /* The accepted keys to display the pause/help screen. */
+  case '?':
+  case KEY_HELP:
+  case KEY_BREAK:
+  case 'p':
+    timer_stop();
 
-                /* the accepted key to make a 'new' game */
-                case 'n':
-                        Game->Status = ABORT;
-                        break;
+    cbreak();
+    pause_display();
+    halfdelay(100);
 
-                /* The accepted key to make a reconfigure if the game */
-                case 'x':
-                        Game->Status = RECONF;
-                        break;
+    draw_title();
+    log_refresh();
+    stats_refresh();
+    timer_start();
+    break;
 
-                /* The accepted key to open the save gui */
-                case 'w':
-                        if ( (pathname = FSGUI() ) != NULL )
-                        {
-                                if ((  LoadedGame = LoadGame(pathname) ) == NULL )
-                                {
-                                        SweepError("Error loading game %s", pathname);
-                                }
-                                else
-                                {
-                                        werase(Game->Board);
-                                        wnoutrefresh(Game->Board);
-                                        werase(Game->Border);
-                                        wnoutrefresh(Game->Border);
-                                        delwin(Game->Board);
-                                        delwin(Game->Border);
-                                        free(Game->Field);
-                                        free(Game);
-                                        Game = LoadedGame;
-                                        SweepError("Done Loading");
-                                }
-                                break;
-                        }
-                        else
-                        {
-                                SweepError("Unable to open file");
-                        }
-                break;
+    /* The accepted values to center the cursor on board */
+  case 'c':
+    cursor_center(game);
+    break;
 
-                /* The accepted keys to expose a space. */
-                case ' ':
-                case KEY_IC:
-                        GetMine(Game->CursorX,Game->CursorY,RetVal);
-                        switch (RetVal)
-                        {
-                                case BAD_MARK:
-                                case MARKED:
-                                        SweepError("Cannot expose a flagged mine.");
-                                        break;
-                                case MINE:
-                                        StopTimer();
-                                        /* BOOM! */
-/*                                      Boom();*/
-                                        SetMine(Game->CursorX,Game->CursorY,DETONATED);
-                                        Game->Status=LOSE;
-#ifdef DEBUG_LOG
-                                        fprintf(DebugLog,"Mine exposed! Setting Status to LOSE.\n");
-                                        fflush(DebugLog);
-#endif /* DEBUG_LOG */
-                                        break;
-                                case UNKNOWN:
-                                        Clear(Game);
-                                        break;
-                                case EMPTY:
-                                        SweepError("Square already exposed.");
-                                        break;
-                                case 1: case 2: case 3: case 4:
-                                case 5: case 6: case 7: case 8:
-                                        /* Double-click */
-                                        SuperClear(Game);
+  case 'e':
+    game_find_nearest(game);
+    break;
 
-                                        break;
-                                default:
-                                        break;
-                        }
-                        break;
+  case 'y':
+    game_find_nearest_bad(game);
+    break;
 
-                /* The accepted keys to redraw the screen. */
-                case 'r':
-                case KEY_REFRESH:
-                case '\f':
-                        PrintInfo();
-                        RedrawStatsWin();
-                        RedrawErrorWin();
-                        touchwin(Game->Border);
-                        touchwin(Game->Board);
+    /* The accepted values to suspend the game. */
+  case KEY_SUSPEND:
+  case 'z':
+    break;
 
-                        noutrefresh();
+  case KEY_HOME:
+  case CTRL('a'):
+  case '0':
+    game->CursorX = 0;
+    break;
 
-                        break;
+  case KEY_END:
+  case CTRL('e'):
+  case '$':
+    game->CursorX = game->width - 1;
+    break;
 
-                /* The accepted keys to display the help screen. */
-                case '?':
-                case KEY_HELP:
-                        cbreak();
-                        StopTimer();
-                        Help();
-                        PrintInfo();
-                        RedrawErrorWin();
-                        RedrawStatsWin();
-                        StartTimer();
-                        halfdelay(100);
-                        break;
+  case 'g':
+    if (last_key != 'g') break;
+  case KEY_PPAGE:
+  case CTRL(KEY_HOME):
+    game->CursorY = 0;
+    break;
 
-                /* The accepted keys to display the license screen. */
-                case 'g':
-                        cbreak();
-                        PrintGPL();
-                        halfdelay(100);
-                        PrintInfo();
-                        RedrawErrorWin();
-                        RedrawStatsWin();
-                        break;
-
-                /* The accepted keys to display the best times screen. */
-                case 'b':
-                        PrintBestTimes(NULL);
-                        halfdelay(100);
-                        PrintInfo();
-                        RedrawErrorWin();
-                        RedrawStatsWin();
-                        noutrefresh();
-                        doupdate();
-                        break;
-
-                /* The accepted values to center the cursor on board */
-                case 'c':
-                        Game->CursorX=Game->Width/2;
-                        Game->CursorY=Game->Height/2;
-                        break;
-
-                /* A test key. Sort of feature-of-the-day. */
-                case 't':
-                        SweepMessage("_________0_________0(%u, %u)_________0_________0", Game->CursorX, Game->CursorY);
-                        break;
-
-                case 'e':
-                        FindNearest(Game);
-                        break;
-
-                case 'y':
-                        FindNearestBad(Game);
-                        break;
-
-                /* The accepted values to suspend the game. */
-                case KEY_SUSPEND:
-                case 'z':
-                        break;
-
-                case 'q':
-#ifdef DEBUG_LOG
-                        fprintf(DebugLog,"Quitting quietly.\n========================================\n");
-                        fclose(DebugLog);
-#endif /* DEBUG_LOG */
-                        clear();
-                        refresh();
-                        endwin();
-                        exit(EXIT_SUCCESS);
-                        break;
-
-                case '0':
-                        Game->CursorY=0;
-                        Game->CursorX=0;
-                        break;
-
-                case '1': case '2': case '3': case '4':
-                case '5': case '6': case '7': case '8':
-                case '9':
-                        SweepMessage("Switching themes");
-                        Game->Theme=UserInput-'0';
-                        SetTheme(Game);
-                        PrintInfo();
-                        RedrawErrorWin();
-                        RedrawStatsWin();
-                        break;
-
-                case '$':
-                        Game->CursorY=Game->Height-1;
-                        Game->CursorX=Game->Width-1;
-                        break;
-
-                case 'd':
-                        DumpGame(Game);
-                        break;
+  case KEY_NPAGE:
+  case CTRL(KEY_END):
+  case 'G':
+    game->CursorY = game->height - 1;
+    break;
 
 #ifdef SWEEP_MOUSE
-                case KEY_MOUSE:
-                        if (NCURSES_MOUSE_VERSION==1)
-                        {
-                                if (getmouse(&MouseInput)==ERR)
-                                {
+  case KEY_MOUSE:
+    getmouse(&MouseInput);
 
-                                }
+    if (MouseInput.bstate & BUTTON1_CLICKED) {
+      int mx, my;
 
-                        }
-                        break;
+      mx = (MouseInput.x - 1) / 3;
+      my = MouseInput.y - 1;
+
+      if (mx < game->width && my < game->height) {
+        cursor_undraw(game);
+        game->CursorX = mx;
+        game->CursorY = my;
+        cursor_draw(game);
+
+        cell_expose(game);
+      }
+    }
+    if (MouseInput.bstate & BUTTON3_CLICKED) {
+      int mx, my;
+
+      mx = (MouseInput.x - 1) / 3;
+      my = MouseInput.y - 1;
+
+      if (mx < game->width && my < game->height) {
+        cursor_undraw(game);
+        game->CursorX = mx;
+        game->CursorY = my;
+        cursor_draw(game);
+
+        cell_flag(game);
+      }
+    }
+    break;
 #endif /* SWEEP_MOUSE */
 
-                /* XXX Save a game */
-                case 's':
-                        SaveGame(Game, "./foo.svg");
-                        SweepError("Done Saving");
-                        break;
+  case 'q':
+    game_save(game);
+    game->Status = QUIT;
+    break;
 
-                /* XXX load a game */
-                case 'o':
-                        werase(Game->Board);
-                        wnoutrefresh(Game->Board);
-                        werase(Game->Border);
-                        wnoutrefresh(Game->Border);
-                        delwin(Game->Board);
-                        delwin(Game->Border);
-                        free(Game->Field);
-                        free(Game);
-                        Game = LoadGame("./foo.svg");
-                        SweepError("Done Loading");
-                        break;
+  case 'i':
+    game_save_image(game);
+    break;
 
-                case 'i':
-                        SaveGameImage(Game, "foo.ppm");
-                        break;
+  case ERR:
+    return 1;
+    break;
 
-                case ERR:
-                        return 1;
-                        break;
+  default:
+    log_message("Got unknown keystroke: %c\n", input);
+    last_key = ERR;
+    return 1;
+    break;
+  }
 
-                default:
-#ifdef DEBUG_LOG
-                        fprintf(DebugLog,"Got unknown keystroke: %c\n", UserInput);
-#endif /* DEBUG_LOG */
-                        LastKey=ERR;
-                        SweepError("Bad Input.");
-                        return 1;
-                        break;
-        }
-
-        LastKey=UserInput;
-        return 0;
-}
-
-void MoveLeft(GameStats* Game,int Num)
-{
-        if (Game->CursorX >= Num)
-        {
-                Game->CursorX-=Num;
-        }
-        else
-        {
-                SweepError("Cannot move past left side of board.");
-                Game->CursorX=0;
-        }
-        return;
-}
-
-void MoveRight(GameStats* Game,int Num)
-{
-        if ((Game->CursorX + Num) < Game->Width)
-        {
-                Game->CursorX+=Num;
-        }
-        else
-        {
-                SweepError("Cannot move past right side of board.");
-                Game->CursorX=(Game->Width-1);
-        }
-        return;
-}
-
-void MoveUp(GameStats* Game,int Num)
-{
-        if (Game->CursorY >= Num)
-        {
-                Game->CursorY-=Num;
-        }
-        else
-        {
-                SweepError("Cannot move past top of board.");
-                Game->CursorY=0;
-        }
-        return;
-}
-
-void MoveDown(GameStats* Game,int Num)
-{
-        if ((Game->CursorY + Num) < Game->Height)
-        {
-                Game->CursorY+=Num;
-        }
-        else
-        {
-                SweepError("Cannot move past bottom of board.");
-                Game->CursorY=(Game->Height-1);
-        }
-        return;
-}
-
-void Boom(void)
-{
-        WINDOW* BoomWin;
-
-        if ((BoomWin=newwin(LINES/3,COLS/3,LINES/3,COLS/3))==NULL)
-        {
-                perror("Boom::Alloc Window");
-                return;
-        }
-
-        if (wborder(BoomWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner)!=OK)
-        {
-                perror("Boom::Draw Border");
-                return;
-        }
-
-        mvwprintw(BoomWin,(LINES/6)-1,(COLS-15)/6,"Boom!");
-
-        wrefresh(BoomWin);
-        werase(BoomWin);
-        wnoutrefresh(BoomWin);
-        delwin(BoomWin);
-
-        return;
-}
-
-void YouWin(void)
-{
-        WINDOW* YouWin;
-
-        if ((YouWin=newwin(LINES/3,COLS/3,LINES/3,COLS/3))==NULL)
-        {
-                perror("YouWin::Alloc Window");
-                return;
-        }
-
-        if (wborder(YouWin,CharSet.VLine,CharSet.VLine,CharSet.HLine,CharSet.HLine,CharSet.ULCorner,CharSet.URCorner,CharSet.LLCorner,CharSet.LRCorner)!=OK)
-        {
-                perror("YouWin::Draw Border");
-                return;
-        }
-
-        mvwprintw(YouWin,(LINES/6)-1,(COLS-15)/6,"You Win!");
-
-        wrefresh(YouWin);
-        napms(1000);
-        werase(YouWin);
-        wnoutrefresh(YouWin);
-        delwin(YouWin);
-
-        return;
-}
-
-RETSIGTYPE ResizeSignal(int signo)
-{
-        endwin(); // Recreate stdscr
-        clear();
-        refresh();
-
-        PrintInfo();
-
-        ClearStats();
-        InitStatsWin();
-        RedrawStatsWin();
-
-        RedrawErrorWin();
-        touchwin(Game->Border);
-        touchwin(Game->Board);
-
-        noutrefresh();
-        doupdate();
+  last_key = input;
+  return 0;
 }

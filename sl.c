@@ -1,120 +1,131 @@
-/**********************************************************************
-*  This source code is copyright 1999 by Gus Hartmann & Peter Keller  *
-*  It may be distributed under the terms of the GNU General Purpose   *
-*  License, version 2 or above; see the file COPYING for more         *
-*  information.                                                       *
-*                                                                     *
-*  $Id: sl.c,v 1.10 2000-11-07 05:29:03 hartmann Exp $
-*                                                                     *
-**********************************************************************/
+/*                                                                    -*- c -*-
+ * Copyright (C) 1999  Gus Hartmann & Peter Keller
+ * Copyright (C) 2024  Ron Wills <ron@digitalcombine.ca>
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 2 of the License, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 51
+ * Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.*
+ */
 
 #include "sweep.h"
 
-void SaveGame(GameStats* Game, char *fname)
-{
-        FILE *fo = NULL;
+/*************
+ * game_save *
+ *************/
 
-        if ( ( fo = fopen(fname, "w") ) == NULL )
-        {
-                SweepError("Unable to save game");
-                return;
-        }
+void game_save(game_stats_t* game) {
+  FILE* fp;
+  char *data_path, *filename;
+  int len;
 
-        /* dump the stats out */
-        fprintf(fo, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-                        "%u\n%u\n%u\n",
-                        Game->Height, Game->Width, Game->Percent, Game->NumMines,
-                        Game->MarkedMines, Game->BadMarkedMines, Game->Color,
-                        Game->Fast, Game->Alert,
-                        Game->Theme, Game->CursorX, Game->CursorY,
-                        Game->LargeBoardX, Game->LargeBoardY, Game->Status,
-                        Game->FocusX, Game->FocusY, Game->Time);
+  if ((data_path = xdg_data_home()) == NULL) {
+    return;
+  }
 
-        /* dump the field out */
-        fwrite(Game->Field,
-                (Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
-                * sizeof(unsigned char), 1, fo);
+  // Build the filename.
+  len = strlen(data_path) + strlen(DFL_SAVE_FILE) + 2;
+  filename = (char*)xmalloc(len);
+  snprintf(filename, len, "%s/" DFL_SAVE_FILE, data_path);
+  free(data_path);
 
-        fclose(fo);
+  log_message("Saving the current game.\n -> %s", filename);
+
+  if ((fp = fopen(filename, "w")) == NULL) {
+    log_error("Unable to save game :(");
+    free(filename);
+    return;
+  }
+  free(filename);
+
+  // Write the game stats.
+  fprintf(fp,
+          "%d\n%d\n%d\n%u\n"
+          "%u\n%u\n"
+          "%d\n%d\n%d\n%d\n"
+          "%d\n%d\n%d\n"
+          "%u\n%u\n%u\n",
+          game->height, game->width, game->percent, game->mines,
+          game->MarkedMines, game->BadMarkedMines,
+          game->alert, game->theme, game->CursorX, game->CursorY,
+          game->LargeBoardX, game->LargeBoardY, game->Status,
+          game->FocusX, game->FocusY, game->Time);
+
+  // Write the game field.
+  fwrite(game->Field,
+         (game->height * ((game->width % 2 ? (game->width) + 1 :
+                           game->width)) / 2)
+         * sizeof(unsigned char), 1, fp);
+
+  fclose(fp);
 }
 
-GameStats* LoadGame(char *fname)
-{
-        FILE *fi = NULL;
-        GameStats *Game = NULL;
-        int VViewable = 0, HViewable = 0;
+/*************
+ * game_load *
+ *************/
 
-        VViewable=(LINES-6);
-        HViewable=((COLS-INFO_W-2)/3);
+int game_load(game_stats_t* game) {
+  FILE* fp;
+  char *data_path, *filename;
+  int len;
 
-        Game = (GameStats*)xmalloc(sizeof(GameStats));
+  if ((data_path = xdg_data_home()) == NULL) {
+    return 0;
+  }
 
-        if (( fi = fopen(fname, "r") ) == NULL )
-        {
-                return NULL;
-        }
+  len = strlen(data_path) + strlen(DFL_SAVE_FILE) + 2;
+  filename = (char*)xmalloc(len);
+  snprintf(filename, len, "%s/" DFL_SAVE_FILE, data_path);
+  free(data_path);
 
-        /* Load the Game Stats */
-        if ( fscanf(fi, "%d\n%d\n%d\n%u\n%u\n%u\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n%d\n"
-                "%u\n%u\n%u\n",
-                &Game->Height, &Game->Width, &Game->Percent, &Game->NumMines,
-                &Game->MarkedMines, &Game->BadMarkedMines, &Game->Color,
-                &Game->Fast, &Game->Alert,
-                &Game->Theme, &Game->CursorX, &Game->CursorY,
-                &Game->LargeBoardX, &Game->LargeBoardY, &Game->Status,
-                &Game->FocusX, &Game->FocusY, &Game->Time) == 0 )
-        {
-                return NULL;
-        }
+  if ((fp = fopen(filename, "r")) == NULL) {
+    free(filename);
+    return 0;
+  }
+  log_status("Loading game %s", filename);
 
-        /* make the field I need to write into */
-        if ((Game->Field=calloc((Game->Height*(
-                ( Game->Width % 2 ? (Game->Width) +1 : Game->Width )))/2,
-                sizeof(char)))==NULL)
-        {
-                SweepError("Out of Memory.");
-                /* XXX clean this up */
-                exit(EXIT_FAILURE);
-        }
+  // Load the game stats.
+  if (fscanf(fp,
+             "%d\n%d\n%d\n%u\n"
+             "%u\n%u\n"
+             "%d\n%d\n%d\n%d\n"
+             "%d\n%d\n%d\n"
+             "%u\n%u\n%u\n",
+             &game->height, &game->width, &game->percent, &game->mines,
+             &game->MarkedMines, &game->BadMarkedMines,
+             &game->alert, &game->theme, &game->CursorX, &game->CursorY,
+             &game->LargeBoardX, &game->LargeBoardY, &game->Status,
+             &game->FocusX, &game->FocusY, &game->Time) == 0) {
+    fclose(fp);
+    free(filename);
+    log_error("Unable to read game stats :(");
+    return 0;
+  }
 
-        /* load the board */
-        fread(Game->Field,
-                (Game->Height*((Game->Width % 2 ? (Game->Width) +1 : Game->Width ))/2)
-                * sizeof(unsigned char), 1, fi);
+  game_create_board(game);
 
-        /* make the new window setup for it */
-        if (Game->LargeBoardX && Game->LargeBoardY)
-        {
-                Game->Border=newwin((LINES-4),(COLS-INFO_W),0,0);
-/*              Game->Board=newwin(VViewable,(3*HViewable),1,1);*/
-                Game->Board=derwin(Game->Border,VViewable,(3*HViewable),1,1);
-        }
-        else if (Game->LargeBoardX)
-        {
-                Game->Border=newwin((Game->Height+2),(COLS-INFO_W),0,0);
-/*              Game->Board=newwin(Game->Height,(3*HViewable),1,1);*/
-                Game->Board=derwin(Game->Border,Game->Height,(3*HViewable),1,1);
-        }
-        else if (Game->LargeBoardY)
-        {
-                Game->Border=newwin((LINES-4),((3*Game->Width)+2),0,0);
-/*              Game->Board=newwin(VViewable,(3*Game->Width),1,1);*/
-                Game->Board=derwin(Game->Border,VViewable,(3*Game->Width),1,1);
-        }
-        else
-        {
-                Game->Border=newwin((Game->Height+2),((3*Game->Width)+2),0,0);
-/*              Game->Board=newwin(Game->Height,(3*Game->Width),1,1);*/
-                Game->Board=derwin(Game->Border,Game->Height,(3*Game->Width),1,1);
-        }
+  // Load the game field.
+  fread(game->Field,
+        (game->height * ((game->width % 2 ? (game->width) + 1 :
+                          game->width)) / 2)
+        * sizeof(unsigned char), 1, fp);
+  fclose(fp);
 
-        if ((Game->Border==NULL)||(Game->Board==NULL))
-        {
-                return NULL;
-        }
+  // Set the game clock as the real clock.
+  g_tick = game->Time;
 
-        /* Set the game clock as the real clock */
-        g_tick = Game->Time;
+  // Remove the saved file.
+  unlink(filename);
+  free(filename);
 
-        return Game;
+  return 1;
 }
